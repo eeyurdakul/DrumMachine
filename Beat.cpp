@@ -33,12 +33,10 @@ namespace Zebra {
   }
 
   void Beat::setTimeframe(uint16_t timeframe_) {
-    if (timeframe_ <= kMaxTimeframe) {
-      // resetting timeframe
-      data &= ~(0b111111111 << 5);
-      // setting new timeframe
-      data += (timeframe_ << 5);
-    }
+    // resetting timeframe
+    data &= ~(0b111111111 << 5);
+    // setting new timeframe
+    data += (timeframe_ << 5);
   }
 
   uint16_t Beat::getTimeframe() const {

@@ -14,23 +14,5 @@ namespace Zebra {
   public:
     Timeframe();
     ~Timeframe();
-    // Sector0 functions
-    void resetSector0();
-    void setSector0(uint8_t volume_, bool type_, bool inst_);
-    void setSector0Volume(uint8_t volume_);
-    uint8_t getSector0Volume() const;
-    void setSector0Type(bool type_);    // 0 -> beat, 1 -> fill
-    bool getSector0Type() const;
-    void setSector0Inst(bool inst_);
-    bool getSector0Inst() const;
-    // Sector1 functions
-    void resetSector1();
-    void setSector1(uint8_t volume_, bool type_, bool inst_);
-    void setSector1Volume(uint8_t volume_);
-    uint8_t getSector1Volume() const;
-    void setSector1Type(bool type_);    // 0 -> beat, 1 -> fill
-    bool getSector1Type() const;
-    void setSector1Inst(bool inst_);
-    bool getSector1Inst() const;
   };
 }

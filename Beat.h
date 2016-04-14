@@ -5,6 +5,8 @@
 
 namespace Zebra {
 
+  const uint8_t kMaxFill = 127;
+
   class Beat {
   private:
     uint16_t data;    // 0 active, 0000000000 timeframe, 0 sector, 0000 free

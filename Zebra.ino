@@ -1,10 +1,8 @@
 #include "Timeframe.h"
+#include "Timeline.h"
 #include "Beat.h"
 
 using namespace Zebra;
-
-Timeframe timeframe;
-Beat beat;
 
 void setup() {
   Serial.begin(9600);
