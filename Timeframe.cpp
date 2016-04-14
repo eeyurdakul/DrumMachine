@@ -14,7 +14,9 @@ namespace Zebra {
   }
 
   void Timeframe::setSector0(uint8_t volume_, bool type_, bool inst_) {
-    // statements
+    setSector0Volume(volume_);
+    setSector0Type(type_);
+    setSector0Inst(inst_);
   }
 
   void Timeframe::setSector0Volume(uint8_t volume_) {
@@ -32,15 +34,15 @@ namespace Zebra {
     return volume;
   }
 
-  void setSector0Type(bool type_) {
+  void Timeframe::setSector0Type(bool type_) {
     // resetting type
     data &= ~(1 << 1);
     // setting new type
     data += (type_ << 1);
   }
 
-  bool getSector0Type() const {
-    bool type = (data >> 1);
+  bool Timeframe::getSector0Type() const {
+    uint8_t type = (data >> 1);
     type &= ~((1 << 6) | (1 << 5) | (1 << 4) | (1 << 3) | (1 << 2) | (1 << 1));
     return type;
   }
@@ -65,7 +67,9 @@ namespace Zebra {
   }
 
   void Timeframe::setSector1(uint8_t volume_, bool type_, bool inst_) {
-    // statements
+    setSector1Volume(volume_);
+    setSector1Type(type_);
+    setSector1Inst(inst_);
   }
 
   void Timeframe::setSector1Volume(uint8_t volume_) {
@@ -82,15 +86,15 @@ namespace Zebra {
     return volume;
   }
 
-  void setSector1Type(bool type_) {
+  void Timeframe::setSector1Type(bool type_) {
     // resetting type
     data &= ~(1 << 5);
     // setting new type
     data += (type_ << 5);
   }
 
-  bool getSector1Type() const {
-    bool type = (data >> 5);
+  bool Timeframe::getSector1Type() const {
+    uint8_t type = (data >> 5);
     type &= ~((1 << 2) | (1 << 1));
     return type;
   }
@@ -103,8 +107,8 @@ namespace Zebra {
   }
 
   bool Timeframe::getSector1Inst() const {
-    uint8_t inst = (data >> 4;
-      inst &= ~((1 << 3) | (1 << 2) | (1 << 1));
-      return inst;
-    }
+    uint8_t inst = (data >> 4);
+    inst &= ~((1 << 3) | (1 << 2) | (1 << 1));
+    return inst;
   }
+}

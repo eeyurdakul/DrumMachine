@@ -13,12 +13,9 @@ namespace Zebra {
     Beat();
     ~Beat();
     void reset();
+    void set(uint16_t timeframe_, bool sector_, uint8_t fill_);
     void setActive(bool active_);
     bool getActive() const;
-    void setInst(bool inst_);
-    bool getInst() const;
-    void setVolume(uint8_t volume_);
-    uint8_t getVolume() const;
     void setTimeframe(uint16_t timeframe_);
     uint16_t getTimeframe() const;
     void setSector(bool sector_);

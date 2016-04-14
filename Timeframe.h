@@ -6,6 +6,7 @@ namespace Zebra {
 
   const uint8_t kMaxVolume = 3;   // 0 -> passive, 1 -> 30, 2 -> 60, 3 -> 90
   const uint16_t kMaxTimeframe = 1023;
+  const uint8_t kMaxFill = 127;
 
   class Timeframe {
   private:
@@ -18,7 +19,7 @@ namespace Zebra {
     void setSector0(uint8_t volume_, bool type_, bool inst_);
     void setSector0Volume(uint8_t volume_);
     uint8_t getSector0Volume() const;
-    void setSector0Type(bool type_);
+    void setSector0Type(bool type_);    // 0 -> beat, 1 -> fill
     bool getSector0Type() const;
     void setSector0Inst(bool inst_);
     bool getSector0Inst() const;
@@ -27,9 +28,9 @@ namespace Zebra {
     void setSector1(uint8_t volume_, bool type_, bool inst_);
     void setSector1Volume(uint8_t volume_);
     uint8_t getSector1Volume() const;
-    void setSector0Type(bool type_);
-    bool getSector0Type() const;
-    void setSector0Inst(bool inst_);
-    bool getSector0Inst() const;
+    void setSector1Type(bool type_);    // 0 -> beat, 1 -> fill
+    bool getSector1Type() const;
+    void setSector1Inst(bool inst_);
+    bool getSector1Inst() const;
   };
 }
