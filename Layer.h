@@ -52,11 +52,10 @@ namespace Zebra {
     void calculateLastActiveBeat();
     int8_t getLastActiveBeat() const;
     Beat& getBeat(uint8_t beatNum);
-    // void setBeat();
+    void setBeat();
     // void setFill()
-    // void resetTimeframeLibrary();
+    // void resetTimeline();
     // void resetBeatLibrary();
     // void clearBeatandFill();
-    // void clearFill();
   };
 }
