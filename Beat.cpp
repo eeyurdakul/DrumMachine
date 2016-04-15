@@ -13,10 +13,9 @@ namespace Zebra {
     fill = 0;
   }
 
-  void Beat::set(uint16_t timeframe_, bool sector_, uint8_t fill_) {
+  void Beat::set(uint16_t time_, uint8_t fill_) {
     setActive(true);
-    setTimeframe(timeframe_);
-    setSector(sector_);
+    setTime(time_);
     setFill(fill_);
   }
 
@@ -32,30 +31,17 @@ namespace Zebra {
     return active;
   }
 
-  void Beat::setTimeframe(uint16_t timeframe_) {
+  void Beat::setTime(uint16_t time_) {
     // resetting timeframe
-    data &= ~(0b111111111 << 5);
+    data &= ~(0b11111111111 << 4);
     // setting new timeframe
-    data += (timeframe_ << 5);
+    data += (time_ << 4);
   }
 
-  uint16_t Beat::getTimeframe() const {
-    uint16_t timeframe = (data >> 5);
-    timeframe &= ~(1 << 10);
-    return timeframe;
-  }
-
-  void Beat::setSector(bool sector_) {
-    // resetting sector
-    data &= ~(1 << 4);
-    // setting new sector
-    data += (sector_ << 4);
-  }
-
-  bool Beat::getSector() const {
-    uint8_t sector = (data >> 4);
-    sector &= ~(0b11111111111 << 1);
-    return sector;
+  uint16_t Beat::getTime() const {
+    uint16_t time = (data >> 4);
+    time &= ~(1 << 11);
+    return time;
   }
 
   void Beat::setFill(uint8_t fill_) {
