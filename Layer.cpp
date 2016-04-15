@@ -133,4 +133,69 @@ namespace Zebra {
   Beat& Layer::getBeat(uint8_t beatNum) {
     return beatLibrary[beatNum];
   }
+
+  void Layer::setBeat(uint16_t time_, uint8_t volume_, bool inst_) {
+    uint8_t beatNum;
+    bool shift;
+    // checking right beatNum for given time
+    if (getLastActiveBeat() < kBeatLibrarySize - 1) {
+      for (uint8_t i = 0; i < kBeatLibrarySize; i++) {
+        beatNum = i;
+        if (getBeat(beatNum).getActive() == 0) {
+          shift = false;
+          break;
+        } else if (time_ < getBeat(beatNum).getTime()) {
+          shift = true;
+          break;
+        }
+      }
+      // shifting beats right if necessary
+      if (shift) {
+        for (uint8_t j = kBeatLibrarySize - 1; j > beatNum; j--) {
+          getBeat(j) = getBeat(j - 1);
+        }
+      }
+      // resetting beat
+      getBeat(beatNum).reset();
+      // setting beat
+      getBeat(beatNum).set(time_, 0);
+      // setting timeline
+      timeline.set(time_, volume_, 0, inst_);
+      // arranging previous beat's fill in timeline
+
+      // calculating last active beat
+      calculateLastActiveBeat();
+    }
+  }
+
+  void Layer::setFill(uint8_t beatNum, uint8_t fill) {
+    // changing beat's fill
+
+    // resetting fill's area in timeline
+
+    // setting fill in timeline
+
+  }
+
+  void Layer::clearBeat(uint8_t beatNum) {
+    // resetting beat
+    getBeat(beatNum).reset();
+    // shifting beats left if necessary
+
+    // erasing timeline till next beat
+
+    // arranging previous beat's fill in timeline
+
+    // calculating last active beat
+    calculateLastActiveBeat();
+  }
+
+  void Layer::reset() {
+    // resetting beat library
+
+    // resetting timeline
+
+    // calculating last active beat
+    calculateLastActiveBeat();
+  }
 }
