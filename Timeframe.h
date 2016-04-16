@@ -1,10 +1,9 @@
 #pragma once
 
 #include "Arduino.h"
+#include "Constant.h"
 
 namespace Zebra {
-
-  const uint8_t kMaxVolume = 3;   // 0 -> passive, 1 -> 30, 2 -> 60, 3 -> 90
 
   class Timeframe {
   private:

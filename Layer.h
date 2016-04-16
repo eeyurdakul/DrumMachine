@@ -1,18 +1,12 @@
 #pragma once
 
 #include "Arduino.h"
-#include "Color.h"
+#include "Constant.h"
 #include "Timeline.h"
 #include "Beat.h"
 #include "Fill.h"
 
 namespace Zebra {
-
-  const uint8_t kMinLayerVolume = 0;
-  const uint8_t kMaxLayerVolume = 10;
-  const uint8_t kMinLayerInst = 0;
-  const uint8_t kMaxLayerInst = 127;
-  const uint8_t kBeatLibrarySize = 32;
 
   class Layer {
   private:

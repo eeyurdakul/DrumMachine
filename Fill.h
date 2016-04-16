@@ -1,10 +1,9 @@
 #pragma once
 
 #include <avr/pgmspace.h>
+#include "Constant.h"
 
 namespace Zebra {
-
-  const uint8_t kFillLibrarySize = 4;
 
   const PROGMEM uint8_t step00 = 1;
   const PROGMEM char name00[] = "Basic";

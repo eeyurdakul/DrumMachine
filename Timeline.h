@@ -1,12 +1,10 @@
 #pragma once
 
 #include "Arduino.h"
+#include "Constant.h"
 #include "Timeframe.h"
 
 namespace Zebra {
-
-  const uint16_t kTimeframeLibrarySize = 1024;
-  const uint16_t kMaxTime = 2047;
 
   class Timeline {
   private:

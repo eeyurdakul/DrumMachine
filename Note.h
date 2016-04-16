@@ -1,5 +1,5 @@
 [*] Timeframe class
 [*] Timeline class
 [*] Beat class
-[-] Layer class
+[*] Layer class
 [-] Rhythm class

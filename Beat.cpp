@@ -45,7 +45,7 @@ namespace Zebra {
   }
 
   void Beat::setFill(uint8_t fill_) {
-    if (fill_ <= kMaxFill) {
+    if (fill_ < kFillLibrarySize) {
       fill = fill_;
     }
   }

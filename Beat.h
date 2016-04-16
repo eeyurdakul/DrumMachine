@@ -1,11 +1,10 @@
 #pragma once
 
 #include "Arduino.h"
+#include "Constant.h"
 #include "Timeframe.h"
 
 namespace Zebra {
-
-  const uint8_t kMaxFill = 127;
 
   class Beat {
   private:
