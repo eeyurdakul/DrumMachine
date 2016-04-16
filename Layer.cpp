@@ -42,6 +42,47 @@ namespace Zebra {
 
   Layer::~Layer() {}
 
+  // private fill functions
+
+  uint8_t Layer::getFillStep(uint8_t fillNum) {
+    return pgm_read_byte(&fillStepLibrary[fillNum]);
+  }
+
+  char Layer::getFillName(uint8_t fillNum, uint8_t letterNum) {
+    unsigned int flashAddress = pgm_read_word(&fillNameLibrary[fillNum]);
+    return (char) pgm_read_byte(flashAddress + letterNum);
+  }
+
+  uint8_t Layer::getFillTime(uint8_t fillNum, uint8_t stepNum) {
+    unsigned int flashAddress = pgm_read_word(&fillTimeLibrary[fillNum]);
+    return pgm_read_byte(flashAddress + stepNum);
+  }
+
+  uint8_t Layer::getFillVolume(uint8_t fillNum, uint8_t stepNum) {
+    unsigned int flashAddress = pgm_read_word(&fillVolumeLibrary[fillNum]);
+    return pgm_read_byte(flashAddress + stepNum);
+  }
+
+  uint8_t Layer::getFillInst(uint8_t fillNum, uint8_t stepNum) {
+    unsigned int flashAddress = pgm_read_word(&fillInstLibrary[fillNum]);
+    return pgm_read_byte(flashAddress + stepNum);
+  }
+  
+  // public functions
+
+  void Layer::reset() {
+    // resetting beat library
+    for (uint8_t i = 0; i < kBeatLibrarySize; i++) {
+      getBeat(i).reset();
+    }
+    // resetting timeline
+    for (uint16_t j = 0; j < kMaxTime + 1; j++) {
+      timeline.reset(j);
+    }
+    // calculating last active beat
+    calculateLastActiveBeat();
+  }
+
   void Layer::setNumber(uint8_t number_) {
     number = number_;
   }
@@ -134,68 +175,164 @@ namespace Zebra {
     return beatLibrary[beatNum];
   }
 
+  Timeline& Layer::getTimeline() {
+    return timeline;
+  }
+
   void Layer::setBeat(uint16_t time_, uint8_t volume_, bool inst_) {
     uint8_t beatNum;
     bool shift;
-    // checking right beatNum for given time
-    if (getLastActiveBeat() < kBeatLibrarySize - 1) {
-      for (uint8_t i = 0; i < kBeatLibrarySize; i++) {
-        beatNum = i;
-        if (getBeat(beatNum).getActive() == 0) {
-          shift = false;
-          break;
-        } else if (time_ < getBeat(beatNum).getTime()) {
-          shift = true;
-          break;
+    // checking if given data is correct
+    if ((time_ <= kMaxTime) && (volume_ <= kMaxVolume) && (inst_ <= kMaxVolume)) {
+      // checking right beatNum for given time
+      if (getLastActiveBeat() < kBeatLibrarySize - 1) {
+        for (uint8_t i = 0; i < kBeatLibrarySize; i++) {
+          beatNum = i;
+          if (getBeat(beatNum).getActive() == 0) {
+            shift = false;
+            break;
+          } else if (time_ < getBeat(beatNum).getTime()) {
+            shift = true;
+            break;
+          }
         }
-      }
-      // shifting beats right if necessary
-      if (shift) {
-        for (uint8_t j = kBeatLibrarySize - 1; j > beatNum; j--) {
-          getBeat(j) = getBeat(j - 1);
+        // shifting beats right if necessary
+        if (shift) {
+          for (uint8_t j = kBeatLibrarySize - 1; j > beatNum; j--) {
+            getBeat(j) = getBeat(j - 1);
+          }
         }
+        // resetting beat
+        getBeat(beatNum).reset();
+        // setting beat
+        getBeat(beatNum).set(time_, 0);
+        // clearing previous beat's fill
+        if (beatNum > 0) {
+          // resetting fill of previous beat
+          getBeat(beatNum - 1).setFill(0);
+          // getting previous beat data
+          uint16_t previousBeatTime = getBeat(beatNum - 1).getTime();
+          uint16_t nextBeatTime;
+          bool previousBeatInst = timeline.getInst(previousBeatTime);
+          uint8_t previousBeatVolume = timeline.getVolume(previousBeatTime);
+          // calculating next beat time
+          // checking if this beat is last beat
+          if (beatNum == (kBeatLibrarySize - 1)) {
+            nextBeatTime = kMaxTime + 1;
+          } else
+          // checking if next beat is not active
+          if (getBeat(beatNum + 1).getActive() == 0) {
+            nextBeatTime = kMaxTime + 1;
+          } else {
+            nextBeatTime = getBeat(beatNum + 1).getTime();
+          }
+          // clearing previous beat's fill in timeline
+          for (uint16_t k = previousBeatTime; k < nextBeatTime; k++) {
+            timeline.reset(k);
+          }
+          // re-setting previous beat in timeline
+          timeline.set(previousBeatTime, previousBeatVolume, 0, previousBeatInst);
+        }
+        // setting current beat in timeline
+        timeline.set(time_, volume_, 0, inst_);
+        // calculating last active beat
+        calculateLastActiveBeat();
       }
-      // resetting beat
-      getBeat(beatNum).reset();
-      // setting beat
-      getBeat(beatNum).set(time_, 0);
-      // setting timeline
-      timeline.set(time_, volume_, 0, inst_);
-      // arranging previous beat's fill in timeline
-
-      // calculating last active beat
-      calculateLastActiveBeat();
     }
   }
 
-  void Layer::setFill(uint8_t beatNum, uint8_t fill) {
-    // changing beat's fill
-
-    // resetting fill's area in timeline
-
-    // setting fill in timeline
-
+  void Layer::setFill(uint8_t beatNum, uint8_t fillNum) {
+    // checking if given data is correct
+    if ((beatNum < kBeatLibrarySize) && (fillNum < kFillLibrarySize)) {
+      // changing beat's fill
+      getBeat(beatNum).setFill(fillNum);
+      // resetting fill's area in timeline
+      uint16_t thisBeatTime = getBeat(beatNum).getTime();
+      uint16_t nextBeatTime;
+      // checking if this beat is last beat
+      if (beatNum == (kBeatLibrarySize - 1)) {
+        nextBeatTime = kMaxTime + 1;
+      } else
+      // checking if next beat is not active
+      if (getBeat(beatNum + 1).getActive() == 0) {
+        nextBeatTime = kMaxTime + 1;
+      } else {
+        nextBeatTime = getBeat(beatNum + 1).getTime();
+      }
+      // resetting timeline
+      for (uint16_t i = thisBeatTime; i < nextBeatTime; i++) {
+        timeline.reset(i);
+      }
+      // setting fill in timeline
+      uint8_t fillStep = getFillStep(fillNum);
+      uint16_t fillTotalTime = nextBeatTime - thisBeatTime;
+      uint8_t fillTotalRefTime;
+      // calculating fillTotalRefTime
+      for (uint8_t j = 0; j < fillStep + 1; j++) {
+        fillTotalRefTime += getFillTime(fillNum, j);
+      }
+      // calculating and setting fill data into timeline
+      for (uint8_t k = 0; k < fillStep + 1; k++) {
+        float fillRefTime = getFillTime(fillNum, k);
+        uint16_t fillTime = thisBeatTime + ((fillRefTime / fillTotalRefTime) * fillTotalTime);
+        uint8_t volume = getFillVolume(fillNum, k);
+        bool type = 1;
+        bool inst = getFillInst(fillNum, k);
+        timeline.set(fillTime, volume, type, inst);
+      }
+    }
   }
 
   void Layer::clearBeat(uint8_t beatNum) {
-    // resetting beat
-    getBeat(beatNum).reset();
-    // shifting beats left if necessary
-
-    // erasing timeline till next beat
-
-    // arranging previous beat's fill in timeline
-
-    // calculating last active beat
-    calculateLastActiveBeat();
-  }
-
-  void Layer::reset() {
-    // resetting beat library
-
-    // resetting timeline
-
-    // calculating last active beat
-    calculateLastActiveBeat();
+    // checking if given data is correct
+    if (beatNum < kBeatLibrarySize) {
+      // resetting beat
+      getBeat(beatNum).reset();
+      // checking if shifting left is necessary
+      bool shift;
+      if (beatNum == kBeatLibrarySize - 1) {
+        shift = false;
+      } else if (beatNum == getLastActiveBeat()) {
+        shift = false;
+      } else {
+        shift = true;
+      }
+      // shifting beats left if necessary
+      if (shift) {
+        for (uint8_t i = beatNum; i < kBeatLibrarySize - 2; i++) {
+          getBeat(i) = getBeat(i + 1);
+        }
+        getBeat(kBeatLibrarySize - 1).reset();
+      }
+      // clearing timeline from previous beat till next beat
+      if (beatNum > 0) {
+        // resetting fill of previous beat
+        getBeat(beatNum - 1).setFill(0);
+        // getting previous beat data
+        uint16_t previousBeatTime = getBeat(beatNum - 1).getTime();
+        uint16_t nextBeatTime;
+        bool previousBeatInst = timeline.getInst(previousBeatTime);
+        uint8_t previousBeatVolume = timeline.getVolume(previousBeatTime);
+        // calculating next beat time
+        // checking if this beat is last beat
+        if (beatNum == (kBeatLibrarySize - 1)) {
+          nextBeatTime = kMaxTime + 1;
+        } else
+        // checking if next beat is not active
+        if (getBeat(beatNum + 1).getActive() == 0) {
+          nextBeatTime = kMaxTime + 1;
+        } else {
+          nextBeatTime = getBeat(beatNum + 1).getTime();
+        }
+        // clearing previous beat's fill in timeline
+        for (uint16_t k = previousBeatTime; k < nextBeatTime; k++) {
+          timeline.reset(k);
+        }
+        // re-setting previous beat in timeline
+        timeline.set(previousBeatTime, previousBeatVolume, 0, previousBeatInst);
+      }
+      // calculating last active beat
+      calculateLastActiveBeat();
+    }
   }
 }

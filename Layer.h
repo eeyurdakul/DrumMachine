@@ -4,6 +4,7 @@
 #include "Color.h"
 #include "Timeline.h"
 #include "Beat.h"
+#include "Fill.h"
 
 namespace Zebra {
 
@@ -27,10 +28,16 @@ namespace Zebra {
     int8_t lastActiveBeat;
     Timeline timeline;
     Beat beatLibrary[kBeatLibrarySize];
-
+    // private fill functions
+    uint8_t getFillStep(uint8_t fillNum);
+    char getFillName(uint8_t fillNum, uint8_t letterNum);
+    uint8_t getFillTime(uint8_t fillNum, uint8_t stepNum);
+    uint8_t getFillVolume(uint8_t fillNum, uint8_t stepNum);
+    uint8_t getFillInst(uint8_t fillNum, uint8_t stepNum);
   public:
     Layer(uint8_t number_);
     ~Layer();
+    void reset();
     void setNumber(uint8_t number_);
     uint8_t getNumber() const;
     void setColor(uint16_t color_);
@@ -52,9 +59,9 @@ namespace Zebra {
     void calculateLastActiveBeat();
     int8_t getLastActiveBeat() const;
     Beat& getBeat(uint8_t beatNum);
+    Timeline& getTimeline();
     void setBeat(uint16_t time_, uint8_t volume_, bool inst_);
-    void setFill(uint8_t beatNum, uint8_t fill);
+    void setFill(uint8_t beatNum, uint8_t fillNum);
     void clearBeat(uint8_t beatNum);
-    void reset();
   };
 }
