@@ -16,6 +16,23 @@ namespace Zebra {
     DGRAY   = 0x31A6
   };
 
+  // Rhythm.h
+  const uint8_t kMinRhythmTempo = 60;
+  const uint8_t kMaxRhythmTempo = 160;
+  const uint8_t kMinRhythmQuantize = 0;
+  const uint8_t kMaxRhythmQuantize = 6;
+  const uint8_t kMinRhythmBar = 1;
+  const uint8_t kMaxRhythmBar = 4;
+  const uint8_t kMinRhythmMeasure = 1;
+  const uint8_t kMaxRhythmMeasure = 8;
+  const uint8_t kInitialTempo = 120;
+  const uint8_t kInitialQuantize = 0;
+  const uint8_t kInitialBar = 4;
+  const uint8_t kInitialMeasure = 4;
+  const uint8_t kLayerLibrarySize = 4;
+  const uint16_t kMeasureTime = 64;
+  const uint8_t kQuantizeLibrary[7] PROGMEM = {0, 1, 2, 4, 8, 16, 32};
+
   // Layer.h
   const uint8_t kMinLayerVolume = 0;
   const uint8_t kMaxLayerVolume = 10;

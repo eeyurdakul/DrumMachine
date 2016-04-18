@@ -14,7 +14,7 @@ namespace Zebra {
   const PROGMEM uint8_t step01 = 2;
   const PROGMEM char name01[] = "Adolf";
   const PROGMEM uint8_t time01[] = {0, 1, 1};
-  const PROGMEM uint8_t volume01[] = {3, 1};
+  const PROGMEM uint8_t volume01[] = {3, 3};
   const PROGMEM uint8_t inst01[] = {0, 0};
 
   const PROGMEM uint8_t step02 = 3;

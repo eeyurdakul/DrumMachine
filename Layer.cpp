@@ -67,7 +67,7 @@ namespace Zebra {
     unsigned int flashAddress = pgm_read_word(&fillInstLibrary[fillNum]);
     return pgm_read_byte(flashAddress + stepNum);
   }
-  
+
   // public functions
 
   void Layer::reset() {
@@ -265,20 +265,24 @@ namespace Zebra {
       }
       // setting fill in timeline
       uint8_t fillStep = getFillStep(fillNum);
-      uint16_t fillTotalTime = nextBeatTime - thisBeatTime;
-      uint8_t fillTotalRefTime;
+      uint32_t fillTotalTime = nextBeatTime - thisBeatTime;
+      uint16_t fillTotalRefTime = 0;
+      float fillRefTime = 0;
       // calculating fillTotalRefTime
       for (uint8_t j = 0; j < fillStep + 1; j++) {
         fillTotalRefTime += getFillTime(fillNum, j);
       }
       // calculating and setting fill data into timeline
-      for (uint8_t k = 0; k < fillStep + 1; k++) {
-        float fillRefTime = getFillTime(fillNum, k);
-        uint16_t fillTime = thisBeatTime + ((fillRefTime / fillTotalRefTime) * fillTotalTime);
+      for (uint8_t k = 0; k < fillStep; k++) {
+        fillRefTime += getFillTime(fillNum, k);
+        uint16_t fillTime = thisBeatTime + (fillTotalTime * fillRefTime / fillTotalRefTime);
         uint8_t volume = getFillVolume(fillNum, k);
         bool type = 1;
         bool inst = getFillInst(fillNum, k);
         timeline.set(fillTime, volume, type, inst);
+        // Serial.println(fillRefTime);
+        // Serial.println(fillTime);
+        // Serial.println(volume);
       }
     }
   }
@@ -287,6 +291,9 @@ namespace Zebra {
     // checking if given data is correct
     if (beatNum < kBeatLibrarySize) {
       // resetting beat
+      uint16_t currentBeatTime = getBeat(beatNum).getTime();
+      uint16_t nextBeatTime;
+      uint16_t previousBeatTime;
       getBeat(beatNum).reset();
       // checking if shifting left is necessary
       bool shift;
@@ -309,8 +316,7 @@ namespace Zebra {
         // resetting fill of previous beat
         getBeat(beatNum - 1).setFill(0);
         // getting previous beat data
-        uint16_t previousBeatTime = getBeat(beatNum - 1).getTime();
-        uint16_t nextBeatTime;
+        previousBeatTime = getBeat(beatNum - 1).getTime();
         bool previousBeatInst = timeline.getInst(previousBeatTime);
         uint8_t previousBeatVolume = timeline.getVolume(previousBeatTime);
         // calculating next beat time
@@ -330,6 +336,12 @@ namespace Zebra {
         }
         // re-setting previous beat in timeline
         timeline.set(previousBeatTime, previousBeatVolume, 0, previousBeatInst);
+      } else if (beatNum == 0) {
+        nextBeatTime = getBeat(beatNum + 1).getTime();
+        // clearing beat's fill in timeline
+        for (uint16_t l = currentBeatTime; l < nextBeatTime; l++) {
+          timeline.reset(l);
+        }
       }
       // calculating last active beat
       calculateLastActiveBeat();
