@@ -16,6 +16,45 @@ namespace Zebra {
     DGRAY   = 0x31A6
   };
 
+  // View.h
+  // play constants
+  const uint16_t kPlayY = 60;
+  const uint16_t kPlayColor0 = WHITE;
+  const uint16_t kPlayColor1 = MGRAY;
+  // layer constants
+  const uint16_t kSongStartX = 48;
+  const uint16_t kSongEndX = 408;
+  const uint16_t kSongX = 360;
+  const uint16_t kStartY = 0;
+  // info constants
+  const uint8_t kInfoHeight = 52;
+  const uint8_t kMinInfoDigit = 0;
+  const uint8_t kMaxInfoDigit = 3;
+  const uint8_t kInfoDigitOffset = 12;
+  // info rhythm constants
+  const uint16_t kTempoXPos = 10;
+  const uint16_t kTempoYPos = 32;
+  const uint8_t kTempoDigit = 3;
+  const uint16_t kQuantizeXPos = 130;
+  const uint16_t kQuantizeYPos = 32;
+  const uint8_t kQuantizeDigit = 2;
+  const uint16_t kBarXPos = 250;
+  const uint16_t kBarYPos = 32;
+  const uint8_t kBarDigit = 2;
+  const uint16_t kMeasureXPos = 370;
+  const uint16_t kMeasureYPos = 32;
+  const uint8_t kMeasureDigit = 2;
+  // info layer constants
+  const uint16_t kInstAXPos = 10;
+  const uint16_t kInstAYPos = 32;
+  const uint8_t kInstADigit = 2;
+  const uint16_t kInstBXPos = 130;
+  const uint16_t kInstBYPos = 32;
+  const uint8_t kInstBDigit = 2;
+  const uint16_t kFillNameXPos = 250;
+  const uint16_t kFillNameYPos = 32;
+  const uint8_t kFillNameLetterCount = 5;
+
   // Rhythm.h
   const uint8_t kMinRhythmTempo = 60;
   const uint8_t kMaxRhythmTempo = 160;
@@ -48,4 +87,6 @@ namespace Zebra {
   const uint16_t kMaxTime = 2047;
   const uint8_t kMaxVolume = 3;   // 0 -> passive, 1 -> 30, 2 -> 60, 3 -> 90
 
+  // Button.h
+  const uint8_t kDebounceDelay = 50;
 }
