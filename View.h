@@ -5,7 +5,6 @@
 #include <avr/pgmspace.h>
 #include "Constant.h"
 #include "Rhythm.h"
-#include "Color.h"
 #include "Digit.h"
 #include "Fill.h"
 
