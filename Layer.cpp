@@ -205,7 +205,7 @@ namespace Zebra {
         // resetting beat
         getBeat(beatNum).reset();
         // setting beat
-        getBeat(beatNum).set(time_, 0);
+        getBeat(beatNum).set(time_, volume_, inst_, 0);
         // clearing previous beat's fill
         if (beatNum > 0) {
           // resetting fill of previous beat

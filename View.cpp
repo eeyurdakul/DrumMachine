@@ -171,7 +171,7 @@ namespace Zebra {
       if (beat.getActive()) {
         uint16_t xPos = kSongStartX + (kSongX  * beat.getTime() / rhythmRef.getSongTime());
         uint16_t yPos = layer_.getStartY() + 23;
-        if (!layer_.getTimeline().getInst(beat.getTime())) {
+        if (!beat.getInst()) {
           drawFastVLine(xPos, yPos, 13, layer_.getColor());
         } else {
           for (uint8_t i = 0; i < 5; i++) {
@@ -343,6 +343,8 @@ namespace Zebra {
     fillRect(330, 9, 140, 36, WHITE);
     fillNumberClean = -1;
   }
+
+  // private info functions
 
   void View::drawInfoNumber(uint8_t num, uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color) {
     uint8_t digitHundreds;
@@ -533,6 +535,8 @@ namespace Zebra {
       }
     }
   }
+
+  // private fill functions
 
   uint8_t View::getFillStep(uint8_t fillNum) {
     return pgm_read_byte(&fillStepLibrary[fillNum]);

@@ -4,3 +4,4 @@
 [*] Layer class
 [*] Rhythm class
 [-] Layer Inst selection
+[-] Controller Rhythm Quantize
