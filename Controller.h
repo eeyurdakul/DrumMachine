@@ -4,6 +4,7 @@
 #include "Constant.h"
 #include "Rhythm.h"
 #include "View.h"
+#include "Player.h"
 #include "Keyboard.h"
 #include "Fill.h"
 
@@ -13,6 +14,7 @@ namespace Zebra {
   private:
     Rhythm& rhythmRef;
     View& viewRef;
+    Player& playerRef;
     Keyboard keyboard;
     int8_t selectedLayer;
     int8_t selectedBeat;
@@ -21,7 +23,6 @@ namespace Zebra {
     void adjustBarDownTiming();
     void adjustMeasureUpTiming();
     void adjustMeasureDownTiming();
-    void adjustTiming();
     // private fill functions
     uint8_t getFillStep(uint8_t fillNum);
     char getFillName(uint8_t fillNum, uint8_t letterNum);
@@ -29,7 +30,7 @@ namespace Zebra {
     uint8_t getFillVolume(uint8_t fillNum, uint8_t stepNum);
     uint8_t getFillInst(uint8_t fillNum, uint8_t stepNum);
   public:
-    Controller(Rhythm& rhythm_, View& view_);
+    Controller(Rhythm& rhythm_, View& view_, Player& player_);
     ~Controller();
     void initialize();
     void setSelectedLayer(int8_t selectedLayer_);
@@ -37,9 +38,6 @@ namespace Zebra {
     void setSelectedBeat(int8_t selectedBeat_);
     int8_t getSelectedBeat() const;
     void checkKeyboardStatus();
-    // play functions
-    void playButtonPressed();
-    void resetButtonPressed();
     // select functions
     void rhythmSelectButtonPressed();
     void layerSelectButtonPressed(Layer& layer_);

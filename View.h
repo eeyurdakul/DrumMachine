@@ -23,6 +23,7 @@ namespace Zebra {
     float measureX;
     uint16_t playX;
     uint16_t playColor;
+    float playRatio;
     uint8_t rhythmTempoClean;
     uint8_t rhythmQuantizeClean;
     uint8_t rhythmBarClean;
@@ -50,6 +51,8 @@ namespace Zebra {
     // play functions
     void setPlayX(uint16_t playX_);
     uint16_t getPlayX() const;
+    void calculatePlayRatio();
+    float getPlayRatio() const;
     void drawPlayTime();
     void restartPlayTime();
     void resetPlayTime();

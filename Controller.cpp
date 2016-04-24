@@ -2,9 +2,10 @@
 
 namespace Zebra {
 
-  Controller::Controller(Rhythm& rhythm_, View& view_)
+  Controller::Controller(Rhythm& rhythm_, View& view_, Player& player_)
   : rhythmRef(rhythm_)
   , viewRef(view_)
+  , playerRef(player_)
   , keyboard()
   , selectedLayer(-1)
   , selectedBeat(-1) {}
@@ -88,6 +89,16 @@ namespace Zebra {
         fillDownButtonPressed();
       }
     }
+    if (keyboard.playStopButton.checkStatus()) {
+      if (!playerRef.getActive()) {
+        playerRef.play();
+      } else {
+        playerRef.stop();
+      }
+    }
+    if (keyboard.resetButton.checkStatus()) {
+      playerRef.reset();
+    }
   }
 
   // select functions
@@ -147,6 +158,7 @@ namespace Zebra {
     uint8_t rhythmTempo = rhythmRef.getTempo();
     if (rhythmRef.getTempo() < kMaxRhythmTempo) {
       rhythmRef.setTempo(rhythmTempo + 1);
+      playerRef.calculateDelayRegister();
       viewRef.drawInfoRhythmTempo();
     }
   }
@@ -155,6 +167,7 @@ namespace Zebra {
     uint8_t rhythmTempo = rhythmRef.getTempo();
     if (rhythmTempo > kMinRhythmTempo) {
       rhythmRef.setTempo(rhythmTempo - 1);
+      playerRef.calculateDelayRegister();
       viewRef.drawInfoRhythmTempo();
     }
   }
@@ -303,12 +316,12 @@ namespace Zebra {
 
   void Controller::adjustBarUpTiming() {
     // adjusting rhythm timing data
-    adjustTiming();
+    rhythmRef.calculateSongTime();
   }
 
   void Controller::adjustBarDownTiming() {
     // adjusting rhythm timing data
-    adjustTiming();
+    rhythmRef.calculateSongTime();
     // clearing beat if its time exceeds songtime
     for (int8_t i = kLayerLibrarySize - 1; i >= 0; i--) {
       for (int8_t j = kBeatLibrarySize - 1; j >= 0; j--) {
@@ -325,12 +338,12 @@ namespace Zebra {
 
   void Controller::adjustMeasureUpTiming() {
     // adjusting rhythm timing data
-    adjustTiming();
+    rhythmRef.calculateSongTime();
   }
 
   void Controller::adjustMeasureDownTiming() {
     // adjusting rhythm timing data
-    adjustTiming();
+    rhythmRef.calculateSongTime();
     // clearing beat if its time exceeds songtime
     for (int8_t i = kLayerLibrarySize - 1; i >= 0; i--) {
       for (int8_t j = kBeatLibrarySize - 1; j >= 0; j--) {
@@ -343,10 +356,6 @@ namespace Zebra {
       }
       rhythmRef.getLayer(i).calculateLastActiveBeat();
     }
-  }
-
-  void Controller::adjustTiming() {
-    rhythmRef.setSongTime(kMeasureTime * rhythmRef.getMeasure() * rhythmRef.getBar());
   }
 
   // private fill functions

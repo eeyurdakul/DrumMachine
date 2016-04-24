@@ -61,8 +61,8 @@ namespace Zebra {
     return selectActive;
   }
 
-  void Rhythm::setSongTime(uint32_t songTime_) {
-    songTime = songTime_;
+  void Rhythm::calculateSongTime() {
+    songTime = kMeasureTime * getMeasure() * getBar();
   }
 
   uint32_t Rhythm::getSongTime() const {

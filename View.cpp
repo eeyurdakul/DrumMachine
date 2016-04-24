@@ -39,6 +39,14 @@ namespace Zebra {
     return playX;
   }
 
+  void View::calculatePlayRatio() {
+    playRatio = float(kMeasureTime * rhythmRef.getMeasure() * rhythmRef.getBar()) / kSongX;
+  }
+
+  float View::getPlayRatio() const {
+    return playRatio;
+  }
+
   void View::drawPlayTime() {
     if (playX < kSongX) {
       drawPixel(kSongStartX + playX, kPlayY, playColor);

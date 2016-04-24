@@ -28,7 +28,7 @@ namespace Zebra {
     uint8_t getMeasure() const;
     void setSelectActive(bool active_);
     bool getSelectActive() const;
-    void setSongTime(uint32_t songTime_);
+    void calculateSongTime();
     uint32_t getSongTime() const;
     Layer& getLayer(uint8_t layerNum);
   };

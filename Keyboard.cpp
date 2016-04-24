@@ -12,8 +12,8 @@ namespace Zebra {
   , rhythmBarDownButton(36)
   , rhythmMeasureUpButton(37)
   , rhythmMeasureDownButton(38)
-  , playButton(39)
-  , stopButton(40) {}
+  , playStopButton(39)
+  , resetButton(40) {}
 
   Keyboard::~Keyboard() {}
 }
