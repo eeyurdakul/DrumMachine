@@ -20,10 +20,11 @@ void setup() {
 
 void loop() {
   controller.checkKeyboardStatus();
+  view.drawPlayBar();
 }
 
 ISR(TIMER1_COMPA_vect) {
   if (player.getActive()) {
-
+    rhythm.incrementPlayTime();
   }
 }

@@ -5,8 +5,7 @@ namespace Zebra {
   Player::Player(Rhythm& rhythm_, View& view_)
   : rhythmRef(rhythm_)
   , viewRef(view_)
-  , active(false)
-  , time(0) {}
+  , active(false) {}
 
   Player::~Player() {}
 
@@ -18,11 +17,11 @@ namespace Zebra {
     TCCR1A = 0;
     TCCR1B = 0;
     TCNT1  = 0;
-    OCR1A = 31;
+    OCR1A = 122;
     // turn on CTC mode
     TCCR1B |= (1 << WGM12);
-    // Set CS12 and CS10 bits for 64 prescaler
-    TCCR1B |= (1 << CS11) | (1 << CS10);
+    // Set CS12 and CS10 bits for 1024 prescaler
+    TCCR1B |= (1 << CS12) | (1 << CS10);
     // enable timer compare interrupt
     TIMSK1 |= (1 << OCIE1A);
     interrupts();
@@ -32,7 +31,7 @@ namespace Zebra {
     if (active) {
       stop();
     }
-    time = 0;
+    rhythmRef.setPlayTime(0);
   }
 
   void Player::play() {
@@ -51,14 +50,6 @@ namespace Zebra {
 
   bool Player::getActive() const {
     return active;
-  }
-
-  void Player::setTime(uint32_t time_) {
-    time = time_;
-  }
-
-  uint32_t Player::getTime() const {
-    return time;
   }
 
   void Player::calculateDelay() {

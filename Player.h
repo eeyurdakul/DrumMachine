@@ -11,7 +11,6 @@ namespace Zebra {
     Rhythm& rhythmRef;
     View& viewRef;
     bool active;
-    uint32_t time;
     uint32_t delay;
     uint32_t delayRegister;
   public:
@@ -23,8 +22,6 @@ namespace Zebra {
     void stop();
     void setActive(bool active_);
     bool getActive() const;
-    void setTime(uint32_t time_);
-    uint32_t getTime() const;
     void calculateDelay();
     uint32_t getDelay() const;
     void calculateDelayRegister();

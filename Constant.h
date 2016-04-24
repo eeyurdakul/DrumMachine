@@ -91,6 +91,6 @@ namespace Zebra {
   const uint8_t kDebounceDelay = 50;
 
   // Player.h
-  const uint16_t kTimerPreScaler = 64;
+  const uint16_t kTimerPreScaler = 1024;
   const uint32_t kMicroSecondsinOneMinute = 60000000;
 }

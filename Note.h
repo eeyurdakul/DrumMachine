@@ -7,6 +7,6 @@
 [-] Layer Inst selection
 [-] Controller Rhythm Quantize
 [-] Midi-out function
-[-] Re-define timer register function
-[-] Interrupt function
-[-] Interrupt view play 
+
+beatTime = 60.000.000 / (tempo * 64)
+beatFreq = 1.000.000 / beatTime

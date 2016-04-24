@@ -27,6 +27,7 @@ namespace Zebra {
     begin(identifier);
     setRotation(3);
     fillScreen(BLACK);
+    calculatePlayXRatio();
   }
 
   // play functions
@@ -39,22 +40,14 @@ namespace Zebra {
     return playX;
   }
 
-  void View::calculatePlayRatio() {
-    playRatio = float(kMeasureTime * rhythmRef.getMeasure() * rhythmRef.getBar()) / kSongX;
-  }
-
-  float View::getPlayRatio() const {
-    return playRatio;
-  }
-
-  void View::drawPlayTime() {
-    if (playX < kSongX) {
+  void View::drawPlayBar() {
+    if ((rhythmRef.getPlayTime() / playXRatio) > playX) {
       drawPixel(kSongStartX + playX, kPlayY, playColor);
       playX += 1;
     }
   }
 
-  void View::restartPlayTime() {
+  void View::restartPlayBar() {
     playX = 0;
     if (playColor == kPlayColor0) {
       playColor = kPlayColor1;
@@ -63,10 +56,14 @@ namespace Zebra {
     }
   }
 
-  void View::resetPlayTime() {
+  void View::resetPlayBar() {
     drawFastHLine(kSongStartX, kPlayY, kSongX + 1, kPlayColor1);
     playX = 0;
     playColor = kPlayColor0;
+  }
+
+  void View::calculatePlayXRatio() {
+    playXRatio = float(rhythmRef.getSongTime()) / kSongX;
   }
 
   // rhythm functions

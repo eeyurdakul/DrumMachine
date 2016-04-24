@@ -61,6 +61,22 @@ namespace Zebra {
     return selectActive;
   }
 
+  void Rhythm::setPlayTime(uint32_t playTime_) {
+    playTime = playTime_;
+  }
+
+  uint32_t Rhythm::getPlayTime() const {
+    return playTime;
+  }
+
+  void Rhythm::incrementPlayTime() {
+    if (playTime < songTime) {
+      playTime++;
+    } else {
+      playTime = 0;
+    }
+  }
+
   void Rhythm::calculateSongTime() {
     songTime = kMeasureTime * getMeasure() * getBar();
   }

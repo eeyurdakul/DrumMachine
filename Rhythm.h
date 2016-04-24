@@ -13,6 +13,7 @@ namespace Zebra {
     uint8_t bar;
     uint8_t measure;
     bool selectActive;
+    uint32_t playTime;
     uint32_t songTime;
     Layer layerLibrary[kLayerLibrarySize];
   public:
@@ -28,6 +29,9 @@ namespace Zebra {
     uint8_t getMeasure() const;
     void setSelectActive(bool active_);
     bool getSelectActive() const;
+    void setPlayTime(uint32_t playTime_);
+    uint32_t getPlayTime() const;
+    void incrementPlayTime();
     void calculateSongTime();
     uint32_t getSongTime() const;
     Layer& getLayer(uint8_t layerNum);
