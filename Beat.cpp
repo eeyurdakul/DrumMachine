@@ -40,8 +40,8 @@ namespace Zebra {
     data += (time_ << 4);
   }
 
-  uint16_t Beat::getTime() const {
-    uint16_t time = (data >> 4);
+  uint32_t Beat::getTime() const {
+    uint32_t time = (data >> 4);
     time &= ~(1 << 11);
     return time;
   }

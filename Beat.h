@@ -18,7 +18,7 @@ namespace Zebra {
     void setActive(bool active_);
     bool getActive() const;
     void setTime(uint16_t time_);
-    uint16_t getTime() const;
+    uint32_t getTime() const;
     void setVolume(uint8_t volume_);
     uint8_t getVolume() const;
     void setInst(bool inst_);

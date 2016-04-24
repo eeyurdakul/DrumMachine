@@ -201,7 +201,7 @@ namespace Zebra {
       rhythmRef.setMeasure(rhythmMeasure + 1);
       adjustMeasureUpTiming();
       viewRef.drawInfoRhythmMeasure();
-      viewRef.drawAllLayerMeasure();
+      viewRef.drawAllLayerMeasureAndSong();
     }
   }
 
@@ -211,7 +211,7 @@ namespace Zebra {
       rhythmRef.setMeasure(rhythmMeasure - 1);
       adjustMeasureDownTiming();
       viewRef.drawInfoRhythmMeasure();
-      viewRef.drawAllLayerMeasure();
+      viewRef.drawAllLayerMeasureAndSong();
     }
   }
 
@@ -310,8 +310,8 @@ namespace Zebra {
     // adjusting rhythm timing data
     adjustTiming();
     // clearing beat if its time exceeds songtime
-    for (uint8_t i = kLayerLibrarySize; i >= 0; i--) {
-      for (uint8_t j = kBeatLibrarySize - 1; j >= 0; j--) {
+    for (int8_t i = kLayerLibrarySize - 1; i >= 0; i--) {
+      for (int8_t j = kBeatLibrarySize - 1; j >= 0; j--) {
         Beat& beat = rhythmRef.getLayer(i).getBeat(j);
         if (beat.getActive()) {
           if (beat.getTime() >= rhythmRef.getSongTime()) {
@@ -332,8 +332,8 @@ namespace Zebra {
     // adjusting rhythm timing data
     adjustTiming();
     // clearing beat if its time exceeds songtime
-    for (uint8_t i = kLayerLibrarySize; i >= 0; i--) {
-      for (uint8_t j = kBeatLibrarySize - 1; j >= 0; j--) {
+    for (int8_t i = kLayerLibrarySize - 1; i >= 0; i--) {
+      for (int8_t j = kBeatLibrarySize - 1; j >= 0; j--) {
         Beat& beat = rhythmRef.getLayer(i).getBeat(j);
         if (beat.getActive()) {
           if (beat.getTime() >= rhythmRef.getSongTime()) {

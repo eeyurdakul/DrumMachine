@@ -165,7 +165,7 @@ namespace Zebra {
   }
 
   void View::drawLayerSong(Layer& layer_) {
-    fillRect(kSongStartX, layer_.getStartY() + 23, kSongX, 13, BLACK);
+    fillRect(kSongStartX, layer_.getStartY() + 23, kSongX + 1, 13, BLACK);
     for (uint8_t i = 0; i < kBeatLibrarySize; i++) {
       Beat& beat = layer_.getBeat(i);
       if (beat.getActive()) {
@@ -328,7 +328,7 @@ namespace Zebra {
         quantaTimeRatio += getFillTime(fill, k);
         quantaVolume = getFillVolume(fill, k);
         uint16_t fillDiagXPos = int(330 + 140 * double(quantaTimeRatio) / quantaTotalTimeRatio);
-        float vLine = 36 * float(quantaVolume) / 100;
+        float vLine = 36 * float(quantaVolume) / kMaxVolume;
         drawFastVLine(fillDiagXPos, 45 - vLine, vLine, BLACK);
       }
       // adjusting fillNumberClean
