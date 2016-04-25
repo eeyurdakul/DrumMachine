@@ -11,8 +11,9 @@ namespace Zebra {
     Rhythm& rhythmRef;
     View& viewRef;
     bool active;
-    uint32_t delay;
-    uint32_t delayRegister;
+    uint32_t period;
+    uint32_t frequency;
+    uint32_t matchRegister;
   public:
     Player(Rhythm& rhythm_, View& view_);
     ~Player();
@@ -22,9 +23,12 @@ namespace Zebra {
     void stop();
     void setActive(bool active_);
     bool getActive() const;
-    void calculateDelay();
-    uint32_t getDelay() const;
-    void calculateDelayRegister();
-    uint32_t getDelayRegister() const;
+    void calculatePeriod();
+    uint32_t getPeriod() const;
+    void calculateFrequency();
+    uint32_t getFrequency() const;
+    void calculateMatchRegister();
+    uint32_t getMatchRegister() const;
+    void setTimerMatchRegister();
   };
 }

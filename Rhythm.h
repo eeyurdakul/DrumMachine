@@ -32,6 +32,7 @@ namespace Zebra {
     void setPlayTime(uint32_t playTime_);
     uint32_t getPlayTime() const;
     void incrementPlayTime();
+    void restartPlayTime();
     void calculateSongTime();
     uint32_t getSongTime() const;
     Layer& getLayer(uint8_t layerNum);

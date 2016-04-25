@@ -18,6 +18,8 @@ namespace Zebra {
     Keyboard keyboard;
     int8_t selectedLayer;
     int8_t selectedBeat;
+    // private play functions
+    void resetPlay();
     // private timing functions
     void adjustBarUpTiming();
     void adjustBarDownTiming();

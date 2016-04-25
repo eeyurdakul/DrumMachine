@@ -2,8 +2,6 @@
 #include "View.h"
 #include "Controller.h"
 
-uint16_t playXRatio = 0;
-
 using namespace Zebra;
 
 Rhythm rhythm;
@@ -25,6 +23,11 @@ void loop() {
 
 ISR(TIMER1_COMPA_vect) {
   if (player.getActive()) {
-    rhythm.incrementPlayTime();
+    if (rhythm.getPlayTime() < rhythm.getSongTime()) {
+      rhythm.incrementPlayTime();
+    } else {
+      rhythm.restartPlayTime();
+      view.restartPlayBar();
+    }
   }
 }

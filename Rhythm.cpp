@@ -70,11 +70,11 @@ namespace Zebra {
   }
 
   void Rhythm::incrementPlayTime() {
-    if (playTime < songTime) {
       playTime++;
-    } else {
-      playTime = 0;
-    }
+  }
+
+  void Rhythm::restartPlayTime() {
+    playTime = 0;
   }
 
   void Rhythm::calculateSongTime() {

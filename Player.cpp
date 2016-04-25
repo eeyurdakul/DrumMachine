@@ -11,13 +11,13 @@ namespace Zebra {
 
   void Player::initialize() {
     pinMode(41, OUTPUT);
-    calculateDelayRegister();
+    calculateMatchRegister();
     // initializing timer1
     noInterrupts();
     TCCR1A = 0;
     TCCR1B = 0;
     TCNT1  = 0;
-    OCR1A = 122;
+    OCR1A = matchRegister;
     // turn on CTC mode
     TCCR1B |= (1 << WGM12);
     // Set CS12 and CS10 bits for 1024 prescaler
@@ -52,20 +52,36 @@ namespace Zebra {
     return active;
   }
 
-  void Player::calculateDelay() {
-    delay = kMicroSecondsinOneMinute / (rhythmRef.getTempo() * kMeasureTime);
+  void Player::calculatePeriod() {
+    period = kMicroSecondsinOneMinute / (rhythmRef.getTempo() * kMeasureTime);
   }
 
-  uint32_t Player::getDelay() const {
-    return delay;
+  uint32_t Player::getPeriod() const {
+    return period;
   }
 
-  void Player::calculateDelayRegister() {
-    calculateDelay();
-    delayRegister = (delay / kTimerPreScaler) - 1;
+  void Player::calculateFrequency() {
+    calculatePeriod();
+    frequency = kMicroSecondsinOneSecond / period;
   }
 
-  uint32_t Player::getDelayRegister() const {
-    return delay;
+  uint32_t Player::getFrequency() const {
+    return frequency;
+  }
+
+  void Player::calculateMatchRegister() {
+    calculateFrequency();
+    matchRegister = (16000000 / (kTimerPreScaler * frequency)) - 1;
+  }
+
+  uint32_t Player::getMatchRegister() const {
+    return matchRegister;
+  }
+
+  void Player::setTimerMatchRegister() {
+    calculateMatchRegister();
+    noInterrupts();
+    OCR1A = matchRegister;
+    interrupts();
   }
 }

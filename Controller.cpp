@@ -26,6 +26,7 @@ namespace Zebra {
       viewRef.drawInfoLayerBase();
       viewRef.drawInfoLayerAll(rhythmRef.getLayer(selectedLayer), rhythmRef.getLayer(selectedLayer).getBeat(selectedBeat));
     }
+    viewRef.resetPlayBar();
     viewRef.drawAllLayer();
   }
 
@@ -97,7 +98,7 @@ namespace Zebra {
       }
     }
     if (keyboard.resetButton.checkStatus()) {
-      playerRef.reset();
+      resetPlay();
     }
   }
 
@@ -158,7 +159,7 @@ namespace Zebra {
     uint8_t rhythmTempo = rhythmRef.getTempo();
     if (rhythmRef.getTempo() < kMaxRhythmTempo) {
       rhythmRef.setTempo(rhythmTempo + 1);
-      playerRef.calculateDelayRegister();
+      playerRef.setTimerMatchRegister();
       viewRef.drawInfoRhythmTempo();
     }
   }
@@ -167,7 +168,7 @@ namespace Zebra {
     uint8_t rhythmTempo = rhythmRef.getTempo();
     if (rhythmTempo > kMinRhythmTempo) {
       rhythmRef.setTempo(rhythmTempo - 1);
-      playerRef.calculateDelayRegister();
+      playerRef.setTimerMatchRegister();
       viewRef.drawInfoRhythmTempo();
     }
   }
@@ -191,8 +192,10 @@ namespace Zebra {
   void Controller::rhythmBarUpButtonPressed() {
     uint8_t rhythmBar = rhythmRef.getBar();
     if (rhythmBar < kMaxRhythmBar) {
+      resetPlay();
       rhythmRef.setBar(rhythmBar + 1);
       adjustBarUpTiming();
+      viewRef.calculatePlayXRatio();
       viewRef.drawInfoRhythmBar();
       viewRef.drawAllLayerMeasureAndSong();
     }
@@ -201,8 +204,10 @@ namespace Zebra {
   void Controller::rhythmBarDownButtonPressed() {
     uint8_t rhythmBar = rhythmRef.getBar();
     if (rhythmBar > kMinRhythmBar) {
+      resetPlay();
       rhythmRef.setBar(rhythmBar - 1);
       adjustBarDownTiming();
+      viewRef.calculatePlayXRatio();
       viewRef.drawInfoRhythmBar();
       viewRef.drawAllLayerMeasureAndSong();
     }
@@ -211,8 +216,10 @@ namespace Zebra {
   void Controller::rhythmMeasureUpButtonPressed() {
     uint8_t rhythmMeasure = rhythmRef.getMeasure();
     if (rhythmMeasure < kMaxRhythmMeasure) {
+      resetPlay();
       rhythmRef.setMeasure(rhythmMeasure + 1);
       adjustMeasureUpTiming();
+      viewRef.calculatePlayXRatio();
       viewRef.drawInfoRhythmMeasure();
       viewRef.drawAllLayerMeasureAndSong();
     }
@@ -221,8 +228,10 @@ namespace Zebra {
   void Controller::rhythmMeasureDownButtonPressed() {
     uint8_t rhythmMeasure = rhythmRef.getMeasure();
     if (rhythmMeasure > kMinRhythmMeasure) {
+      resetPlay();
       rhythmRef.setMeasure(rhythmMeasure - 1);
       adjustMeasureDownTiming();
+      viewRef.calculatePlayXRatio();
       viewRef.drawInfoRhythmMeasure();
       viewRef.drawAllLayerMeasureAndSong();
     }
@@ -310,6 +319,14 @@ namespace Zebra {
         viewRef.drawInfoFill(beat);
       }
     }
+  }
+
+  // private play functions
+
+  void Controller::resetPlay() {
+    // resetting all play functions
+    playerRef.reset();
+    viewRef.resetPlayBar();
   }
 
   // private timing functions

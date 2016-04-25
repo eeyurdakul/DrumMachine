@@ -18,7 +18,7 @@ namespace Zebra {
 
   // View.h
   // play constants
-  const uint16_t kPlayY = 60;
+  const uint16_t kPlayY = 58;
   const uint16_t kPlayColor0 = WHITE;
   const uint16_t kPlayColor1 = MGRAY;
   // layer constants
@@ -92,5 +92,6 @@ namespace Zebra {
 
   // Player.h
   const uint16_t kTimerPreScaler = 1024;
+  const uint32_t kMicroSecondsinOneSecond = 1000000;
   const uint32_t kMicroSecondsinOneMinute = 60000000;
 }
