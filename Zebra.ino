@@ -18,7 +18,7 @@ void setup() {
 
 void loop() {
   controller.checkKeyboardStatus();
-  view.drawPlayBar();
+  view.update();
 }
 
 ISR(TIMER1_COMPA_vect) {

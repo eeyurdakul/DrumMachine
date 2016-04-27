@@ -15,7 +15,12 @@ namespace Zebra {
   , rhythmMeasureClean(0)
   , layerInstAClean(0)
   , layerInstBClean(0)
-  , fillNumberClean(255) {}
+  , fillNumberClean(255)
+  , switchInfoFromLayerToRhythmFlag(false)
+  , switchInfoFromRhythmToLayerFlag(false)
+  , switchInfoFromLayerToLayerFlag(false)
+  , switchLayer(0)
+  , switchState(0) {}
 
   View::~View() {}
 
@@ -28,6 +33,13 @@ namespace Zebra {
     setRotation(3);
     fillScreen(BLACK);
     calculatePlayXRatio();
+  }
+
+  void View::update() {
+    drawPlayBar();
+    checkSwitchInfoFromLayerToRhythm();
+    checkSwitchInfoFromRhythmToLayer();
+    checkSwitchInfoFromLayerToLayer();
   }
 
   // play functions
@@ -566,6 +578,233 @@ namespace Zebra {
     unsigned int flashAddress = pgm_read_word(&fillInstLibrary[fillNum]);
     return pgm_read_byte(flashAddress + stepNum);
   }
+
+  // info switch functions
+
+  void View::switchInfoFromLayerToRhythm() {
+    switchInfoFromLayerToRhythmFlag = true;
+    switchState = 0;
+  }
+
+
+  void View::switchInfoFromRhythmToLayer(uint8_t layerNum) {
+    switchInfoFromRhythmToLayerFlag = true;
+    switchLayer = layerNum;
+    switchState = 0;
+  }
+
+  void View::switchInfoFromLayerToLayer(uint8_t layerNum) {
+    switchInfoFromLayerToLayerFlag = true;
+    switchLayer = layerNum;
+    switchState = 0;
+  }
+
+  void View::checkSwitchInfoFromLayerToRhythm() {
+    if (switchInfoFromLayerToRhythmFlag) {
+      switch (switchState) {
+        // clearing layer elements
+        case 0:
+        setTextSize(1);
+        setTextColor(WHITE);
+        setCursor(8, 8);
+        println(F("INST A"));
+        switchState += 1;
+        break;
+        case 1:
+        setCursor(128, 8);
+        println(F("INST B"));
+        switchState += 1;
+        break;
+        case 2:
+        setCursor(248, 8);
+        println(F("FILL"));
+        switchState += 1;
+        break;
+        case 3:
+        drawInfoNumber(layerInstAClean, kInstADigit, kInstAXPos, kInstAYPos, WHITE);
+        switchState += 1;
+        break;
+        case 4:
+        drawInfoNumber(layerInstBClean, kInstBDigit, kInstBXPos, kInstBYPos, WHITE);
+        switchState += 1;
+        break;
+        case 5:
+        fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
+        switchState += 1;
+        break;
+        case 6:
+        fillRect(330, 9, 141, 37, WHITE);
+        switchState += 1;
+        break;
+        // drawing rhythm elements
+        case 7:
+        drawFastVLine(360, 0, 20, BLACK);
+        setTextColor(BLACK);
+        switchState += 1;
+        break;
+        case 8:
+        setCursor(8, 8);
+        println(F("TEMPO"));
+        switchState += 1;
+        break;
+        case 9:
+        setCursor(128, 8);
+        println(F("QUANTIZE"));
+        switchState += 1;
+        break;
+        case 10:
+        setCursor(248, 8);
+        println(F("BAR"));
+        switchState += 1;
+        break;
+        case 11:
+        setCursor(368, 8);
+        println(F("MEASURE"));
+        switchState += 1;
+        break;
+        case 12:
+        drawInfoRhythmTempo();
+        switchState += 1;
+        break;
+        case 13:
+        drawInfoRhythmQuantize();
+        switchState += 1;
+        break;
+        case 14:
+        drawInfoRhythmBar();
+        switchState += 1;
+        break;
+        case 15:
+        drawInfoRhythmMeasure();
+        switchState = 0;
+        switchInfoFromLayerToRhythmFlag = false;
+        break;
+        default:
+        break;
+      }
+    }
+  }
+
+  void View::checkSwitchInfoFromRhythmToLayer() {
+    if (switchInfoFromRhythmToLayerFlag) {
+      switch (switchState) {
+        // clearing layer elements
+        case 0:
+        drawFastVLine(360, 0, 20, WHITE);
+        setTextSize(1);
+        setTextColor(WHITE);
+        switchState += 1;
+        break;
+        case 1:
+        setCursor(8, 8);
+        println(F("TEMPO"));
+        switchState += 1;
+        break;
+        case 2:
+        setCursor(128, 8);
+        println(F("QUANTIZE"));
+        switchState += 1;
+        break;
+        case 3:
+        setCursor(248, 8);
+        println(F("BAR"));
+        switchState += 1;
+        break;
+        case 4:
+        setCursor(368, 8);
+        println(F("MEASURE"));
+        switchState += 1;
+        break;
+        case 5:
+        drawInfoNumber(rhythmTempoClean, kTempoDigit, kTempoXPos, kTempoYPos, WHITE);
+        switchState += 1;
+        break;
+        case 6:
+        drawInfoNumber(rhythmQuantizeClean, kQuantizeDigit, kQuantizeXPos, kQuantizeYPos, WHITE);
+        switchState += 1;
+        break;
+        case 7:
+        drawInfoNumber(rhythmBarClean, kBarDigit, kBarXPos, kBarYPos, WHITE);
+        switchState += 1;
+        break;
+        case 8:
+        drawInfoNumber(rhythmMeasureClean, kMeasureDigit, kMeasureXPos, kMeasureYPos, WHITE);
+        switchState += 1;
+        break;
+        // drawing layer elements
+        case 9:
+        drawFastHLine(330, 45, 140, BLACK);
+        for(int i = 0; i < 12; i ++) {
+          drawPixel(470, 9 + (3 * i), BLACK);
+        }
+        setTextSize(1);
+        setTextColor(BLACK);
+        switchState += 1;
+        break;
+        case 10:
+        setCursor(8, 8);
+        println(F("INST A"));
+        switchState += 1;
+        break;
+        case 11:
+        setCursor(128, 8);
+        println(F("INST B"));
+        switchState += 1;
+        break;
+        case 12:
+        setCursor(248, 8);
+        println(F("FILL"));
+        switchState += 1;
+        break;
+        case 13:
+        drawInfoLayerInstA(rhythmRef.getLayer(switchLayer));
+        switchState += 1;
+        break;
+        case 14:
+        drawInfoLayerInstB(rhythmRef.getLayer(switchLayer));
+        switchState += 1;
+        break;
+        case 15:
+        if (rhythmRef.getLayer(switchLayer).getLastActiveBeat() != -1) {
+          drawInfoFill(rhythmRef.getLayer(switchLayer).getBeat(0));
+        } else {
+          cleanInfoFill();
+        }
+        switchState = 0;
+        switchInfoFromRhythmToLayerFlag = false;
+        break;
+        default:
+        break;
+      }
+    }
+  }
+
+  void View::checkSwitchInfoFromLayerToLayer() {
+    if (switchInfoFromLayerToLayerFlag) {
+      switch (switchState) {
+        case 0:
+        drawInfoLayerInstA(rhythmRef.getLayer(switchLayer));
+        switchState += 1;
+        break;
+        case 1:
+        drawInfoLayerInstB(rhythmRef.getLayer(switchLayer));
+        switchState += 1;
+        break;
+        case 2:
+        if (rhythmRef.getLayer(switchLayer).getLastActiveBeat() != -1) {
+          drawInfoFill(rhythmRef.getLayer(switchLayer).getBeat(0));
+        } else {
+          cleanInfoFill();
+        }
+        switchState = 0;
+        switchInfoFromLayerToLayerFlag = false;
+        break;
+        default:
+        break;
+      }
+    }
+  }
+
 
   // debug functions
 

@@ -18,9 +18,9 @@ namespace Zebra {
 
   // View.h
   // play constants
-  const uint16_t kPlayY = 58;
+  const uint16_t kPlayY = 56;
   const uint16_t kPlayColor0 = WHITE;
-  const uint16_t kPlayColor1 = MGRAY;
+  const uint16_t kPlayColor1 = BLACK;
   // layer constants
   const uint16_t kSongStartX = 48;
   const uint16_t kSongEndX = 408;

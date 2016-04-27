@@ -115,8 +115,7 @@ namespace Zebra {
       selectedBeat = -1;
       viewRef.drawSelectedFill(selectedLayer, selectedBeat);
       viewRef.drawRhythmSelectActive();
-      viewRef.drawInfoRhythmBase();
-      viewRef.drawInfoRhythmAll();
+      viewRef.switchInfoFromLayerToRhythm();
     }
   }
 
@@ -129,8 +128,7 @@ namespace Zebra {
       viewRef.drawRhythmSelectActive();
       viewRef.drawSelectedFill(selectedLayer, selectedBeat);
       viewRef.drawLayerSelectActive(layer_);
-      viewRef.drawInfoLayerBase();
-      viewRef.drawInfoLayerAll(layer_, layer_.getBeat(selectedBeat));
+      viewRef.switchInfoFromRhythmToLayer(selectedLayer);
     } else if (layer_.getNumber() != getSelectedLayer()) {
       rhythmRef.getLayer(selectedLayer).setSelectActive(false);
       viewRef.drawLayerSelectActive(rhythmRef.getLayer(selectedLayer));
@@ -139,7 +137,7 @@ namespace Zebra {
       selectedBeat = 0;
       viewRef.drawSelectedFill(selectedLayer, selectedBeat);
       viewRef.drawLayerSelectActive(layer_);
-      viewRef.drawInfoLayerAll(layer_, layer_.getBeat(selectedBeat));
+      viewRef.switchInfoFromLayerToLayer(selectedLayer);
     }
   }
 

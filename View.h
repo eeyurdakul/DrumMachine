@@ -34,6 +34,11 @@ namespace Zebra {
     uint16_t selectedFillXStartClean;
     uint16_t selectedFillXEndClean;
     uint16_t selectedFillYClean;
+    bool switchInfoFromLayerToRhythmFlag;
+    bool switchInfoFromRhythmToLayerFlag;
+    bool switchInfoFromLayerToLayerFlag;
+    int8_t switchLayer;
+    int8_t switchState;
     // private info functions
     void drawInfoNumber(uint8_t num, uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color);
     void drawInfoLetter(char letter, uint16_t xPos, uint16_t yPos, uint16_t color);
@@ -48,6 +53,7 @@ namespace Zebra {
     View(Rhythm& rhythm);
     ~View();
     void initialize();
+    void update();
     // play functions
     void setPlayX(uint16_t playX_);
     uint16_t getPlayX() const;
@@ -84,6 +90,13 @@ namespace Zebra {
     void drawInfoLayerInstB(const Layer& layer_);
     void drawInfoFill(const Beat& beat_);
     void cleanInfoFill();
+    // info switch functions
+    void switchInfoFromLayerToRhythm();
+    void switchInfoFromRhythmToLayer(uint8_t layerNum);
+    void switchInfoFromLayerToLayer(uint8_t layerNum);
+    void checkSwitchInfoFromLayerToRhythm();
+    void checkSwitchInfoFromRhythmToLayer();
+    void checkSwitchInfoFromLayerToLayer();
     // debug functions
     void debug(uint32_t var);
   };
