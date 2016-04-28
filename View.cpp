@@ -31,6 +31,7 @@ namespace Zebra {
     identifier = 0x9341;
     begin(identifier);
     setRotation(3);
+    setTextSize(1);
     fillScreen(BLACK);
     calculatePlayXRatio();
   }
@@ -54,7 +55,9 @@ namespace Zebra {
 
   void View::drawPlayBar() {
     if ((rhythmRef.getPlayTime() / playXRatio) > playX) {
-      drawPixel(kSongStartX + playX, kPlayY, playColor);
+      if (playX % int(measureX)) {
+        drawPixel(kSongStartX + playX, kPlayY, playColor);
+      }
       playX += 1;
     }
   }
@@ -166,6 +169,7 @@ namespace Zebra {
   }
 
   void View::drawLayerMeasure(const Layer& layer_) {
+    // clearing measure
     fillRect(kSongStartX, layer_.getStartY() + 45, kSongX, 12, BLACK);
     drawFastHLine(kSongStartX, layer_.getStartY() + 56, kSongX + 1, LGRAY);
     barX = kSongX / rhythmRef.getBar();
@@ -233,7 +237,6 @@ namespace Zebra {
     drawFastVLine(120, 0, 20, BLACK);
     drawFastVLine(240, 0, 20, BLACK);
     drawFastVLine(360, 0, 20, BLACK);
-    setTextSize(1);
     setTextColor(BLACK);
     setCursor(8, 8);
     println(F("TEMPO"));
@@ -294,7 +297,6 @@ namespace Zebra {
     for(int i = 0; i < 12; i ++) {
       drawPixel(470, 9 + (3 * i), BLACK);
     }
-    setTextSize(1);
     setTextColor(BLACK);
     setCursor(8, 8);
     println(F("INST A"));
@@ -586,7 +588,6 @@ namespace Zebra {
     switchState = 0;
   }
 
-
   void View::switchInfoFromRhythmToLayer(uint8_t layerNum) {
     switchInfoFromRhythmToLayerFlag = true;
     switchLayer = layerNum;
@@ -604,7 +605,6 @@ namespace Zebra {
       switch (switchState) {
         // clearing layer elements
         case 0:
-        setTextSize(1);
         setTextColor(WHITE);
         setCursor(8, 8);
         println(F("INST A"));
@@ -691,7 +691,6 @@ namespace Zebra {
         // clearing layer elements
         case 0:
         drawFastVLine(360, 0, 20, WHITE);
-        setTextSize(1);
         setTextColor(WHITE);
         switchState += 1;
         break;
@@ -737,7 +736,6 @@ namespace Zebra {
         for(int i = 0; i < 12; i ++) {
           drawPixel(470, 9 + (3 * i), BLACK);
         }
-        setTextSize(1);
         setTextColor(BLACK);
         switchState += 1;
         break;
@@ -804,7 +802,6 @@ namespace Zebra {
       }
     }
   }
-
 
   // debug functions
 

@@ -12,8 +12,14 @@ namespace Zebra {
   , rhythmBarDownButton(36)
   , rhythmMeasureUpButton(37)
   , rhythmMeasureDownButton(38)
-  , playStopButton(39)
-  , resetButton(40) {}
+  , recordButton(39)
+  , playStopButton(40)
+  , resetButton(41)
+  , metronomeButton(42)
+  , beatAButton(43)
+  , beatBButton(44)
+  , beatCButton(45)
+  , beatDButton(46) {}
 
   Keyboard::~Keyboard() {}
 }

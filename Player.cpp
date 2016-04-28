@@ -5,7 +5,8 @@ namespace Zebra {
   Player::Player(Rhythm& rhythm_, View& view_)
   : rhythmRef(rhythm_)
   , viewRef(view_)
-  , active(false) {}
+  , playActive(false)
+  , recordActive(false) {}
 
   Player::~Player() {}
 
@@ -28,28 +29,42 @@ namespace Zebra {
   }
 
   void Player::reset() {
-    if (active) {
+    if (playActive) {
       stop();
     }
     rhythmRef.setPlayTime(0);
   }
 
   void Player::play() {
-    active = true;
+    playActive = true;
     digitalWrite(41, HIGH);
   }
 
+  void Player::record() {
+    playActive = true;
+    recordActive = true;
+  }
+
   void Player::stop() {
-    active = false;
+    playActive = false;
+    recordActive = false;
     digitalWrite(41, LOW);
   }
 
-  void Player::setActive(bool active_) {
-    active = active_;
+  void Player::setPlayActive(bool active_) {
+    playActive = active_;
   }
 
-  bool Player::getActive() const {
-    return active;
+  bool Player::getPlayActive() const {
+    return playActive;
+  }
+
+  void Player::setRecordActive(bool active_) {
+    recordActive = active_;
+  }
+
+  bool Player::getRecordActive() const {
+    return recordActive;
   }
 
   void Player::calculatePeriod() {

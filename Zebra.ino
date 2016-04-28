@@ -22,7 +22,7 @@ void loop() {
 }
 
 ISR(TIMER1_COMPA_vect) {
-  if (player.getActive()) {
+  if (player.getPlayActive()) {
     if (rhythm.getPlayTime() < rhythm.getSongTime()) {
       rhythm.incrementPlayTime();
     } else {

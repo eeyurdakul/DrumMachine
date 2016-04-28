@@ -10,7 +10,8 @@ namespace Zebra {
   private:
     Rhythm& rhythmRef;
     View& viewRef;
-    bool active;
+    bool playActive;
+    bool recordActive;
     uint32_t period;
     uint32_t frequency;
     uint32_t matchRegister;
@@ -20,9 +21,12 @@ namespace Zebra {
     void initialize();
     void reset();
     void play();
+    void record();
     void stop();
-    void setActive(bool active_);
-    bool getActive() const;
+    void setPlayActive(bool active_);
+    bool getPlayActive() const;
+    void setRecordActive(bool active_);
+    bool getRecordActive() const;
     void calculatePeriod();
     uint32_t getPeriod() const;
     void calculateFrequency();

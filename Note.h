@@ -4,7 +4,7 @@
 [*] Layer class
 [*] Rhythm class
 [*] Player class
-[-] Clear info area effectively
+[*] Clear info area effectively
 [-] Layer Inst selection
 [-] Controller Rhythm Quantize
 [-] Midi-out function

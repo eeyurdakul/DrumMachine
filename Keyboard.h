@@ -19,8 +19,14 @@ namespace Zebra {
     Button rhythmBarDownButton;
     Button rhythmMeasureUpButton;
     Button rhythmMeasureDownButton;
+    Button recordButton;
     Button playStopButton;
     Button resetButton;
+    Button metronomeButton;
+    Button beatAButton;
+    Button beatBButton;
+    Button beatCButton;
+    Button beatDButton;
   };
 
 }

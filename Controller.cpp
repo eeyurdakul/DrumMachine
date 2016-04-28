@@ -90,8 +90,11 @@ namespace Zebra {
         fillDownButtonPressed();
       }
     }
+    if (keyboard.recordButton.checkStatus()) {
+      playerRef.record();
+    }
     if (keyboard.playStopButton.checkStatus()) {
-      if (!playerRef.getActive()) {
+      if (!playerRef.getPlayActive()) {
         playerRef.play();
       } else {
         playerRef.stop();
@@ -99,6 +102,21 @@ namespace Zebra {
     }
     if (keyboard.resetButton.checkStatus()) {
       resetPlay();
+    }
+    if (keyboard.metronomeButton.checkStatus()) {
+      // statements
+    }
+    if (keyboard.beatAButton.checkStatus()) {
+      // statements
+    }
+    if (keyboard.beatBButton.checkStatus()) {
+      // statements
+    }
+    if (keyboard.beatCButton.checkStatus()) {
+      // statements
+    }
+    if (keyboard.beatDButton.checkStatus()) {
+      // statements
     }
   }
 
