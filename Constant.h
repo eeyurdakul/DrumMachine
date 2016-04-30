@@ -16,7 +16,41 @@ namespace Zebra {
     DGRAY   = 0x31A6
   };
 
+  // Keyboard.h
+
+  const uint8_t kRhythmSelectButtonPin = 30;
+  const uint8_t kLayer0SelectButtonPin = 31;
+  const uint8_t kLayer1SelectButtonPin = 32;
+  const uint8_t kLayer2SelectButtonPin = 33;
+  const uint8_t kLayer3SelectButtonPin = 34;
+
+  const uint8_t kRhythmTempoUpButtonPin = 35;
+  const uint8_t kRhythmTempoDownButtonPin = 36;
+  const uint8_t kRhythmQuantizeUpButtonPin = 37;
+  const uint8_t kRhythmQuantizeDownButtonPin = 38;
+
+  const uint8_t kRhythmBarUpButtonPin = 39;
+  const uint8_t kRhythmBarDownButtonPin = 40;
+  const uint8_t kRhythmMeasureUpButtonPin = 41;
+  const uint8_t kRhythmMeasureDownButtonPin = 42;
+
+  const uint8_t kRecordButtonPin = 43;
+  const uint8_t kPlayButtonPin = 44;
+  const uint8_t kResetButtonPin = 45;
+
+  const uint8_t kBeatShiftButtonPin = 46;
+  const uint8_t kBeatAButtonPin = 47;
+  const uint8_t kBeatBButtonPin = 48;
+  const uint8_t kBeatCButtonPin = 49;
+  const uint8_t kBeatDButtonPin = 50;
+
+  const uint8_t kMetronomeButtonPin = 51;
+
+  const uint8_t kRecordLedPin = 52;
+  const uint8_t kPlayLedPin = 53;
+
   // View.h
+
   // play constants
   const uint16_t kPlayY = 56;
   const uint16_t kPlayColor0 = WHITE;
@@ -56,6 +90,7 @@ namespace Zebra {
   const uint8_t kFillNameLetterCount = 5;
 
   // Rhythm.h
+
   const uint8_t kMinRhythmTempo = 60;
   const uint8_t kMaxRhythmTempo = 160;
   const uint8_t kMinRhythmQuantize = 0;
@@ -73,6 +108,7 @@ namespace Zebra {
   const uint8_t kQuantizeLibrary[7] PROGMEM = {0, 1, 2, 4, 8, 16, 32};
 
   // Layer.h
+
   const uint8_t kMinLayerVolume = 0;
   const uint8_t kMaxLayerVolume = 10;
   const uint8_t kMinLayerInst = 0;
@@ -80,17 +116,21 @@ namespace Zebra {
   const uint8_t kBeatLibrarySize = 32;
 
   // Fill.h
+
   const uint8_t kFillLibrarySize = 4;
 
   // Timeline.h
+
   const uint16_t kTimeframeLibrarySize = 1024;
   const uint16_t kMaxTime = 2047;
   const uint8_t kMaxVolume = 3;   // 0 -> passive, 1 -> 30, 2 -> 60, 3 -> 90
 
   // Button.h
+
   const uint8_t kDebounceDelay = 50;
 
   // Player.h
+
   const uint16_t kTimerPreScaler = 1024;
   const uint32_t kMicroSecondsinOneSecond = 1000000;
   const uint32_t kMicroSecondsinOneMinute = 60000000;

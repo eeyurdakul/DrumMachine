@@ -8,6 +8,7 @@ namespace Zebra {
   , barX(0)
   , measureX(0)
   , playX(0)
+  , measurePlayCount(0)
   , playColor(kPlayColor0)
   , rhythmTempoClean(0)
   , rhythmQuantizeClean(0)
@@ -55,8 +56,9 @@ namespace Zebra {
 
   void View::drawPlayBar() {
     if ((rhythmRef.getPlayTime() / playXRatio) > playX) {
-      if (playX % int(measureX)) {
-        drawPixel(kSongStartX + playX, kPlayY, playColor);
+      if (playX > (measureX * measurePlayCount)) {
+        drawFastVLine(kSongStartX + playX, kPlayY, 2, playColor);
+        measurePlayCount++;
       }
       playX += 1;
     }
@@ -64,16 +66,21 @@ namespace Zebra {
 
   void View::restartPlayBar() {
     playX = 0;
+    measurePlayCount = 0;
     if (playColor == kPlayColor0) {
+      drawFastVLine(kSongEndX, kPlayY, 2, playColor);
       playColor = kPlayColor1;
     } else {
+      drawFastVLine(kSongEndX, kPlayY, 2, playColor);
       playColor = kPlayColor0;
     }
   }
 
   void View::resetPlayBar() {
     drawFastHLine(kSongStartX, kPlayY, kSongX + 1, kPlayColor1);
+    drawFastHLine(kSongStartX, kPlayY + 1, kSongX + 1, kPlayColor1);
     playX = 0;
+    measurePlayCount = 0;
     playColor = kPlayColor0;
   }
 

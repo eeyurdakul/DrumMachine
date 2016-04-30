@@ -91,33 +91,52 @@ namespace Zebra {
       }
     }
     if (keyboard.recordButton.checkStatus()) {
-      playerRef.record();
+      recordButtonPressed();
     }
-    if (keyboard.playStopButton.checkStatus()) {
-      if (!playerRef.getPlayActive()) {
-        playerRef.play();
-      } else {
-        playerRef.stop();
-      }
+    if (keyboard.playButton.checkStatus()) {
+      playButtonPressed();
     }
     if (keyboard.resetButton.checkStatus()) {
-      resetPlay();
+      resetButtonPressed();
     }
-    if (keyboard.metronomeButton.checkStatus()) {
-      // statements
+    if (keyboard.beatShiftButton.checkStatus()) {
+      beatShiftButtonPressed();
     }
     if (keyboard.beatAButton.checkStatus()) {
-      // statements
+      beatAButtonPressed();
     }
     if (keyboard.beatBButton.checkStatus()) {
-      // statements
+      beatBButtonPressed();
     }
     if (keyboard.beatCButton.checkStatus()) {
-      // statements
+      beatCButtonPressed();
     }
     if (keyboard.beatDButton.checkStatus()) {
-      // statements
+      beatDButtonPressed();
     }
+    if (keyboard.metronomeButton.checkStatus()) {
+      metronomeButtonPressed();
+    }
+  }
+
+  // play functions
+
+  void Controller::recordButtonPressed() {
+    playerRef.record();
+  }
+
+  void Controller::playButtonPressed() {
+    if (!playerRef.getPlayActive()) {
+      playerRef.play();
+    } else {
+      playerRef.stop();
+    }
+  }
+
+  void Controller::resetButtonPressed() {
+    Serial.println("reset");
+    playerRef.reset();
+    viewRef.resetPlayBar();
   }
 
   // select functions
@@ -208,7 +227,7 @@ namespace Zebra {
   void Controller::rhythmBarUpButtonPressed() {
     uint8_t rhythmBar = rhythmRef.getBar();
     if (rhythmBar < kMaxRhythmBar) {
-      resetPlay();
+      playerRef.reset();
       rhythmRef.setBar(rhythmBar + 1);
       adjustBarUpTiming();
       viewRef.calculatePlayXRatio();
@@ -220,7 +239,7 @@ namespace Zebra {
   void Controller::rhythmBarDownButtonPressed() {
     uint8_t rhythmBar = rhythmRef.getBar();
     if (rhythmBar > kMinRhythmBar) {
-      resetPlay();
+      playerRef.reset();
       rhythmRef.setBar(rhythmBar - 1);
       adjustBarDownTiming();
       viewRef.calculatePlayXRatio();
@@ -232,7 +251,7 @@ namespace Zebra {
   void Controller::rhythmMeasureUpButtonPressed() {
     uint8_t rhythmMeasure = rhythmRef.getMeasure();
     if (rhythmMeasure < kMaxRhythmMeasure) {
-      resetPlay();
+      playerRef.reset();
       rhythmRef.setMeasure(rhythmMeasure + 1);
       adjustMeasureUpTiming();
       viewRef.calculatePlayXRatio();
@@ -244,7 +263,7 @@ namespace Zebra {
   void Controller::rhythmMeasureDownButtonPressed() {
     uint8_t rhythmMeasure = rhythmRef.getMeasure();
     if (rhythmMeasure > kMinRhythmMeasure) {
-      resetPlay();
+      playerRef.reset();
       rhythmRef.setMeasure(rhythmMeasure - 1);
       adjustMeasureDownTiming();
       viewRef.calculatePlayXRatio();
@@ -337,13 +356,21 @@ namespace Zebra {
     }
   }
 
-  // private play functions
+  // beat record functions
 
-  void Controller::resetPlay() {
-    // resetting all play functions
-    playerRef.reset();
-    viewRef.resetPlayBar();
-  }
+  void Controller::beatShiftButtonPressed() {}
+
+  void Controller::beatAButtonPressed() {}
+
+  void Controller::beatBButtonPressed() {}
+
+  void Controller::beatCButtonPressed() {}
+
+  void Controller::beatDButtonPressed() {}
+
+  // metronome functions
+
+  void Controller::metronomeButtonPressed() {}
 
   // private timing functions
 

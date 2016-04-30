@@ -22,6 +22,7 @@ namespace Zebra {
     float barX;
     float measureX;
     uint16_t playX;
+    uint8_t measurePlayCount;
     uint16_t playColor;
     float playXRatio;
     uint8_t rhythmTempoClean;

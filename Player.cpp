@@ -11,7 +11,8 @@ namespace Zebra {
   Player::~Player() {}
 
   void Player::initialize() {
-    pinMode(41, OUTPUT);
+    pinMode(kRecordLedPin, OUTPUT);
+    pinMode(kPlayLedPin, OUTPUT);
     calculateMatchRegister();
     // initializing timer1
     noInterrupts();
@@ -37,18 +38,21 @@ namespace Zebra {
 
   void Player::play() {
     playActive = true;
-    digitalWrite(41, HIGH);
+    digitalWrite(kPlayLedPin, HIGH);
   }
 
   void Player::record() {
-    playActive = true;
     recordActive = true;
+    playActive = true;
+    digitalWrite(kRecordLedPin, HIGH);
+    digitalWrite(kPlayLedPin, HIGH);
   }
 
   void Player::stop() {
-    playActive = false;
     recordActive = false;
-    digitalWrite(41, LOW);
+    playActive = false;
+    digitalWrite(kRecordLedPin, LOW);
+    digitalWrite(kPlayLedPin, LOW);
   }
 
   void Player::setPlayActive(bool active_) {
