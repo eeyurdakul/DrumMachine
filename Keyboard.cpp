@@ -22,12 +22,10 @@ namespace Zebra {
   , recordButton(kRecordButtonPin)
   , playButton(kPlayButtonPin)
   , resetButton(kResetButtonPin)
-
-  , beatShiftButton(kBeatShiftButtonPin)
+  
   , beatAButton(kBeatAButtonPin)
   , beatBButton(kBeatBButtonPin)
-  , beatCButton(kBeatCButtonPin)
-  , beatDButton(kBeatDButtonPin)
+  , beatClearButton(kBeatClearButtonPin)
 
   , metronomeButton(kMetronomeButtonPin) {}
 

@@ -14,9 +14,9 @@ namespace Zebra {
 
   void Controller::initialize() {
     ////////// test //////////
-    for (uint8_t i = 0; i < 8; i++) {
-      rhythmRef.getLayer(0).setBeat(64 * i, 3, (i % 2));
-    }
+    // for (uint8_t i = 0; i < 8; i++) {
+    //  rhythmRef.getLayer(0).setBeat(64 * i, 3, (i % 2));
+    // }
     ////////// test //////////
 
     if (rhythmRef.getSelectActive()) {
@@ -62,6 +62,34 @@ namespace Zebra {
     if (keyboard.layer3SelectButton.checkStatus()) {
       layerSelectButtonPressed(rhythmRef.getLayer(3));
     }
+    if (keyboard.rhythmTempoUpButton.checkStatus()) {
+      if (rhythmRef.getSelectActive()) {
+        rhythmTempoUpButtonPressed();
+      } else {
+        layerInstAUpButtonPressed();
+      }
+    }
+    if (keyboard.rhythmTempoDownButton.checkStatus()) {
+      if (rhythmRef.getSelectActive()) {
+        rhythmTempoDownButtonPressed();
+      } else {
+        layerInstADownButtonPressed();
+      }
+    }
+    if (keyboard.rhythmQuantizeUpButton.checkStatus()) {
+      if (rhythmRef.getSelectActive()) {
+        rhythmQuantizeUpButtonPressed();
+      } else {
+        layerInstBUpButtonPressed();
+      }
+    }
+    if (keyboard.rhythmQuantizeDownButton.checkStatus()) {
+      if (rhythmRef.getSelectActive()) {
+        rhythmQuantizeDownButtonPressed();
+      } else {
+        layerInstBDownButtonPressed();
+      }
+    }
     if (keyboard.rhythmBarUpButton.checkStatus()) {
       if (rhythmRef.getSelectActive()) {
         rhythmBarUpButtonPressed();
@@ -99,20 +127,14 @@ namespace Zebra {
     if (keyboard.resetButton.checkStatus()) {
       resetButtonPressed();
     }
-    if (keyboard.beatShiftButton.checkStatus()) {
-      beatShiftButtonPressed();
-    }
     if (keyboard.beatAButton.checkStatus()) {
       beatAButtonPressed();
     }
     if (keyboard.beatBButton.checkStatus()) {
       beatBButtonPressed();
     }
-    if (keyboard.beatCButton.checkStatus()) {
-      beatCButtonPressed();
-    }
-    if (keyboard.beatDButton.checkStatus()) {
-      beatDButtonPressed();
+    if (keyboard.beatClearButton.checkStatus()) {
+      beatClearButtonPressed();
     }
     if (keyboard.metronomeButton.checkStatus()) {
       metronomeButtonPressed();
@@ -358,15 +380,25 @@ namespace Zebra {
 
   // beat record functions
 
-  void Controller::beatShiftButtonPressed() {}
+  void Controller::beatAButtonPressed() {
+    if (playerRef.getRecordActive() && !(rhythmRef.getSelectActive())) {
+      uint32_t recordTime = rhythmRef.getPlayTime();
+      bool recordInst = 0;
+      rhythmRef.getLayer(selectedLayer).setBeat(recordTime, 3, recordInst);
+      viewRef.drawLayerBeat(rhythmRef.getLayer(selectedLayer), recordTime, recordInst);
+    }
+  }
 
-  void Controller::beatAButtonPressed() {}
+  void Controller::beatBButtonPressed() {
+    if (playerRef.getRecordActive() && !(rhythmRef.getSelectActive())) {
+      uint32_t recordTime = rhythmRef.getPlayTime();
+      bool recordInst = 1;
+      rhythmRef.getLayer(selectedLayer).setBeat(recordTime, 3, recordInst);
+      viewRef.drawLayerBeat(rhythmRef.getLayer(selectedLayer), recordTime, recordInst);
+    }
+  }
 
-  void Controller::beatBButtonPressed() {}
-
-  void Controller::beatCButtonPressed() {}
-
-  void Controller::beatDButtonPressed() {}
+  void Controller::beatClearButtonPressed() {}
 
   // metronome functions
 

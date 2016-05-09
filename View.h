@@ -73,6 +73,7 @@ namespace Zebra {
     void drawLayerFillActive(const Layer& layer_);
     void drawLayerMeasure(const Layer& layer_);
     void drawLayerSong(Layer& layer_);
+    void drawLayerBeat(Layer& layer_, uint32_t time_, bool inst_);
     void drawAllLayer();
     void drawAllLayerMeasure();
     void drawAllLayerMeasureAndSong();

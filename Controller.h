@@ -67,11 +67,9 @@ namespace Zebra {
     void fillUpButtonPressed();
     void fillDownButtonPressed();
     // beat record functions
-    void beatShiftButtonPressed();
     void beatAButtonPressed();
     void beatBButtonPressed();
-    void beatCButtonPressed();
-    void beatDButtonPressed();
+    void beatClearButtonPressed();
     // metronome functions
     void metronomeButtonPressed();
   };

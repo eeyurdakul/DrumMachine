@@ -26,11 +26,9 @@ namespace Zebra {
     Button recordButton;
     Button playButton;
     Button resetButton;
-    Button beatShiftButton;
     Button beatAButton;
     Button beatBButton;
-    Button beatCButton;
-    Button beatDButton;
+    Button beatClearButton;
     Button metronomeButton;
   };
 

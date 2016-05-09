@@ -38,13 +38,11 @@ namespace Zebra {
   const uint8_t kPlayButtonPin = 44;
   const uint8_t kResetButtonPin = 45;
 
-  const uint8_t kBeatShiftButtonPin = 46;
-  const uint8_t kBeatAButtonPin = 47;
-  const uint8_t kBeatBButtonPin = 48;
-  const uint8_t kBeatCButtonPin = 49;
-  const uint8_t kBeatDButtonPin = 50;
+  const uint8_t kBeatAButtonPin = 46;
+  const uint8_t kBeatBButtonPin = 47;
+  const uint8_t kBeatClearButtonPin = 48;
 
-  const uint8_t kMetronomeButtonPin = 51;
+  const uint8_t kMetronomeButtonPin = 49;
 
   const uint8_t kRecordLedPin = 52;
   const uint8_t kPlayLedPin = 53;

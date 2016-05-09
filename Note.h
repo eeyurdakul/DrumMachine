@@ -6,7 +6,9 @@
 [*] Player class
 [*] Clear info area effectively
 [-] Layer Inst selection
-[-] Controller Rhythm Quantize
+[*] Beat Button
+[-] BeatClear Button
+[-] Quantize Calculation
 [-] Midi-out function
 
 playPeriod = 60.000.000 / (tempo * 64)

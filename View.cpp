@@ -210,6 +210,18 @@ namespace Zebra {
     }
   }
 
+  void View::drawLayerBeat(Layer& layer_, uint32_t time_, bool inst_) {
+    uint16_t xPos = kSongStartX + (kSongX * time_ / rhythmRef.getSongTime());
+    uint16_t yPos = layer_.getStartY() + 23;
+    if (!inst_) {
+      drawFastVLine(xPos, yPos, 13, layer_.getColor());
+    } else {
+      for (uint8_t i = 0; i < 5; i++) {
+        drawPixel(xPos, yPos + (3 * i), layer_.getColor());
+      }
+    }
+  }
+
   void View::drawAllLayer() {
     for (uint8_t i = 0; i < kLayerLibrarySize; i++) {
       drawLayerAll(rhythmRef.getLayer(i));
