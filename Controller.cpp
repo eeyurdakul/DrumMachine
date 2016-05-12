@@ -14,9 +14,10 @@ namespace Zebra {
 
   void Controller::initialize() {
     ////////// test //////////
-    // for (uint8_t i = 0; i < 8; i++) {
-    //  rhythmRef.getLayer(0).setBeat(64 * i, 3, (i % 2));
-    // }
+    for (uint8_t i = 1; i < 5; i++) {
+      rhythmRef.getLayer(0).setBeat(64 * i, 3, (i % 2));
+      rhythmRef.getLayer(1).setBeat(64 * i, 3, (i % 2));
+    }
     ////////// test //////////
 
     if (rhythmRef.getSelectActive()) {
@@ -172,7 +173,7 @@ namespace Zebra {
       rhythmRef.setSelectActive(true);
       selectedLayer = -1;
       selectedBeat = -1;
-      viewRef.drawSelectedFill(selectedLayer, selectedBeat);
+      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
       viewRef.drawRhythmSelectActive();
       viewRef.switchInfoFromLayerToRhythm();
     }
@@ -185,7 +186,7 @@ namespace Zebra {
       selectedLayer = layer_.getNumber();
       selectedBeat = 0;
       viewRef.drawRhythmSelectActive();
-      viewRef.drawSelectedFill(selectedLayer, selectedBeat);
+      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
       viewRef.drawLayerSelectActive(layer_);
       viewRef.switchInfoFromRhythmToLayer(selectedLayer);
     } else if (layer_.getNumber() != getSelectedLayer()) {
@@ -194,7 +195,7 @@ namespace Zebra {
       layer_.setSelectActive(true);
       selectedLayer = layer_.getNumber();
       selectedBeat = 0;
-      viewRef.drawSelectedFill(selectedLayer, selectedBeat);
+      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
       viewRef.drawLayerSelectActive(layer_);
       viewRef.switchInfoFromLayerToLayer(selectedLayer);
     }
@@ -336,7 +337,7 @@ namespace Zebra {
       if (selectedBeat < rhythmRef.getLayer(selectedLayer).getLastActiveBeat()) {
         selectedBeat += 1;
         viewRef.drawInfoFill(rhythmRef.getLayer(selectedLayer).getBeat(selectedBeat));
-        viewRef.drawSelectedFill(selectedLayer, selectedBeat);
+        viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
       }
     }
   }
@@ -347,7 +348,7 @@ namespace Zebra {
       if (selectedBeat > 0) {
         selectedBeat -= 1;
         viewRef.drawInfoFill(rhythmRef.getLayer(selectedLayer).getBeat(selectedBeat));
-        viewRef.drawSelectedFill(selectedLayer, selectedBeat);
+        viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
       }
     }
   }
@@ -361,6 +362,9 @@ namespace Zebra {
       if (beatFill < (kFillLibrarySize - 1)) {
         layer.setFill(getSelectedBeat(), beatFill + 1);
         viewRef.drawInfoFill(beat);
+        if (beat.getFill() == 1) {
+          viewRef.drawBeatFill(layer, selectedBeat, true);
+        }
       }
     }
   }
@@ -374,6 +378,9 @@ namespace Zebra {
       if (beatFill > 0) {
         layer.setFill(getSelectedBeat(), beatFill - 1);
         viewRef.drawInfoFill(beat);
+        if (beat.getFill() == 0) {
+          viewRef.drawBeatFill(layer, selectedBeat, false);
+        }
       }
     }
   }

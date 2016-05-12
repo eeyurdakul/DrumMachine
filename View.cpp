@@ -94,33 +94,24 @@ namespace Zebra {
     // statement
   }
 
-  void View::drawSelectedFill(uint8_t selectedLayer, uint8_t selectedBeat) {
-    fillRect(selectedFillXStartClean, selectedFillYClean, selectedFillXEndClean - selectedFillXStartClean + 1, 3, BLACK);
+  void View::drawSelectedBeat(uint8_t selectedLayer, uint8_t selectedBeat) {
+    uint16_t xPos = selectedBeatXClean;
+    uint16_t yPos = selectedBeatYClean;
+    fillTriangle(xPos, yPos, xPos - 3, yPos - 3, xPos + 3, yPos - 3, BLACK);
     // checking if layer is active and has at least one beat
     if ((selectedLayer < kLayerLibrarySize) && (rhythmRef.getLayer(selectedLayer).getLastActiveBeat() >= 0)) {
       // calculating starting beat time
       uint32_t beatTime = rhythmRef.getLayer(selectedLayer).getBeat(selectedBeat).getTime();
-      uint32_t nextBeatTime;
-      // calculating ending beat time
-      if (selectedBeat == kBeatLibrarySize - 1) {
-        nextBeatTime = rhythmRef.getSongTime();
-      } else if (!rhythmRef.getLayer(selectedLayer).getBeat(selectedBeat + 1).getActive()) {
-        nextBeatTime = rhythmRef.getSongTime();
-      } else {
-        nextBeatTime = rhythmRef.getLayer(selectedLayer).getBeat(selectedBeat + 1).getTime();
-      }
       // calculating starting X position
-      uint16_t xStartPos = kSongStartX + (beatTime * kSongX / rhythmRef.getSongTime());
-      // calculating ending X position
-      uint16_t xEndPos = kSongStartX +  (nextBeatTime * kSongX / rhythmRef.getSongTime());
+      xPos = kSongStartX + (beatTime * kSongX / rhythmRef.getSongTime());
       // calculating Y position
-      uint16_t yPos = rhythmRef.getLayer(selectedLayer).getStartY() + 11;
+      yPos = rhythmRef.getLayer(selectedLayer).getStartY() + 15;
       // drawing selected fill
-      fillRect(xStartPos, yPos, xEndPos - xStartPos + 1, 3, rhythmRef.getLayer(selectedLayer).getColor());
+      fillTriangle(xPos, yPos, xPos - 3, yPos - 3, xPos + 3, yPos - 3, rhythmRef.getLayer(selectedLayer).getColor());
       // saving X - Y positions to clean state
-      selectedFillXStartClean = xStartPos;
-      selectedFillXEndClean = xEndPos;
-      selectedFillYClean = yPos;
+      selectedBeatXClean = xPos;
+      //selectedFillXEndClean = xEndPos;
+      selectedBeatYClean = yPos;
     }
   }
 
@@ -221,6 +212,56 @@ namespace Zebra {
       }
     }
   }
+
+  void View::drawBeatFill(Layer& layer_, uint8_t beat_, bool condition) {
+    // introducing time variables
+    uint32_t beatTime;
+    uint32_t nextBeatTime;
+    uint32_t loopBeatTime;
+    bool loop = false;
+    // introducing position variables
+    uint16_t xStartPos;
+    uint16_t xEndPos;
+    uint16_t xLoopStartPos;
+    uint16_t xLoopEndPos;
+    uint16_t yPos;
+    uint16_t color;
+    // calculating starting fill time
+    beatTime = layer_.getBeat(beat_).getTime();
+    // calculating ending fill time
+    if (beat_ == kBeatLibrarySize - 1) {
+      nextBeatTime = rhythmRef.getSongTime();
+      loop = true;
+    } else if (!layer_.getBeat(beat_ + 1).getActive()) {
+      nextBeatTime = rhythmRef.getSongTime();
+      loop = true;
+    } else {
+      nextBeatTime = layer_.getBeat(beat_ + 1).getTime();
+    }
+    // calculating starting X position
+    xStartPos = kSongStartX + (beatTime * kSongX / rhythmRef.getSongTime()) + 1;
+    // calculating ending X position
+    xEndPos = kSongStartX + (nextBeatTime * kSongX / rhythmRef.getSongTime()) - 1;
+    // calculating loop X position
+    if (loop) {
+      loopBeatTime = layer_.getBeat(0).getTime();
+      xLoopStartPos = kSongStartX;
+      xLoopEndPos = kSongStartX + (loopBeatTime * kSongX / rhythmRef.getSongTime()) - 1;
+    }
+    // calculating Y position
+    yPos = layer_.getStartY() + 38;
+    // drawing fill
+    if (condition) {
+      color = layer_.getColor();
+    } else {
+      color = BLACK;
+    }
+    drawFastHLine(xStartPos, yPos, xEndPos - xStartPos + 1, color);
+    if (loop) {
+      drawFastHLine(xLoopStartPos, yPos, xLoopEndPos - xLoopStartPos + 1, color);
+    }
+  }
+
 
   void View::drawAllLayer() {
     for (uint8_t i = 0; i < kLayerLibrarySize; i++) {

@@ -6,8 +6,13 @@
 [*] Player class
 [*] Clear info area effectively
 [-] Layer Inst selection
-[*] Beat Button
+
+[*] Add Beat Button
 [-] BeatClear Button
+
+[*] View.drawSelectedBeat
+[*] View.drawBeatFill
+
 [-] Quantize Calculation
 [-] Midi-out function
 

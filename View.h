@@ -32,9 +32,8 @@ namespace Zebra {
     uint8_t layerInstAClean;
     uint8_t layerInstBClean;
     int8_t fillNumberClean;
-    uint16_t selectedFillXStartClean;
-    uint16_t selectedFillXEndClean;
-    uint16_t selectedFillYClean;
+    uint16_t selectedBeatXClean;
+    uint16_t selectedBeatYClean;
     bool switchInfoFromLayerToRhythmFlag;
     bool switchInfoFromRhythmToLayerFlag;
     bool switchInfoFromLayerToLayerFlag;
@@ -64,7 +63,7 @@ namespace Zebra {
     void calculatePlayXRatio();
     // rhythm functions
     void drawRhythmSelectActive();
-    void drawSelectedFill(uint8_t selectedLayer_, uint8_t selectedBeat_);
+    void drawSelectedBeat(uint8_t selectedLayer_, uint8_t selectedBeat_);
     // layer functions
     void drawLayerAll(Layer& layer_);
     void drawLayerBase(const Layer& layer_);
@@ -74,6 +73,7 @@ namespace Zebra {
     void drawLayerMeasure(const Layer& layer_);
     void drawLayerSong(Layer& layer_);
     void drawLayerBeat(Layer& layer_, uint32_t time_, bool inst_);
+    void drawBeatFill(Layer& layer_, uint8_t beat_, bool condition);
     void drawAllLayer();
     void drawAllLayerMeasure();
     void drawAllLayerMeasureAndSong();
