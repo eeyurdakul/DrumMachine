@@ -179,7 +179,7 @@ namespace Zebra {
     return timeline;
   }
 
-  void Layer::setBeat(uint16_t time_, uint8_t volume_, bool inst_) {
+  uint8_t Layer::setBeat(uint16_t time_, uint8_t volume_, bool inst_) {
     uint8_t beatNum;
     bool shift;
     // checking if given data is correct
@@ -237,6 +237,7 @@ namespace Zebra {
         timeline.set(time_, volume_, 0, inst_);
         // calculating last active beat
         calculateLastActiveBeat();
+        return beatNum;
       }
     }
   }

@@ -54,7 +54,7 @@ namespace Zebra {
     int8_t getLastActiveBeat() const;
     Beat& getBeat(uint8_t beatNum);
     Timeline& getTimeline();
-    void setBeat(uint16_t time_, uint8_t volume_, bool inst_);
+    uint8_t setBeat(uint16_t time_, uint8_t volume_, bool inst_);
     void setFill(uint8_t beatNum, uint8_t fillNum);
     void clearBeat(uint8_t beatNum);
   };

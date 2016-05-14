@@ -213,6 +213,14 @@ namespace Zebra {
     }
   }
 
+  void View::clearLayerBeat(Layer& layer_, uint8_t beat_) {
+    uint32_t beatTime = layer_.getBeat(beat_).getTime();
+    bool beatInst = layer_.getBeat(beat_).getInst();
+    uint16_t xPos = kSongStartX + (kSongX * beatTime / rhythmRef.getSongTime());
+    uint16_t yPos = layer_.getStartY() + 23;
+    drawFastVLine(xPos, yPos, 13, BLACK);
+  }
+
   void View::drawBeatFill(Layer& layer_, uint8_t beat_, bool condition) {
     // introducing time variables
     uint32_t beatTime;

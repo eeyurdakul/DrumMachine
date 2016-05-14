@@ -14,10 +14,10 @@ namespace Zebra {
 
   void Controller::initialize() {
     ////////// test //////////
-    for (uint8_t i = 1; i < 5; i++) {
-      rhythmRef.getLayer(0).setBeat(64 * i, 3, (i % 2));
-      rhythmRef.getLayer(1).setBeat(64 * i, 3, (i % 2));
-    }
+    // for (uint8_t i = 1; i < 5; i++) {
+    //  rhythmRef.getLayer(0).setBeat(64 * i, 3, (i % 2));
+    //  rhythmRef.getLayer(1).setBeat(64 * i, 3, (i % 2));
+    // }
     ////////// test //////////
 
     if (rhythmRef.getSelectActive()) {
@@ -391,8 +391,9 @@ namespace Zebra {
     if (playerRef.getRecordActive() && !(rhythmRef.getSelectActive())) {
       uint32_t recordTime = rhythmRef.getPlayTime();
       bool recordInst = 0;
-      rhythmRef.getLayer(selectedLayer).setBeat(recordTime, 3, recordInst);
+      selectedBeat = rhythmRef.getLayer(selectedLayer).setBeat(recordTime, 3, recordInst);
       viewRef.drawLayerBeat(rhythmRef.getLayer(selectedLayer), recordTime, recordInst);
+      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
     }
   }
 
@@ -400,12 +401,34 @@ namespace Zebra {
     if (playerRef.getRecordActive() && !(rhythmRef.getSelectActive())) {
       uint32_t recordTime = rhythmRef.getPlayTime();
       bool recordInst = 1;
-      rhythmRef.getLayer(selectedLayer).setBeat(recordTime, 3, recordInst);
+      selectedBeat = rhythmRef.getLayer(selectedLayer).setBeat(recordTime, 3, recordInst);
       viewRef.drawLayerBeat(rhythmRef.getLayer(selectedLayer), recordTime, recordInst);
+      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
     }
   }
 
-  void Controller::beatClearButtonPressed() {}
+  void Controller::beatClearButtonPressed() {
+    if (!rhythmRef.getSelectActive()) {
+      Layer& layer = rhythmRef.getLayer(getSelectedLayer());
+      // clearing previous beat fill
+      if (selectedBeat > 0) {
+        viewRef.drawBeatFill(layer, selectedBeat - 1, false);
+      }
+      // clearing selected beat's fill
+      viewRef.drawBeatFill(layer, selectedBeat, false);
+      // clearing selected beat
+      viewRef.clearLayerBeat(layer, selectedBeat);
+      layer.clearBeat(selectedBeat);
+      // shifting to new selected beat
+      if ((selectedBeat == 0) && (layer.getLastActiveBeat() == -1)) {
+        selectedBeat = -1;
+      } else if (selectedBeat > layer.getLastActiveBeat()) {
+        selectedBeat = 0;
+      }
+      // drawing new selected beat
+      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
+    }
+  }
 
   // metronome functions
 
