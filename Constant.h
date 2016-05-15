@@ -77,15 +77,15 @@ namespace Zebra {
   const uint16_t kMeasureYPos = 32;
   const uint8_t kMeasureDigit = 2;
   // info layer constants
-  const uint16_t kInstAXPos = 10;
-  const uint16_t kInstAYPos = 32;
-  const uint8_t kInstADigit = 2;
-  const uint16_t kInstBXPos = 130;
-  const uint16_t kInstBYPos = 32;
-  const uint8_t kInstBDigit = 2;
-  const uint16_t kFillNameXPos = 250;
+  const uint16_t kFillNameXPos = 10;
   const uint16_t kFillNameYPos = 32;
   const uint8_t kFillNameLetterCount = 5;
+  const uint16_t kInstAXPos = 250;
+  const uint16_t kInstAYPos = 32;
+  const uint8_t kInstADigit = 2;
+  const uint16_t kInstBXPos = 370;
+  const uint16_t kInstBYPos = 32;
+  const uint8_t kInstBDigit = 2;
 
   // Rhythm.h
 

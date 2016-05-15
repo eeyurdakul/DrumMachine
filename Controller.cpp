@@ -332,6 +332,11 @@ namespace Zebra {
         selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
         viewRef.drawInfoFill(*selectedBeat);
         viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
+      } else if (selectedLayer->getLastActiveBeat() != 0) {
+        selectedBeatNum = 0;
+        selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
+        viewRef.drawInfoFill(*selectedBeat);
+        viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       }
     }
   }
@@ -341,6 +346,11 @@ namespace Zebra {
     if (selectedLayer->getLastActiveBeat() != -1) {
       if (selectedBeatNum > 0) {
         selectedBeatNum -= 1;
+        selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
+        viewRef.drawInfoFill(*selectedBeat);
+        viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
+      } else if (selectedLayer->getLastActiveBeat() != 0) {
+        selectedBeatNum = selectedLayer->getLastActiveBeat();
         selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
         viewRef.drawInfoFill(*selectedBeat);
         viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
@@ -424,7 +434,11 @@ namespace Zebra {
       // drawing new selected beat
       viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       // drawing new selected beat's fill
-      viewRef.drawInfoFill(*selectedBeat);
+      if (selectedLayer->getLastActiveBeat() == -1) {
+        viewRef.cleanInfoFill();
+      } else {
+        viewRef.drawInfoFill(*selectedBeat);
+      }
     }
   }
 
