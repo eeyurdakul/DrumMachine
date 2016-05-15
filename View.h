@@ -63,7 +63,7 @@ namespace Zebra {
     void calculatePlayXRatio();
     // rhythm functions
     void drawRhythmSelectActive();
-    void drawSelectedBeat(uint8_t selectedLayer_, uint8_t selectedBeat_);
+    void drawSelectedBeat(const Layer& layer_, const Beat& beat_);
     // layer functions
     void drawLayerAll(Layer& layer_);
     void drawLayerBase(const Layer& layer_);
@@ -72,9 +72,9 @@ namespace Zebra {
     void drawLayerFillActive(const Layer& layer_);
     void drawLayerMeasure(const Layer& layer_);
     void drawLayerSong(Layer& layer_);
-    void drawLayerBeat(Layer& layer_, uint32_t time_, bool inst_);
-    void clearLayerBeat(Layer& layer_, uint8_t beat_);
-    void drawBeatFill(Layer& layer_, uint8_t beat_, bool condition);
+    void drawLayerBeat(const Layer& layer_, uint32_t time_, bool inst_);
+    void clearLayerBeat(const Layer& layer_, const Beat& beat_);
+    void drawBeatFill(Layer& layer_, uint8_t beatNum_, bool condition);
     void drawAllLayer();
     void drawAllLayerMeasure();
     void drawAllLayerMeasureAndSong();
@@ -95,8 +95,8 @@ namespace Zebra {
     void cleanInfoFill();
     // info switch functions
     void switchInfoFromLayerToRhythm();
-    void switchInfoFromRhythmToLayer(uint8_t layerNum);
-    void switchInfoFromLayerToLayer(uint8_t layerNum);
+    void switchInfoFromRhythmToLayer(const Layer& layer_);
+    void switchInfoFromLayerToLayer(const Layer& layer_);
     void checkSwitchInfoFromLayerToRhythm();
     void checkSwitchInfoFromRhythmToLayer();
     void checkSwitchInfoFromLayerToLayer();

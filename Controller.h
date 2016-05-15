@@ -16,8 +16,9 @@ namespace Zebra {
     View& viewRef;
     Player& playerRef;
     Keyboard keyboard;
-    int8_t selectedLayer;
-    int8_t selectedBeat;
+    Layer* selectedLayer;
+    Beat* selectedBeat;
+    int8_t selectedBeatNum;
     // private timing functions
     void adjustBarUpTiming();
     void adjustBarDownTiming();
@@ -33,10 +34,6 @@ namespace Zebra {
     Controller(Rhythm& rhythm_, View& view_, Player& player_);
     ~Controller();
     void initialize();
-    void setSelectedLayer(int8_t selectedLayer_);
-    int8_t getSelectedLayer() const;
-    void setSelectedBeat(int8_t selectedBeat_);
-    int8_t getSelectedBeat() const;
     void checkKeyboardStatus();
     // play functions
     void recordButtonPressed();

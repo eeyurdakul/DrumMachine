@@ -8,10 +8,14 @@
 [-] Layer Inst selection
 
 [*] Add Beat Button
-[-] BeatClear Button
+[*] BeatClear Button
 
 [*] View.drawSelectedBeat
 [*] View.drawBeatFill
+
+[*] add if (&layer & &beat != NULL) protection to view classes
+
+[-] add number variable into beat class (optional)
 
 [-] Quantize Calculation
 [-] Midi-out function

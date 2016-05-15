@@ -7,44 +7,22 @@ namespace Zebra {
   , viewRef(view_)
   , playerRef(player_)
   , keyboard()
-  , selectedLayer(-1)
-  , selectedBeat(-1) {}
+  , selectedLayer(NULL)
+  , selectedBeat(NULL)
+  , selectedBeatNum(-1) {}
 
   Controller::~Controller() {}
 
   void Controller::initialize() {
-    ////////// test //////////
-    // for (uint8_t i = 1; i < 5; i++) {
-    //  rhythmRef.getLayer(0).setBeat(64 * i, 3, (i % 2));
-    //  rhythmRef.getLayer(1).setBeat(64 * i, 3, (i % 2));
-    // }
-    ////////// test //////////
-
     if (rhythmRef.getSelectActive()) {
       viewRef.drawInfoRhythmBase();
       viewRef.drawInfoRhythmAll();
     } else {
       viewRef.drawInfoLayerBase();
-      viewRef.drawInfoLayerAll(rhythmRef.getLayer(selectedLayer), rhythmRef.getLayer(selectedLayer).getBeat(selectedBeat));
+      viewRef.drawInfoLayerAll(*selectedLayer, *selectedBeat);
     }
     viewRef.resetPlayBar();
     viewRef.drawAllLayer();
-  }
-
-  void Controller::setSelectedLayer(int8_t selectedLayer_) {
-    selectedLayer = selectedLayer_;
-  }
-
-  int8_t Controller::getSelectedLayer() const {
-    return selectedLayer;
-  }
-
-  void Controller::setSelectedBeat(int8_t selectedBeat_) {
-    selectedBeat = selectedBeat_;
-  }
-
-  int8_t Controller::getSelectedBeat() const {
-    return selectedBeat;
   }
 
   void Controller::checkKeyboardStatus() {
@@ -145,6 +123,9 @@ namespace Zebra {
   // play functions
 
   void Controller::recordButtonPressed() {
+    if (selectedLayer == NULL) {
+      layerSelectButtonPressed(rhythmRef.getLayer(0));
+    }
     playerRef.record();
   }
 
@@ -157,7 +138,6 @@ namespace Zebra {
   }
 
   void Controller::resetButtonPressed() {
-    Serial.println("reset");
     playerRef.reset();
     viewRef.resetPlayBar();
   }
@@ -165,39 +145,52 @@ namespace Zebra {
   // select functions
 
   void Controller::rhythmSelectButtonPressed() {
-    if (!rhythmRef.getSelectActive()) {
+    if (selectedLayer != NULL) {
       for (int i = 0; i < kLayerLibrarySize; i++) {
         rhythmRef.getLayer(i).setSelectActive(false);
         viewRef.drawLayerSelectActive(rhythmRef.getLayer(i));
       }
       rhythmRef.setSelectActive(true);
-      selectedLayer = -1;
-      selectedBeat = -1;
-      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
+      selectedLayer = NULL;
+      selectedBeat = NULL;
+      selectedBeatNum = -1;
+      viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       viewRef.drawRhythmSelectActive();
       viewRef.switchInfoFromLayerToRhythm();
     }
   }
 
   void Controller::layerSelectButtonPressed(Layer& layer_) {
-    if (rhythmRef.getSelectActive()) {
+    if (selectedLayer == NULL) {
       rhythmRef.setSelectActive(false);
-      layer_.setSelectActive(true);
-      selectedLayer = layer_.getNumber();
-      selectedBeat = 0;
+      selectedLayer = &layer_;
+      selectedLayer->setSelectActive(true);
+      if (selectedLayer->getLastActiveBeat() >= 0) {
+        selectedBeatNum = 0;
+        selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
+      } else {
+        selectedBeatNum = -1;
+        selectedBeat = NULL;
+      }
       viewRef.drawRhythmSelectActive();
-      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
-      viewRef.drawLayerSelectActive(layer_);
-      viewRef.switchInfoFromRhythmToLayer(selectedLayer);
-    } else if (layer_.getNumber() != getSelectedLayer()) {
-      rhythmRef.getLayer(selectedLayer).setSelectActive(false);
-      viewRef.drawLayerSelectActive(rhythmRef.getLayer(selectedLayer));
-      layer_.setSelectActive(true);
-      selectedLayer = layer_.getNumber();
-      selectedBeat = 0;
-      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
-      viewRef.drawLayerSelectActive(layer_);
-      viewRef.switchInfoFromLayerToLayer(selectedLayer);
+      viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
+      viewRef.drawLayerSelectActive(*selectedLayer);
+      viewRef.switchInfoFromRhythmToLayer(*selectedLayer);
+    } else if (layer_.getNumber() != selectedLayer->getNumber()) {
+      selectedLayer->setSelectActive(false);
+      viewRef.drawLayerSelectActive(*selectedLayer);
+      selectedLayer = &layer_;
+      selectedLayer->setSelectActive(true);
+      if (selectedLayer->getLastActiveBeat() >= 0) {
+        selectedBeatNum = 0;
+        selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
+      } else {
+        selectedBeatNum = -1;
+        selectedBeat = NULL;
+      }
+      viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
+      viewRef.drawLayerSelectActive(*selectedLayer);
+      viewRef.switchInfoFromLayerToLayer(*selectedLayer);
     }
   }
 
@@ -298,34 +291,34 @@ namespace Zebra {
   // layer functions
 
   void Controller::layerInstAUpButtonPressed() {
-    uint8_t layerInst = rhythmRef.getLayer(getSelectedLayer()).getInstA();
+    uint8_t layerInst = selectedLayer->getInstA();
     if (layerInst < kMaxLayerInst) {
-      rhythmRef.getLayer(getSelectedLayer()).setInstA(layerInst + 1);
-      viewRef.drawInfoLayerInstA(rhythmRef.getLayer(selectedLayer));
+      selectedLayer->setInstA(layerInst + 1);
+      viewRef.drawInfoLayerInstA(*selectedLayer);
     }
   }
 
   void Controller::layerInstADownButtonPressed() {
-    uint8_t layerInst = rhythmRef.getLayer(getSelectedLayer()).getInstA();
+    uint8_t layerInst = selectedLayer->getInstA();
     if (layerInst > kMinLayerInst) {
-      rhythmRef.getLayer(getSelectedLayer()).setInstA(layerInst - 1);
-      viewRef.drawInfoLayerInstA(rhythmRef.getLayer(selectedLayer));
+      selectedLayer->setInstA(layerInst - 1);
+      viewRef.drawInfoLayerInstA(*selectedLayer);
     }
   }
 
   void Controller::layerInstBUpButtonPressed() {
-    uint8_t layerInst = rhythmRef.getLayer(getSelectedLayer()).getInstB();
+    uint8_t layerInst = selectedLayer->getInstB();
     if (layerInst < kMaxLayerInst) {
-      rhythmRef.getLayer(getSelectedLayer()).setInstB(layerInst + 1);
-      viewRef.drawInfoLayerInstB(rhythmRef.getLayer(selectedLayer));
+      selectedLayer->setInstB(layerInst + 1);
+      viewRef.drawInfoLayerInstB(*selectedLayer);
     }
   }
 
   void Controller::layerInstBDownButtonPressed() {
-    uint8_t layerInst = rhythmRef.getLayer(getSelectedLayer()).getInstB();
+    uint8_t layerInst = selectedLayer->getInstB();
     if (layerInst > kMinLayerInst) {
-      rhythmRef.getLayer(getSelectedLayer()).setInstB(layerInst - 1);
-      viewRef.drawInfoLayerInstB(rhythmRef.getLayer(selectedLayer));
+      selectedLayer->setInstB(layerInst - 1);
+      viewRef.drawInfoLayerInstB(*selectedLayer);
     }
   }
 
@@ -333,37 +326,37 @@ namespace Zebra {
 
   void Controller::beatUpButtonPressed() {
     // checking if layer is not empty
-    if (rhythmRef.getLayer(selectedLayer).getLastActiveBeat() != -1) {
-      if (selectedBeat < rhythmRef.getLayer(selectedLayer).getLastActiveBeat()) {
-        selectedBeat += 1;
-        viewRef.drawInfoFill(rhythmRef.getLayer(selectedLayer).getBeat(selectedBeat));
-        viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
+    if (selectedLayer->getLastActiveBeat() != -1) {
+      if (selectedBeatNum < selectedLayer->getLastActiveBeat()) {
+        selectedBeatNum += 1;
+        selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
+        viewRef.drawInfoFill(*selectedBeat);
+        viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       }
     }
   }
 
   void Controller::beatDownButtonPressed() {
     // checking if layer is not empty
-    if (rhythmRef.getLayer(selectedLayer).getLastActiveBeat() != -1) {
-      if (selectedBeat > 0) {
-        selectedBeat -= 1;
-        viewRef.drawInfoFill(rhythmRef.getLayer(selectedLayer).getBeat(selectedBeat));
-        viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
+    if (selectedLayer->getLastActiveBeat() != -1) {
+      if (selectedBeatNum > 0) {
+        selectedBeatNum -= 1;
+        selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
+        viewRef.drawInfoFill(*selectedBeat);
+        viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       }
     }
   }
 
   void Controller::fillUpButtonPressed() {
     // checking if layer is not empty
-    if (rhythmRef.getLayer(selectedLayer).getLastActiveBeat() != -1) {
-      Layer& layer = rhythmRef.getLayer(getSelectedLayer());
-      Beat& beat = rhythmRef.getLayer(getSelectedLayer()).getBeat(getSelectedBeat());
-      uint8_t beatFill = beat.getFill();
+    if (selectedLayer->getLastActiveBeat() != -1) {
+      uint8_t beatFill = selectedBeat->getFill();
       if (beatFill < (kFillLibrarySize - 1)) {
-        layer.setFill(getSelectedBeat(), beatFill + 1);
-        viewRef.drawInfoFill(beat);
-        if (beat.getFill() == 1) {
-          viewRef.drawBeatFill(layer, selectedBeat, true);
+        selectedLayer->setFill(selectedBeatNum, beatFill + 1);
+        viewRef.drawInfoFill(*selectedBeat);
+        if (selectedBeat->getFill() == 1) {
+          viewRef.drawBeatFill(*selectedLayer, selectedBeatNum, true);
         }
       }
     }
@@ -371,15 +364,13 @@ namespace Zebra {
 
   void Controller::fillDownButtonPressed() {
     // checking if layer is not empty
-    if (rhythmRef.getLayer(selectedLayer).getLastActiveBeat() != -1) {
-      Layer& layer = rhythmRef.getLayer(getSelectedLayer());
-      Beat& beat = rhythmRef.getLayer(getSelectedLayer()).getBeat(getSelectedBeat());
-      uint8_t beatFill = beat.getFill();
+    if (selectedLayer->getLastActiveBeat() != -1) {
+      uint8_t beatFill = selectedBeat->getFill();
       if (beatFill > 0) {
-        layer.setFill(getSelectedBeat(), beatFill - 1);
-        viewRef.drawInfoFill(beat);
-        if (beat.getFill() == 0) {
-          viewRef.drawBeatFill(layer, selectedBeat, false);
+        selectedLayer->setFill(selectedBeatNum, beatFill - 1);
+        viewRef.drawInfoFill(*selectedBeat);
+        if (selectedBeat->getFill() == 0) {
+          viewRef.drawBeatFill(*selectedLayer, selectedBeatNum, false);
         }
       }
     }
@@ -391,9 +382,11 @@ namespace Zebra {
     if (playerRef.getRecordActive() && !(rhythmRef.getSelectActive())) {
       uint32_t recordTime = rhythmRef.getPlayTime();
       bool recordInst = 0;
-      selectedBeat = rhythmRef.getLayer(selectedLayer).setBeat(recordTime, 3, recordInst);
-      viewRef.drawLayerBeat(rhythmRef.getLayer(selectedLayer), recordTime, recordInst);
-      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
+      selectedBeatNum = selectedLayer->setBeat(recordTime, 3, recordInst);
+      selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
+      viewRef.drawLayerBeat(*selectedLayer, recordTime, recordInst);
+      viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
+      viewRef.drawInfoFill(*selectedBeat);
     }
   }
 
@@ -401,32 +394,37 @@ namespace Zebra {
     if (playerRef.getRecordActive() && !(rhythmRef.getSelectActive())) {
       uint32_t recordTime = rhythmRef.getPlayTime();
       bool recordInst = 1;
-      selectedBeat = rhythmRef.getLayer(selectedLayer).setBeat(recordTime, 3, recordInst);
-      viewRef.drawLayerBeat(rhythmRef.getLayer(selectedLayer), recordTime, recordInst);
-      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
+      selectedBeatNum = selectedLayer->setBeat(recordTime, 3, recordInst);
+      selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
+      viewRef.drawLayerBeat(*selectedLayer, recordTime, recordInst);
+      viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
+      viewRef.drawInfoFill(*selectedBeat);
     }
   }
 
   void Controller::beatClearButtonPressed() {
     if (!rhythmRef.getSelectActive()) {
-      Layer& layer = rhythmRef.getLayer(getSelectedLayer());
       // clearing previous beat fill
-      if (selectedBeat > 0) {
-        viewRef.drawBeatFill(layer, selectedBeat - 1, false);
+      if (selectedBeatNum > 0) {
+        viewRef.drawBeatFill(*selectedLayer, selectedBeatNum - 1, false);
       }
       // clearing selected beat's fill
-      viewRef.drawBeatFill(layer, selectedBeat, false);
+      viewRef.drawBeatFill(*selectedLayer, selectedBeatNum, false);
       // clearing selected beat
-      viewRef.clearLayerBeat(layer, selectedBeat);
-      layer.clearBeat(selectedBeat);
+      viewRef.clearLayerBeat(*selectedLayer, *selectedBeat);
+      selectedLayer->clearBeat(selectedBeatNum);
       // shifting to new selected beat
-      if ((selectedBeat == 0) && (layer.getLastActiveBeat() == -1)) {
-        selectedBeat = -1;
-      } else if (selectedBeat > layer.getLastActiveBeat()) {
-        selectedBeat = 0;
+      if ((selectedBeatNum == 0) && (selectedLayer->getLastActiveBeat() == -1)) {
+        selectedBeatNum = -1;
+        selectedBeat = NULL;
+      } else if (selectedBeatNum > selectedLayer->getLastActiveBeat()) {
+        selectedBeatNum = 0;
+        selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
       }
       // drawing new selected beat
-      viewRef.drawSelectedBeat(selectedLayer, selectedBeat);
+      viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
+      // drawing new selected beat's fill
+      viewRef.drawInfoFill(*selectedBeat);
     }
   }
 
