@@ -124,6 +124,7 @@ namespace Zebra {
     drawLayerSelectActive(layer_);
     drawLayerMeasure(layer_);
     drawLayerSong(layer_);
+    drawLayerFill(layer_);
   }
 
   void View::drawLayerBase(const Layer& layer_) {
@@ -196,7 +197,7 @@ namespace Zebra {
   void View::drawLayerSong(Layer& layer_) {
     if (&layer_ != NULL) {
       fillRect(kSongStartX, layer_.getStartY() + 23, kSongX + 1, 13, BLACK);
-      for (uint8_t i = 0; i < kBeatLibrarySize; i++) {
+      for (uint8_t i = 0; i <= layer_.getLastActiveBeat(); i++) {
         Beat& beat = layer_.getBeat(i);
         if (beat.getActive()) {
           uint16_t xPos = kSongStartX + (kSongX  * beat.getTime() / rhythmRef.getSongTime());
@@ -288,6 +289,18 @@ namespace Zebra {
     }
   }
 
+  void View::drawLayerFill(Layer& layer_) {
+    if (&layer_ != NULL) {
+      // calculating Y position
+      uint16_t yPos = layer_.getStartY() + 38;
+      // clearing old fill line
+      drawFastHLine(kSongStartX, yPos, kSongX, BLACK);
+      for (uint8_t i = 0; i <= layer_.getLastActiveBeat(); i++) {
+        drawBeatFill(layer_, i, layer_.getBeat(i).getFill());
+      }
+    }
+  }
+
   void View::drawAllLayer() {
     for (uint8_t i = 0; i < kLayerLibrarySize; i++) {
       drawLayerAll(rhythmRef.getLayer(i));
@@ -300,10 +313,11 @@ namespace Zebra {
     }
   }
 
-  void View::drawAllLayerMeasureAndSong() {
+  void View::drawAllLayerMeasureSongFill() {
     for (uint8_t i = 0; i < kLayerLibrarySize; i++) {
       drawLayerMeasure(rhythmRef.getLayer(i));
       drawLayerSong(rhythmRef.getLayer(i));
+      drawLayerFill(rhythmRef.getLayer(i));
     }
   }
 

@@ -248,7 +248,7 @@ namespace Zebra {
       adjustBarUpTiming();
       viewRef.calculatePlayXRatio();
       viewRef.drawInfoRhythmBar();
-      viewRef.drawAllLayerMeasureAndSong();
+      viewRef.drawAllLayerMeasureSongFill();
     }
   }
 
@@ -260,7 +260,7 @@ namespace Zebra {
       adjustBarDownTiming();
       viewRef.calculatePlayXRatio();
       viewRef.drawInfoRhythmBar();
-      viewRef.drawAllLayerMeasureAndSong();
+      viewRef.drawAllLayerMeasureSongFill();
     }
   }
 
@@ -272,7 +272,7 @@ namespace Zebra {
       adjustMeasureUpTiming();
       viewRef.calculatePlayXRatio();
       viewRef.drawInfoRhythmMeasure();
-      viewRef.drawAllLayerMeasureAndSong();
+      viewRef.drawAllLayerMeasureSongFill();
     }
   }
 
@@ -284,7 +284,7 @@ namespace Zebra {
       adjustMeasureDownTiming();
       viewRef.calculatePlayXRatio();
       viewRef.drawInfoRhythmMeasure();
-      viewRef.drawAllLayerMeasureAndSong();
+      viewRef.drawAllLayerMeasureSongFill();
     }
   }
 
