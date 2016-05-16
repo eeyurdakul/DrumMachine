@@ -132,4 +132,9 @@ namespace Zebra {
   const uint16_t kTimerPreScaler = 1024;
   const uint32_t kMicroSecondsinOneSecond = 1000000;
   const uint32_t kMicroSecondsinOneMinute = 60000000;
+
+  // Midi.h
+
+  const uint16_t kMidiBaudRate = 31250;
+  const uint8_t kMidiInitialChannel = 9;
 }
