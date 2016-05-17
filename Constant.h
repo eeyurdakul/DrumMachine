@@ -137,4 +137,8 @@ namespace Zebra {
 
   const uint16_t kMidiBaudRate = 31250;
   const uint8_t kMidiInitialChannel = 9;
+  const uint8_t kMidiVolume0 = 0;
+  const uint8_t kMidiVolume1 = 40;
+  const uint8_t kMidiVolume2 = 70;
+  const uint8_t kMidiVolume3 = 100;
 }

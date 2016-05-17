@@ -3,6 +3,7 @@
 #include "Arduino.h"
 #include "Rhythm.h"
 #include "View.h"
+#include "Midi.h"
 
 namespace Zebra {
 
@@ -10,6 +11,7 @@ namespace Zebra {
   private:
     Rhythm& rhythmRef;
     View& viewRef;
+    Midi midi;
     bool playActive;
     bool recordActive;
     uint32_t period;
@@ -34,5 +36,6 @@ namespace Zebra {
     void calculateMatchRegister();
     uint32_t getMatchRegister() const;
     void setTimerMatchRegister();
+    Midi& getMidi();
   };
 }

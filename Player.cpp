@@ -6,11 +6,13 @@ namespace Zebra {
   : rhythmRef(rhythm_)
   , viewRef(view_)
   , playActive(false)
-  , recordActive(false) {}
+  , recordActive(false)
+  , midi() {}
 
   Player::~Player() {}
 
   void Player::initialize() {
+    midi.initialize();
     pinMode(kRecordLedPin, OUTPUT);
     pinMode(kPlayLedPin, OUTPUT);
     calculateMatchRegister();
@@ -102,5 +104,9 @@ namespace Zebra {
     noInterrupts();
     OCR1A = matchRegister;
     interrupts();
+  }
+
+  Midi& Player::getMidi() {
+    return midi;
   }
 }
