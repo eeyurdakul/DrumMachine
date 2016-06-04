@@ -5,7 +5,9 @@ namespace Zebra {
   Button::Button(uint8_t pin_)
   : pin(pin_)
   , state(false)
-  , lastState(false) {}
+  , lastState(false) {
+    pinMode(pin, INPUT);
+  }
 
   Button::~Button() {}
 

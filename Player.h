@@ -14,9 +14,8 @@ namespace Zebra {
     Midi midi;
     bool playActive;
     bool recordActive;
-    uint32_t period;
-    uint32_t frequency;
-    uint32_t matchRegister;
+    double period;
+    double frequency;
   public:
     Player(Rhythm& rhythm_, View& view_);
     ~Player();
@@ -30,12 +29,10 @@ namespace Zebra {
     void setRecordActive(bool active_);
     bool getRecordActive() const;
     void calculatePeriod();
-    uint32_t getPeriod() const;
+    double getPeriod() const;
     void calculateFrequency();
-    uint32_t getFrequency() const;
-    void calculateMatchRegister();
-    uint32_t getMatchRegister() const;
-    void setTimerMatchRegister();
+    double getFrequency() const;
+    void calculateAndStartTimer();
     Midi& getMidi();
   };
 }

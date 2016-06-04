@@ -18,31 +18,31 @@ namespace Zebra {
 
   // Keyboard.h
 
-  const uint8_t kRhythmSelectButtonPin = 30;
-  const uint8_t kLayer0SelectButtonPin = 31;
-  const uint8_t kLayer1SelectButtonPin = 32;
-  const uint8_t kLayer2SelectButtonPin = 33;
-  const uint8_t kLayer3SelectButtonPin = 34;
+  const uint8_t kRhythmSelectButtonPin = 24;
+  const uint8_t kLayer0SelectButtonPin = 25;
+  const uint8_t kLayer1SelectButtonPin = 26;
+  const uint8_t kLayer2SelectButtonPin = 27;
+  const uint8_t kLayer3SelectButtonPin = 28;
 
-  const uint8_t kRhythmTempoUpButtonPin = 35;
-  const uint8_t kRhythmTempoDownButtonPin = 36;
-  const uint8_t kRhythmQuantizeUpButtonPin = 37;
-  const uint8_t kRhythmQuantizeDownButtonPin = 38;
+  const uint8_t kRhythmTempoUpButtonPin = 29;
+  const uint8_t kRhythmTempoDownButtonPin = 30;
+  const uint8_t kRhythmQuantizeUpButtonPin = 31;
+  const uint8_t kRhythmQuantizeDownButtonPin = 32;
 
-  const uint8_t kRhythmBarUpButtonPin = 39;
-  const uint8_t kRhythmBarDownButtonPin = 40;
-  const uint8_t kRhythmMeasureUpButtonPin = 41;
-  const uint8_t kRhythmMeasureDownButtonPin = 42;
+  const uint8_t kRhythmBarUpButtonPin = 42;
+  const uint8_t kRhythmBarDownButtonPin = 43;
+  const uint8_t kRhythmMeasureUpButtonPin = 44;
+  const uint8_t kRhythmMeasureDownButtonPin = 45;
 
-  const uint8_t kRecordButtonPin = 43;
-  const uint8_t kPlayButtonPin = 44;
-  const uint8_t kResetButtonPin = 45;
+  const uint8_t kRecordButtonPin = 46;
+  const uint8_t kPlayButtonPin = 47;
+  const uint8_t kResetButtonPin = 48;
 
-  const uint8_t kBeatAButtonPin = 46;
-  const uint8_t kBeatBButtonPin = 47;
-  const uint8_t kBeatClearButtonPin = 48;
+  const uint8_t kBeatAButtonPin = 49;
+  const uint8_t kBeatBButtonPin = 50;
+  const uint8_t kBeatClearButtonPin = 51;
 
-  const uint8_t kMetronomeButtonPin = 49;
+  const uint8_t kMetronomeButtonPin = 4;
 
   const uint8_t kRecordLedPin = 52;
   const uint8_t kPlayLedPin = 53;
@@ -94,7 +94,7 @@ namespace Zebra {
   const uint8_t kMinRhythmQuantize = 0;
   const uint8_t kMaxRhythmQuantize = 6;
   const uint8_t kMinRhythmBar = 1;
-  const uint8_t kMaxRhythmBar = 4;
+  const uint8_t kMaxRhythmBar = 8;
   const uint8_t kMinRhythmMeasure = 1;
   const uint8_t kMaxRhythmMeasure = 8;
   const uint8_t kInitialTempo = 120;
@@ -119,8 +119,8 @@ namespace Zebra {
 
   // Timeline.h
 
-  const uint16_t kTimeframeLibrarySize = 1024;
-  const uint16_t kMaxTime = 2047;
+  const uint16_t kTimeframeLibrarySize = 2048;
+  const uint16_t kMaxTime = 4095;
   const uint8_t kMaxVolume = 3;   // 0 -> passive, 1 -> 30, 2 -> 60, 3 -> 90
 
   // Button.h

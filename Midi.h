@@ -4,6 +4,7 @@
 #include "Constant.h"
 
 namespace Zebra {
+
   class Midi {
   private:
     uint8_t channel;

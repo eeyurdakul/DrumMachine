@@ -13,22 +13,9 @@ namespace Zebra {
 
   void Player::initialize() {
     midi.initialize();
+    calculateAndStartTimer();
     pinMode(kRecordLedPin, OUTPUT);
     pinMode(kPlayLedPin, OUTPUT);
-    calculateMatchRegister();
-    // initializing timer1
-    noInterrupts();
-    TCCR1A = 0;
-    TCCR1B = 0;
-    TCNT1  = 0;
-    OCR1A = matchRegister;
-    // turn on CTC mode
-    TCCR1B |= (1 << WGM12);
-    // Set CS12 and CS10 bits for 1024 prescaler
-    TCCR1B |= (1 << CS12) | (1 << CS10);
-    // enable timer compare interrupt
-    TIMSK1 |= (1 << OCIE1A);
-    interrupts();
   }
 
   void Player::reset() {
@@ -74,36 +61,34 @@ namespace Zebra {
   }
 
   void Player::calculatePeriod() {
-    period = kMicroSecondsinOneMinute / (rhythmRef.getTempo() * kMeasureTime);
+    period = double(kMicroSecondsinOneMinute) / rhythmRef.getTempo() / kMeasureTime;
   }
 
-  uint32_t Player::getPeriod() const {
+  double Player::getPeriod() const {
     return period;
   }
 
   void Player::calculateFrequency() {
     calculatePeriod();
-    frequency = kMicroSecondsinOneSecond / period;
+    frequency = double(kMicroSecondsinOneSecond) / period;
   }
 
-  uint32_t Player::getFrequency() const {
+  double Player::getFrequency() const {
     return frequency;
   }
 
-  void Player::calculateMatchRegister() {
+  void Player::calculateAndStartTimer() {
     calculateFrequency();
-    matchRegister = (16000000 / (kTimerPreScaler * frequency)) - 1;
-  }
-
-  uint32_t Player::getMatchRegister() const {
-    return matchRegister;
-  }
-
-  void Player::setTimerMatchRegister() {
-    calculateMatchRegister();
-    noInterrupts();
-    OCR1A = matchRegister;
-    interrupts();
+    // TC --> 1 , Channel --> 0
+    pmc_set_writeprotect(false);
+    pmc_enable_periph_clk((uint32_t)TC3_IRQn);
+    TC_Configure(TC1, 0, TC_CMR_WAVE | TC_CMR_WAVSEL_UP_RC | TC_CMR_TCCLKS_TIMER_CLOCK4);
+    uint32_t rc = uint32_t(double(VARIANT_MCK) / 128 / frequency);
+    TC_SetRC(TC1, 0, rc);
+    TC_Start(TC1, 0);
+    TC1->TC_CHANNEL[0].TC_IER=TC_IER_CPCS;
+    TC1->TC_CHANNEL[0].TC_IDR=~TC_IER_CPCS;
+    NVIC_EnableIRQ(TC3_IRQn);
   }
 
   Midi& Player::getMidi() {

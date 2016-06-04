@@ -210,7 +210,7 @@ namespace Zebra {
     uint8_t rhythmTempo = rhythmRef.getTempo();
     if (rhythmRef.getTempo() < kMaxRhythmTempo) {
       rhythmRef.setTempo(rhythmTempo + 1);
-      playerRef.setTimerMatchRegister();
+      playerRef.calculateAndStartTimer();
       viewRef.drawInfoRhythmTempo();
     }
   }
@@ -219,7 +219,7 @@ namespace Zebra {
     uint8_t rhythmTempo = rhythmRef.getTempo();
     if (rhythmTempo > kMinRhythmTempo) {
       rhythmRef.setTempo(rhythmTempo - 1);
-      playerRef.setTimerMatchRegister();
+      playerRef.calculateAndStartTimer();
       viewRef.drawInfoRhythmTempo();
     }
   }

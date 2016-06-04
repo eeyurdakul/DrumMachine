@@ -20,7 +20,11 @@ void loop() {
   view.update();
 }
 
-ISR(TIMER1_COMPA_vect) {
+void TC3_Handler()
+{
+  // accepting interrupt
+  TC_GetStatus(TC1, 0);
+  // function
   if (player.getPlayActive()) {
     playMidi();
     if (rhythm.getPlayTime() < rhythm.getSongTime()) {
