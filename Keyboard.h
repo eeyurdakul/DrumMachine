@@ -15,21 +15,19 @@ namespace Zebra {
     Button layer1SelectButton;
     Button layer2SelectButton;
     Button layer3SelectButton;
-    Button rhythmTempoUpButton;
-    Button rhythmTempoDownButton;
-    Button rhythmQuantizeUpButton;
-    Button rhythmQuantizeDownButton;
-    Button rhythmBarUpButton;
-    Button rhythmBarDownButton;
-    Button rhythmMeasureUpButton;
-    Button rhythmMeasureDownButton;
+    Button upButton;
+    Button downButton;
+    Button rightButton;
+    Button leftButton;
+    Button instAUpButton;
+    Button instADownButton;
+    Button instBUpButton;
+    Button instBDownButton;
     Button recordButton;
     Button playButton;
     Button resetButton;
     Button beatAButton;
     Button beatBButton;
     Button beatClearButton;
-    Button metronomeButton;
   };
-
 }

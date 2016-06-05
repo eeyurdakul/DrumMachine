@@ -9,25 +9,23 @@ namespace Zebra {
   , layer2SelectButton(kLayer2SelectButtonPin)
   , layer3SelectButton(kLayer3SelectButtonPin)
 
-  , rhythmTempoUpButton(kRhythmTempoUpButtonPin)
-  , rhythmTempoDownButton(kRhythmTempoDownButtonPin)
-  , rhythmQuantizeUpButton(kRhythmQuantizeUpButtonPin)
-  , rhythmQuantizeDownButton(kRhythmQuantizeDownButtonPin)
+  , upButton(kUpButtonPin)
+  , downButton(kDownButtonPin)
+  , rightButton(kRightButtonPin)
+  , leftButton(kLeftButtonPin)
 
-  , rhythmBarUpButton(kRhythmBarUpButtonPin)
-  , rhythmBarDownButton(kRhythmBarDownButtonPin)
-  , rhythmMeasureUpButton(kRhythmMeasureUpButtonPin)
-  , rhythmMeasureDownButton(kRhythmMeasureDownButtonPin)
+  , instAUpButton(kInstAUpButtonPin)
+  , instADownButton(kInstADownButtonPin)
+  , instBUpButton(kInstBUpButtonPin)
+  , instBDownButton(kInstBDownButtonPin)
 
   , recordButton(kRecordButtonPin)
   , playButton(kPlayButtonPin)
   , resetButton(kResetButtonPin)
-  
+
   , beatAButton(kBeatAButtonPin)
   , beatBButton(kBeatBButtonPin)
-  , beatClearButton(kBeatClearButtonPin)
-
-  , metronomeButton(kMetronomeButtonPin) {}
+  , beatClearButton(kBeatClearButtonPin) {}
 
   Keyboard::~Keyboard() {}
 }

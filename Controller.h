@@ -45,14 +45,24 @@ namespace Zebra {
     void layerBeatButtonPressed(Layer& layer_);
     void layerFillButtonPressed(Layer& layer_);
     // rhythm functions
+    void rhythmMoveRightButtonPressed();
+    void rhythmMoveLeftButtonPressed();
     void rhythmTempoUpButtonPressed();
     void rhythmTempoDownButtonPressed();
-    void rhythmQuantizeUpButtonPressed();
-    void rhythmQuantizeDownButtonPressed();
+    void rhythmMetronomeUpButtonPressed();
+    void rhythmMetronomeDownButtonPressed();
     void rhythmBarUpButtonPressed();
     void rhythmBarDownButtonPressed();
     void rhythmMeasureUpButtonPressed();
     void rhythmMeasureDownButtonPressed();
+    void rhythmLoadUpButtonPressed();
+    void rhythmLoadDownButtonPressed();
+    void rhythmSaveUpButtonPressed();
+    void rhythmSaveDownButtonPressed();
+    void rhythmOutputUpButtonPressed();
+    void rhythmOutputDownButtonPressed();
+    void rhythmQuantizeUpButtonPressed();
+    void rhythmQuantizeDownButtonPressed();
     // layer functions
     void layerInstAUpButtonPressed();
     void layerInstADownButtonPressed();

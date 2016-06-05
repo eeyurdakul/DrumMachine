@@ -66,9 +66,9 @@ void playMidi() {
       type = timeline.getType(playTime);
       // setting inst
       if (timeline.getInst(playTime) == 0) {
-        inst = rhythm.getLayer(i).getInstA();
+        inst = rhythm.getLayer(i).getInstAMidi();
       } else {
-        inst = rhythm.getLayer(i).getInstB();
+        inst = rhythm.getLayer(i).getInstBMidi();
       }
       // playing midi
       if ((type == 0) && (rhythm.getLayer(i).getBeatActive())) {

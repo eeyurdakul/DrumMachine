@@ -17,9 +17,9 @@ namespace Zebra {
   , layerInstAClean(0)
   , layerInstBClean(0)
   , fillNumberClean(255)
-  , switchInfoFromLayerToRhythmFlag(false)
-  , switchInfoFromRhythmToLayerFlag(false)
-  , switchInfoFromLayerToLayerFlag(false)
+  , switchInfoToRhythmFlag(false)
+  , switchInfoToLayerFlag(false)
+  , switchInfoBetweenLayersFlag(false)
   , switchLayer(0)
   , switchState(0) {}
 
@@ -39,9 +39,9 @@ namespace Zebra {
 
   void View::update() {
     drawPlayBar();
-    checkSwitchInfoFromLayerToRhythm();
-    checkSwitchInfoFromRhythmToLayer();
-    checkSwitchInfoFromLayerToLayer();
+    checkSwitchInfoToRhythm();
+    checkSwitchInfoToLayer();
+    checkSwitchInfoBetweenLayers();
   }
 
   // play functions
@@ -56,10 +56,7 @@ namespace Zebra {
 
   void View::drawPlayBar() {
     if ((rhythmRef.getPlayTime() / playXRatio) > playX) {
-      if (playX > (measureX * measurePlayCount)) {
-        drawFastVLine(kSongStartX + playX, kPlayY, 2, playColor);
-        measurePlayCount++;
-      }
+      drawPixel(kSongStartX + playX, kPlayY, playColor);
       playX += 1;
     }
   }
@@ -68,10 +65,10 @@ namespace Zebra {
     playX = 0;
     measurePlayCount = 0;
     if (playColor == kPlayColor0) {
-      drawFastVLine(kSongEndX, kPlayY, 2, playColor);
+      drawPixel(kSongEndX, kPlayY, playColor);
       playColor = kPlayColor1;
     } else {
-      drawFastVLine(kSongEndX, kPlayY, 2, playColor);
+      drawPixel(kSongEndX, kPlayY, playColor);
       playColor = kPlayColor0;
     }
   }
@@ -90,7 +87,7 @@ namespace Zebra {
 
   // rhythm functions
 
-  void View::drawRhythmSelectActive() {
+  void View::drawRhythmSelected() {
     // statement
   }
 
@@ -121,7 +118,7 @@ namespace Zebra {
     drawLayerBase(layer_);
     drawLayerBeatActive(layer_);
     drawLayerFillActive(layer_);
-    drawLayerSelectActive(layer_);
+    drawLayerSelected(layer_);
     drawLayerMeasure(layer_);
     drawLayerSong(layer_);
     drawLayerFill(layer_);
@@ -135,10 +132,10 @@ namespace Zebra {
     }
   }
 
-  void View::drawLayerSelectActive(const Layer& layer_) {
+  void View::drawLayerSelected(const Layer& layer_) {
     if (&layer_ != NULL) {
       uint16_t color;
-      if (layer_.getSelectActive()) {
+      if (layer_.getSelected()) {
         color = layer_.getColor();
       } else {
         color = BLACK;
@@ -406,9 +403,9 @@ namespace Zebra {
 
   void View::drawInfoLayerInstA(const Layer& layer_) {
     if (&layer_ != NULL) {
-      uint8_t instA = layer_.getInstA();
+      uint8_t instA = layer_.getInstAMidi();
       // checking if there is a new inst data
-      if ((switchInfoFromRhythmToLayerFlag) || (instA != layerInstAClean)) {
+      if ((switchInfoToLayerFlag) || (instA != layerInstAClean)) {
         drawInfoNumber(layerInstAClean, kInstADigit, kInstAXPos, kInstAYPos, WHITE);
         drawInfoNumber(instA, kInstADigit, kInstAXPos, kInstAYPos, BLACK);
         layerInstAClean = instA;
@@ -418,9 +415,9 @@ namespace Zebra {
 
   void View::drawInfoLayerInstB(const Layer& layer_) {
     if (&layer_ != NULL) {
-      uint8_t instB = layer_.getInstB();
+      uint8_t instB = layer_.getInstBMidi();
       // checking if there is a new inst data
-      if ((switchInfoFromRhythmToLayerFlag) || (instB != layerInstBClean)) {
+      if ((switchInfoToLayerFlag) || (instB != layerInstBClean)) {
         drawInfoNumber(layerInstBClean, kInstBDigit, kInstBXPos, kInstBYPos, WHITE);
         drawInfoNumber(instB, kInstBDigit, kInstBXPos, kInstBYPos, BLACK);
         layerInstBClean = instB;
@@ -431,7 +428,7 @@ namespace Zebra {
   void View::drawInfoFill(const Beat& beat_) {
     if (&beat_ != NULL) {
       // checking if there is a new fill data
-      if ((switchInfoFromRhythmToLayerFlag) || (beat_.getFill() != fillNumberClean)) {
+      if ((switchInfoToLayerFlag) || (beat_.getFill() != fillNumberClean)) {
         // clearing old fill name
         fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
         // drawing fill name
@@ -469,7 +466,7 @@ namespace Zebra {
 
   void View::cleanInfoFill() {
     // checking if there is a new fill data
-    if ((switchInfoFromRhythmToLayerFlag) || (fillNumberClean != -1)) {
+    if ((switchInfoToLayerFlag) || (fillNumberClean != -1)) {
       // clearing old fill name
       fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
       // clearing old fill diagram
@@ -705,105 +702,87 @@ namespace Zebra {
 
   // info switch functions
 
-  void View::switchInfoFromLayerToRhythm() {
-    switchInfoFromLayerToRhythmFlag = true;
+  void View::switchInfoToRhythm() {
+    switchInfoToRhythmFlag = true;
     switchState = 0;
   }
 
-  void View::switchInfoFromRhythmToLayer(const Layer& layer_) {
+  void View::switchInfoToLayer(const Layer& layer_) {
     if (&layer_ != NULL) {
-      switchInfoFromRhythmToLayerFlag = true;
+      switchInfoToLayerFlag = true;
       switchLayer = layer_.getNumber();
       switchState = 0;
     }
   }
 
-  void View::switchInfoFromLayerToLayer(const Layer& layer_) {
+  void View::switchInfoBetweenLayers(const Layer& layer_) {
     if (&layer_ != NULL) {
-      switchInfoFromLayerToLayerFlag = true;
+      switchInfoBetweenLayersFlag = true;
       switchLayer = layer_.getNumber();
       switchState = 0;
     }
   }
 
-  void View::checkSwitchInfoFromLayerToRhythm() {
-    if (switchInfoFromLayerToRhythmFlag) {
+  void View::checkSwitchInfoToRhythm() {
+    if (switchInfoToRhythmFlag) {
       switch (switchState) {
-        // clearing layer elements
+        // clearing all
         case 0:
-        setTextColor(WHITE);
-        setCursor(8, 8);
-        println(F("FILL"));
-        switchState += 1;
-        break;
-        case 1:
-        setCursor(248, 8);
-        println(F("INST A"));
-        switchState += 1;
-        break;
-        case 2:
-        setCursor(368, 8);
-        println(F("INST B"));
-        switchState += 1;
-        break;
-        case 3:
-        fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
-        switchState += 1;
-        break;
-        case 4:
-        fillRect(90, 9, 121, 37, WHITE);
-        switchState += 1;
-        break;
-        case 5:
-        drawInfoNumber(layerInstAClean, kInstADigit, kInstAXPos, kInstAYPos, WHITE);
-        switchState += 1;
-        break;
-        case 6:
-        drawInfoNumber(layerInstBClean, kInstBDigit, kInstBXPos, kInstBYPos, WHITE);
+        fillRect(0, 0, 480, kInfoHeight, WHITE);
         switchState += 1;
         break;
         // drawing rhythm elements
-        case 7:
-        drawFastVLine(120, 0, 20, BLACK);
-        setTextColor(BLACK);
+        case 1:
+        fillRect(0, 0, 121, kInfoHeight - 1, BLACK);
+        drawFastVLine(120, 0, 50, BLACK);
         switchState += 1;
         break;
-        case 8:
+        case 2:
+        drawFastVLine(240, 0, 50, BLACK);
+        switchState += 1;
+        break;
+        case 3:
+        drawFastVLine(360, 0, 50, BLACK);
+        switchState += 1;
+        break;
+        case 4:
+        setTextColor(WHITE);
         setCursor(8, 8);
         println(F("TEMPO"));
         switchState += 1;
         break;
-        case 9:
+        case 5:
+        setTextColor(BLACK);
         setCursor(128, 8);
         println(F("QUANTIZE"));
         switchState += 1;
         break;
-        case 10:
+        case 6:
         setCursor(248, 8);
         println(F("BAR"));
         switchState += 1;
         break;
-        case 11:
+        case 7:
         setCursor(368, 8);
         println(F("MEASURE"));
         switchState += 1;
         break;
-        case 12:
+        case 8:
         drawInfoRhythmTempo();
         switchState += 1;
         break;
-        case 13:
+        case 9:
         drawInfoRhythmQuantize();
         switchState += 1;
         break;
-        case 14:
+        case 10:
         drawInfoRhythmBar();
         switchState += 1;
         break;
-        case 15:
+        case 11:
         drawInfoRhythmMeasure();
         switchState = 0;
-        switchInfoFromLayerToRhythmFlag = false;
+        switchInfoToRhythmFlag = false;
         break;
         default:
         break;
@@ -811,53 +790,24 @@ namespace Zebra {
     }
   }
 
-  void View::checkSwitchInfoFromRhythmToLayer() {
-    if (switchInfoFromRhythmToLayerFlag) {
+  void View::checkSwitchInfoToLayer() {
+    if (switchInfoToLayerFlag) {
       switch (switchState) {
-        // clearing layer elements
+        // clearing all
         case 0:
-        drawFastVLine(120, 0, 20, WHITE);
-        setTextColor(WHITE);
-        switchState += 1;
-        break;
-        case 1:
-        setCursor(8, 8);
-        println(F("TEMPO"));
-        switchState += 1;
-        break;
-        case 2:
-        setCursor(128, 8);
-        println(F("QUANTIZE"));
-        switchState += 1;
-        break;
-        case 3:
-        setCursor(248, 8);
-        println(F("BAR"));
-        switchState += 1;
-        break;
-        case 4:
-        setCursor(368, 8);
-        println(F("MEASURE"));
-        switchState += 1;
-        break;
-        case 5:
-        drawInfoNumber(rhythmTempoClean, kTempoDigit, kTempoXPos, kTempoYPos, WHITE);
-        switchState += 1;
-        break;
-        case 6:
-        drawInfoNumber(rhythmQuantizeClean, kQuantizeDigit, kQuantizeXPos, kQuantizeYPos, WHITE);
-        switchState += 1;
-        break;
-        case 7:
-        drawInfoNumber(rhythmBarClean, kBarDigit, kBarXPos, kBarYPos, WHITE);
-        switchState += 1;
-        break;
-        case 8:
-        drawInfoNumber(rhythmMeasureClean, kMeasureDigit, kMeasureXPos, kMeasureYPos, WHITE);
+        fillRect(0, 0, 480, kInfoHeight, WHITE);
         switchState += 1;
         break;
         // drawing layer elements
-        case 9:
+        case 1:
+        drawFastVLine(240, 0, 20, BLACK);
+        switchState += 1;
+        break;
+        case 2:
+        drawFastVLine(360, 0, 20, BLACK);
+        switchState += 1;
+        break;
+        case 3:
         drawFastHLine(90, 45, 120, BLACK);
         for(int i = 0; i < 12; i ++) {
           drawPixel(210, 9 + (3 * i), BLACK);
@@ -865,22 +815,22 @@ namespace Zebra {
         setTextColor(BLACK);
         switchState += 1;
         break;
-        case 10:
+        case 4:
         setCursor(8, 8);
         println(F("FILL"));
         switchState += 1;
         break;
-        case 11:
+        case 5:
         setCursor(248, 8);
         println(F("INST A"));
         switchState += 1;
         break;
-        case 12:
+        case 6:
         setCursor(368, 8);
         println(F("INST B"));
         switchState += 1;
         break;
-        case 13:
+        case 7:
         if (rhythmRef.getLayer(switchLayer).getLastActiveBeat() != -1) {
           drawInfoFill(rhythmRef.getLayer(switchLayer).getBeat(0));
         } else {
@@ -888,14 +838,14 @@ namespace Zebra {
         }
         switchState += 1;
         break;
-        case 14:
+        case 8:
         drawInfoLayerInstA(rhythmRef.getLayer(switchLayer));
         switchState += 1;
         break;
-        case 15:
+        case 9:
         drawInfoLayerInstB(rhythmRef.getLayer(switchLayer));
         switchState = 0;
-        switchInfoFromRhythmToLayerFlag = false;
+        switchInfoToLayerFlag = false;
         break;
         default:
         break;
@@ -903,8 +853,8 @@ namespace Zebra {
     }
   }
 
-  void View::checkSwitchInfoFromLayerToLayer() {
-    if (switchInfoFromLayerToLayerFlag) {
+  void View::checkSwitchInfoBetweenLayers() {
+    if (switchInfoBetweenLayersFlag) {
       switch (switchState) {
         case 0:
         if (rhythmRef.getLayer(switchLayer).getLastActiveBeat() != -1) {
@@ -921,7 +871,7 @@ namespace Zebra {
         case 2:
         drawInfoLayerInstB(rhythmRef.getLayer(switchLayer));
         switchState = 0;
-        switchInfoFromLayerToLayerFlag = false;
+        switchInfoBetweenLayersFlag = false;
         break;
         default:
         break;

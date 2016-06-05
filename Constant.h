@@ -18,21 +18,23 @@ namespace Zebra {
 
   // Keyboard.h
 
+  const uint8_t kMenuSelectButtonPin = 23;
+
   const uint8_t kRhythmSelectButtonPin = 24;
   const uint8_t kLayer0SelectButtonPin = 25;
   const uint8_t kLayer1SelectButtonPin = 26;
   const uint8_t kLayer2SelectButtonPin = 27;
   const uint8_t kLayer3SelectButtonPin = 28;
 
-  const uint8_t kRhythmTempoUpButtonPin = 29;
-  const uint8_t kRhythmTempoDownButtonPin = 30;
-  const uint8_t kRhythmQuantizeUpButtonPin = 31;
-  const uint8_t kRhythmQuantizeDownButtonPin = 32;
+  const uint8_t kUpButtonPin = 29;
+  const uint8_t kDownButtonPin = 30;
+  const uint8_t kRightButtonPin = 31;
+  const uint8_t kLeftButtonPin = 32;
 
-  const uint8_t kRhythmBarUpButtonPin = 42;
-  const uint8_t kRhythmBarDownButtonPin = 43;
-  const uint8_t kRhythmMeasureUpButtonPin = 44;
-  const uint8_t kRhythmMeasureDownButtonPin = 45;
+  const uint8_t kInstAUpButtonPin = 42;
+  const uint8_t kInstADownButtonPin = 43;
+  const uint8_t kInstBUpButtonPin = 44;
+  const uint8_t kInstBDownButtonPin = 45;
 
   const uint8_t kRecordButtonPin = 46;
   const uint8_t kPlayButtonPin = 47;
@@ -41,8 +43,6 @@ namespace Zebra {
   const uint8_t kBeatAButtonPin = 49;
   const uint8_t kBeatBButtonPin = 50;
   const uint8_t kBeatClearButtonPin = 51;
-
-  const uint8_t kMetronomeButtonPin = 4;
 
   const uint8_t kRecordLedPin = 52;
   const uint8_t kPlayLedPin = 53;
@@ -109,8 +109,10 @@ namespace Zebra {
 
   const uint8_t kMinLayerVolume = 0;
   const uint8_t kMaxLayerVolume = 10;
-  const uint8_t kMinLayerInst = 0;
-  const uint8_t kMaxLayerInst = 127;
+  const uint8_t kMinLayerInstMidi = 0;
+  const uint8_t kMaxLayerInstMidi = 127;
+  const uint8_t kMinLayerInstAudio = 0;
+  const uint8_t kMaxLayerInstAudio = 127;
   const uint8_t kBeatLibrarySize = 32;
 
   // Fill.h

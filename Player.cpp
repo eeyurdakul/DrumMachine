@@ -7,6 +7,8 @@ namespace Zebra {
   , viewRef(view_)
   , playActive(false)
   , recordActive(false)
+  , midiActive(false)
+  , audioActive(true)
   , midi() {}
 
   Player::~Player() {}
@@ -58,6 +60,22 @@ namespace Zebra {
 
   bool Player::getRecordActive() const {
     return recordActive;
+  }
+
+  void Player::setMidiActive(bool active_) {
+    midiActive = active_;
+  }
+
+  bool Player::getMidiActive() const {
+    return midiActive;
+  }
+
+  void Player::setAudioActive(bool active_) {
+    audioActive = active_;
+  }
+
+  bool Player::getAudioActive() const {
+    return audioActive;
   }
 
   void Player::calculatePeriod() {

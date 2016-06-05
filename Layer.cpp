@@ -8,34 +8,44 @@ namespace Zebra {
   , startY(52 + (67 * number_))
   , beatActive(true)
   , fillActive(true)
-  , selectActive(false)
+  , selected(false)
   , lastActiveBeat(-1)
   , beatLibrary {} {
     switch (number) {
       case 0:
       color = YELLOW;
-      instA = 0;
-      instB = 1;
+      instAMidi = 0;
+      instBMidi = 1;
+      instAAudio = 0;
+      instBAudio = 1;
       break;
       case 1:
       color = GREEN;
-      instA = 10;
-      instB = 11;
+      instAMidi = 10;
+      instBMidi = 11;
+      instAAudio = 10;
+      instBAudio = 11;
       break;
       case 2:
       color = CYAN;
-      instA = 20;
-      instB = 21;
+      instAMidi = 20;
+      instBMidi = 21;
+      instAAudio = 20;
+      instBAudio = 21;
       break;
       case 3:
       color = MAGENTA;
-      instA = 30;
-      instB = 31;
+      instAMidi = 30;
+      instBMidi = 31;
+      instAAudio = 30;
+      instBAudio = 31;
       break;
       default:
       color = WHITE;
-      instA = 0;
-      instB = 1;
+      instAMidi = 0;
+      instBMidi = 1;
+      instAAudio = 0;
+      instBAudio = 1;
       break;
     }
   }
@@ -107,20 +117,36 @@ namespace Zebra {
     return volume;
   }
 
-  void Layer::setInstA(uint8_t instA_) {
-    instA = instA_;
+  void Layer::setInstAMidi(uint8_t instA_) {
+    instAMidi = instA_;
   }
 
-  uint8_t Layer::getInstA() const {
-    return instA;
+  uint8_t Layer::getInstAMidi() const {
+    return instAMidi;
   }
 
-  void Layer::setInstB(uint8_t instB_) {
-    instB = instB_;
+  void Layer::setInstBMidi(uint8_t instB_) {
+    instBMidi = instB_;
   }
 
-  uint8_t Layer::getInstB() const {
-    return instB;
+  uint8_t Layer::getInstBMidi() const {
+    return instBMidi;
+  }
+
+  void Layer::setInstAAudio(uint8_t instA_) {
+    instAAudio = instA_;
+  }
+
+  uint8_t Layer::getInstAAudio() const {
+    return instAAudio;
+  }
+
+  void Layer::setInstBAudio(uint8_t instB_) {
+    instBAudio = instB_;
+  }
+
+  uint8_t Layer::getInstBAudio() const {
+    return instBAudio;
   }
 
   void Layer::setStartY(uint16_t startY_) {
@@ -147,12 +173,12 @@ namespace Zebra {
     return fillActive;
   }
 
-  void Layer::setSelectActive(bool selectActive_) {
-    selectActive = selectActive_;
+  void Layer::setSelected(bool selected_) {
+    selected = selected_;
   }
 
-  bool Layer::getSelectActive() const {
-    return selectActive;
+  bool Layer::getSelected() const {
+    return selected;
   }
 
   void Layer::calculateLastActiveBeat() {
