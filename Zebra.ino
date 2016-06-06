@@ -16,7 +16,7 @@ void setup() {
 }
 
 void loop() {
-  controller.checkKeyboardStatus();
+  controller.checkKeyboard();
   view.update();
 }
 

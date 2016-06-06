@@ -19,6 +19,8 @@ namespace Zebra {
     Layer* selectedLayer;
     Beat* selectedBeat;
     int8_t selectedBeatNum;
+    int8_t currentMenuState;
+    int8_t previousMenuState;
     // private timing functions
     void adjustBarUpTiming();
     void adjustBarDownTiming();
@@ -34,50 +36,51 @@ namespace Zebra {
     Controller(Rhythm& rhythm_, View& view_, Player& player_);
     ~Controller();
     void initialize();
-    void checkKeyboardStatus();
+    void checkKeyboard();
     // play functions
-    void recordButtonPressed();
-    void playButtonPressed();
-    void resetButtonPressed();
+    void record();
+    void playStop();
+    void reset();
     // select functions
-    void rhythmSelectButtonPressed();
-    void layerSelectButtonPressed(Layer& layer_);
-    void layerBeatButtonPressed(Layer& layer_);
-    void layerFillButtonPressed(Layer& layer_);
+    void menuSelect();
+    void layerSelect(Layer& layer_);
+    void layerChannelSelect(Layer& layer_);
+    // menu functions
+    void menuRight();
+    void menuLeft();
+    void menuUp();
+    void menuDown();
+    void menuUpdate();
     // rhythm functions
-    void rhythmMoveRightButtonPressed();
-    void rhythmMoveLeftButtonPressed();
-    void rhythmTempoUpButtonPressed();
-    void rhythmTempoDownButtonPressed();
-    void rhythmMetronomeUpButtonPressed();
-    void rhythmMetronomeDownButtonPressed();
-    void rhythmBarUpButtonPressed();
-    void rhythmBarDownButtonPressed();
-    void rhythmMeasureUpButtonPressed();
-    void rhythmMeasureDownButtonPressed();
-    void rhythmLoadUpButtonPressed();
-    void rhythmLoadDownButtonPressed();
-    void rhythmSaveUpButtonPressed();
-    void rhythmSaveDownButtonPressed();
-    void rhythmOutputUpButtonPressed();
-    void rhythmOutputDownButtonPressed();
-    void rhythmQuantizeUpButtonPressed();
-    void rhythmQuantizeDownButtonPressed();
+    void tempoUp();
+    void tempoDown();
+    void metronomeUp();
+    void metronomeDown();
+    void barUp();
+    void barDown();
+    void measureUp();
+    void measureDown();
+    void loadUp();
+    void loadDown();
+    void saveUp();
+    void saveDown();
+    void outputUp();
+    void outputDown();
+    void quantizeUp();
+    void quantizeDown();
     // layer functions
-    void layerInstAUpButtonPressed();
-    void layerInstADownButtonPressed();
-    void layerInstBUpButtonPressed();
-    void layerInstBDownButtonPressed();
+    void instAUp();
+    void instADown();
+    void instBUp();
+    void instBDown();
     // fill functions
-    void beatUpButtonPressed();
-    void beatDownButtonPressed();
-    void fillUpButtonPressed();
-    void fillDownButtonPressed();
+    void beatUp();
+    void beatDown();
+    void fillUp();
+    void fillDown();
     // beat record functions
-    void beatAButtonPressed();
-    void beatBButtonPressed();
-    void beatClearButtonPressed();
-    // metronome functions
-    void metronomeButtonPressed();
+    void beatA();
+    void beatB();
+    void beatClear();
   };
 }

@@ -25,12 +25,20 @@ namespace Zebra {
     uint8_t measurePlayCount;
     uint16_t playColor;
     float playXRatio;
-    uint8_t rhythmTempoClean;
-    uint8_t rhythmQuantizeClean;
-    uint8_t rhythmBarClean;
-    uint8_t rhythmMeasureClean;
-    uint8_t layerInstAClean;
-    uint8_t layerInstBClean;
+    // info rhythm variables
+    byte currentInfoRhythmLayout;
+    byte previousInfoRhythmLayout;
+    uint8_t tempoClean;
+    uint8_t metronomeClean;
+    uint8_t barClean;
+    uint8_t measureClean;
+    uint8_t loadClean;
+    uint8_t saveClean;
+    uint8_t outputClean;
+    uint8_t quantizeClean;
+    // info layer variables
+    uint8_t instAClean;
+    uint8_t instBClean;
     int8_t fillNumberClean;
     uint16_t selectedBeatXClean;
     uint16_t selectedBeatYClean;
@@ -79,7 +87,25 @@ namespace Zebra {
     void drawAllLayer();
     void drawAllLayerMeasure();
     void drawAllLayerMeasureSongFill();
-    // info rhythm functions
+    // menu functions
+    void drawTempo(bool state);
+    void drawMetronome(bool state);
+    void drawBar(bool state);
+    void drawMeasure(bool state);
+    void drawLoad(bool state);
+    void drawSave(bool state);
+    void drawOutput(bool state);
+    void drawQuantize(bool state);
+
+    void drawTempoData();
+    void drawMetronomeData();
+    void drawBarData();
+    void drawMeasureData();
+    void drawLoadData();
+    void drawSaveData();
+    void drawOutputData();
+    void drawQuantizeData();
+
     void drawInfoRhythmAll();
     void drawInfoRhythmBase();
     void drawInfoRhythmTempo();

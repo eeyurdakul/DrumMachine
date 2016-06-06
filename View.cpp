@@ -10,12 +10,20 @@ namespace Zebra {
   , playX(0)
   , measurePlayCount(0)
   , playColor(kPlayColor0)
-  , rhythmTempoClean(0)
-  , rhythmQuantizeClean(0)
-  , rhythmBarClean(0)
-  , rhythmMeasureClean(0)
-  , layerInstAClean(0)
-  , layerInstBClean(0)
+  // info rhythm variables
+  , currentInfoRhythmLayout(0b10000000)
+  , previousInfoRhythmLayout(0b00000000)
+  , tempoClean(0)
+  , metronomeClean(0)
+  , barClean(0)
+  , measureClean(0)
+  , loadClean(0)
+  , saveClean(0)
+  , outputClean(0)
+  , quantizeClean(0)
+  // info layer variables
+  , instAClean(0)
+  , instBClean(0)
   , fillNumberClean(255)
   , switchInfoToRhythmFlag(false)
   , switchInfoToLayerFlag(false)
@@ -320,6 +328,43 @@ namespace Zebra {
 
   // info rhythm functions
 
+  void View::drawTempo() {
+    uint16_t background;
+    uint16_t foreground;
+    if (currentInfoRhythmLayout >> 7) {
+      background = BLACK;
+      foreground = WHITE;
+    } else {
+      background = WHITE;
+      foreground = BLACK;
+    }
+    if (currentInfoRhythmLayout != previousInfoRhythmLayout) {
+      fillRect(0, 0, 120, kInfoHeight, background);
+      setTextColor(foreground);
+      setCursor(8, 8);
+      println(F("TEMPO"));
+    }
+    //drawInfoNumber(tempoClean, kTempoDigit, kTempoXPos, kTempoYPos, background);
+    //drawInfoNumber(rhythmRef.getTempo(), kTempoDigit, kTempoXPos, kTempoYPos, foreground);
+    //tempoClean = rhythmRef.getTempo();
+  }
+
+  void View::drawMetronome() {}
+
+  void View::drawBar() {}
+
+  void View::drawMeasure() {}
+
+  void View::drawLoad() {}
+
+  void View::drawSave() {}
+
+  void View::drawOutput() {}
+
+  void View::drawQuantize() {}
+
+  //////////////////////
+
   void View::drawInfoRhythmAll() {
     fillNumberClean = -1;
     drawInfoRhythmTempo();
@@ -330,42 +375,50 @@ namespace Zebra {
 
   void View::drawInfoRhythmBase() {
     fillRect(0, 0, 480, kInfoHeight, WHITE);
-    drawFastVLine(120, 0, 20, BLACK);
-    drawFastVLine(240, 0, 20, BLACK);
-    drawFastVLine(360, 0, 20, BLACK);
-    setTextColor(BLACK);
-    setCursor(8, 8);
+    drawFastVLine(120, 0, 50, BLACK);
+    drawFastVLine(240, 0, 50, BLACK);
+    drawFastVLine(360, 0, 50, BLACK);
+    uint8_t x;
+    uint8_t y;
+    fillRect(0, 0, 121, 50, BLACK);
+    fillTriangle(110, 5, 110, 15, 100, 10, BLACK);
+    //drawFastHLine(7, 20, 114, BLACK);
+    setTextColor(LGRAY);
+    setCursor(7, 7);
     println(F("TEMPO"));
-    setCursor(128, 8);
-    println(F("QUANTIZE"));
-    setCursor(248, 8);
+    setTextColor(BLACK);
+    setCursor(127, 7);
+    println(F("METRONOME"));
+    setCursor(247, 7);
     println(F("BAR"));
-    setCursor(368, 8);
+    setCursor(367, 7);
     println(F("MEASURE"));
+    drawInfoNumber(120, kTempoDigit, kTempoXPos - 1, kTempoYPos - 1, LGRAY);
+    drawInfoNumber(120, kTempoDigit, kTempoXPos - 1 + 120, kTempoYPos - 1, BLACK);
   }
 
   void View::drawInfoRhythmTempo() {
-    drawInfoNumber(rhythmTempoClean, kTempoDigit, kTempoXPos, kTempoYPos, WHITE);
-    drawInfoNumber(rhythmRef.getTempo(), kTempoDigit, kTempoXPos, kTempoYPos, BLACK);
-    rhythmTempoClean = rhythmRef.getTempo();
+    drawInfoNumber(tempoClean, kTempoDigit, kTempoXPos, kTempoYPos, BLACK);
+    drawInfoNumber(rhythmRef.getTempo(), kTempoDigit, kTempoXPos, kTempoYPos, WHITE);
+    tempoClean = rhythmRef.getTempo();
   }
 
   void View::drawInfoRhythmQuantize() {
-    drawInfoNumber(rhythmQuantizeClean, kQuantizeDigit, kQuantizeXPos, kQuantizeYPos, WHITE);
+    drawInfoNumber(quantizeClean, kQuantizeDigit, kQuantizeXPos, kQuantizeYPos, WHITE);
     drawInfoNumber(pgm_read_word(&kQuantizeLibrary[rhythmRef.getQuantize()]), kQuantizeDigit, kQuantizeXPos, kQuantizeYPos, BLACK);
-    rhythmQuantizeClean = pgm_read_word(&kQuantizeLibrary[rhythmRef.getQuantize()]);
+    quantizeClean = pgm_read_word(&kQuantizeLibrary[rhythmRef.getQuantize()]);
   }
 
   void View::drawInfoRhythmBar() {
-    drawInfoNumber(rhythmBarClean, kBarDigit, kBarXPos, kBarYPos, WHITE);
+    drawInfoNumber(barClean, kBarDigit, kBarXPos, kBarYPos, WHITE);
     drawInfoNumber(rhythmRef.getBar(), kBarDigit, kBarXPos, kBarYPos, BLACK);
-    rhythmBarClean = rhythmRef.getBar();
+    barClean = rhythmRef.getBar();
   }
 
   void View::drawInfoRhythmMeasure() {
-    drawInfoNumber(rhythmMeasureClean, kMeasureDigit, kMeasureXPos, kMeasureYPos, WHITE);
+    drawInfoNumber(measureClean, kMeasureDigit, kMeasureXPos, kMeasureYPos, WHITE);
     drawInfoNumber(rhythmRef.getMeasure(), kMeasureDigit, kMeasureXPos, kMeasureYPos, BLACK);
-    rhythmMeasureClean = rhythmRef.getMeasure();
+    measureClean = rhythmRef.getMeasure();
   }
 
   // info layer functions
@@ -405,10 +458,10 @@ namespace Zebra {
     if (&layer_ != NULL) {
       uint8_t instA = layer_.getInstAMidi();
       // checking if there is a new inst data
-      if ((switchInfoToLayerFlag) || (instA != layerInstAClean)) {
-        drawInfoNumber(layerInstAClean, kInstADigit, kInstAXPos, kInstAYPos, WHITE);
+      if ((switchInfoToLayerFlag) || (instA != instAClean)) {
+        drawInfoNumber(instAClean, kInstADigit, kInstAXPos, kInstAYPos, WHITE);
         drawInfoNumber(instA, kInstADigit, kInstAXPos, kInstAYPos, BLACK);
-        layerInstAClean = instA;
+        instAClean = instA;
       }
     }
   }
@@ -417,10 +470,10 @@ namespace Zebra {
     if (&layer_ != NULL) {
       uint8_t instB = layer_.getInstBMidi();
       // checking if there is a new inst data
-      if ((switchInfoToLayerFlag) || (instB != layerInstBClean)) {
-        drawInfoNumber(layerInstBClean, kInstBDigit, kInstBXPos, kInstBYPos, WHITE);
+      if ((switchInfoToLayerFlag) || (instB != instBClean)) {
+        drawInfoNumber(instBClean, kInstBDigit, kInstBXPos, kInstBYPos, WHITE);
         drawInfoNumber(instB, kInstBDigit, kInstBXPos, kInstBYPos, BLACK);
-        layerInstBClean = instB;
+        instBClean = instB;
       }
     }
   }

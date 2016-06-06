@@ -18,13 +18,16 @@ namespace Zebra {
 
   // Keyboard.h
 
-  const uint8_t kMenuSelectButtonPin = 23;
-
-  const uint8_t kRhythmSelectButtonPin = 24;
+  const uint8_t kMenuSelectButtonPin = 24;
   const uint8_t kLayer0SelectButtonPin = 25;
   const uint8_t kLayer1SelectButtonPin = 26;
   const uint8_t kLayer2SelectButtonPin = 27;
   const uint8_t kLayer3SelectButtonPin = 28;
+
+  const uint8_t kLayer0ChannelButtonPin = 0;
+  const uint8_t kLayer1ChannelButtonPin = 0;
+  const uint8_t kLayer2ChannelButtonPin = 0;
+  const uint8_t kLayer3ChannelButtonPin = 0;
 
   const uint8_t kUpButtonPin = 29;
   const uint8_t kDownButtonPin = 30;
@@ -59,7 +62,7 @@ namespace Zebra {
   const uint16_t kSongX = 360;
   const uint16_t kStartY = 0;
   // info constants
-  const uint8_t kInfoHeight = 52;
+  const uint8_t kInfoHeight = 50;
   const uint8_t kMinInfoDigit = 0;
   const uint8_t kMaxInfoDigit = 3;
   const uint8_t kInfoDigitOffset = 12;
@@ -98,9 +101,11 @@ namespace Zebra {
   const uint8_t kMinRhythmMeasure = 1;
   const uint8_t kMaxRhythmMeasure = 8;
   const uint8_t kInitialTempo = 120;
-  const uint8_t kInitialQuantize = 0;
+  const bool kInitialMetronome = 1;   // 0 --> off, 1 --> on
   const uint8_t kInitialBar = 4;
   const uint8_t kInitialMeasure = 4;
+  const bool kInitialOutput = 0;      // 0 --> audio, 1 --> midi
+  const uint8_t kInitialQuantize = 0;
   const uint8_t kLayerLibrarySize = 4;
   const uint16_t kMeasureTime = 64;
   const uint8_t kQuantizeLibrary[7] PROGMEM = {0, 1, 2, 4, 8, 16, 32};
