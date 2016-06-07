@@ -1,4 +1,4 @@
-#include "Controller.h"
+rr#include "Controller.h"
 
 namespace Zebra {
 
@@ -148,6 +148,7 @@ namespace Zebra {
       selectedBeat = NULL;
       selectedBeatNum = -1;
       viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
+      menuUpdate();
     }
   }
 
@@ -278,82 +279,82 @@ namespace Zebra {
     switch (currentMenuState) {
       case 0:   // tempo
       if ((previousMenuState == -1) || (previousMenuState == 7)) {
-        drawTempo(1);
-        drawMetronome(0);
-        drawBar(0);
-        drawMeasure(0);
+        drawMenuBox(kTempoBox, 1);
+        drawMenuBox(kMetronomeBox, 0);
+        drawMenuBox(kBarBox, 0);
+        drawMenuBox(kMeasureBox, 0);
       } else if (previousMenuState == 1) {
-        drawTempo(1);
-        drawMetronome(0);
+        drawMenuBox(kTempoBox, 1);
+        drawMenuBox(kMetronomeBox, 0);
       }
       break;
       case 1:   // metronome
       if (previousMenuState == 0) {
-        drawTempo(0);
-        drawMetronome(1);
+        drawMenuBox(kTempoBox, 0);
+        drawMenuBox(kMetronomeBox, 1);
       } else if (previousMenuState == 2) {
-        drawMetronome(1);
-        drawBar(0);
+        drawMenuBox(kMetronomeBox, 1);
+        drawMenuBox(kBarBox, 0);
       }
       break;
       case 2:   // bar
       if (previousMenuState == 1) {
-        drawMetronome(0);
-        drawBar(1);
+        drawMenuBox(kMetronomeBox, 0);
+        drawMenuBox(kBarBox, 1);
       } else if (previousMenuState == 3) {
-        drawBar(1);
-        drawMeasure(0);
+        drawMenuBox(kBarBox, 1);
+        drawMenuBox(kMeasureBox, 0);
       }
       break;
       case 3:   // measure
       if (previousMenuState == 2) {
-        drawBar(0);
-        drawMeasure(1);
+        drawMenuBox(kBarBox, 0);
+        drawMenuBox(kMeasureBox, 1);
       } else if (previousMenuState == 4) {
-        drawTempo(0);
-        drawMetronome(0);
-        drawBar(0);
-        drawMeasure(1);
+        drawMenuBox(kTempoBox, 0);
+        drawMenuBox(kMetronomeBox, 0);
+        drawMenuBox(kBarBox, 0);
+        drawMenuBox(kMeasureBox, 1);
       }
       break;
       case 4:   // load
       if (previousMenuState == 3) {
-        drawLoad(1);
-        drawSave(0);
-        drawOutput(0);
-        drawQuantize(0);
+        drawMenuBox(kLoadBox, 1);
+        drawMenuBox(kSaveBox, 0);
+        drawMenuBox(kOutputBox, 0);
+        drawMenuBox(kQuantizeBox, 0);
       } else if (previousMenuState == 5) {
-        drawLoad(1);
-        drawSave(0);
+        drawMenuBox(kLoadBox, 1);
+        drawMenuBox(kSaveBox, 0);
       }
       break;
       case 5:   // save
       if (previousMenuState == 4) {
-        drawLoad(0);
-        drawSave(1);
+        drawMenuBox(kLoadBox, 0);
+        drawMenuBox(kSaveBox, 1);
       } else if (previousMenuState == 6) {
-        drawSave(1);
-        drawOutput(0);
+        drawMenuBox(kSaveBox, 1);
+        drawMenuBox(kOutputBox, 0);
       }
       break;
       case 6:   // output
       if (previousMenuState == 5) {
-        drawSave(0);
-        drawOutput(1);
+        drawMenuBox(kSaveBox, 0);
+        drawMenuBox(kOutputBox, 1);
       } else if (previousMenuState == 7) {
-        drawOutput(1);
-        drawQuantize(0);
+        drawMenuBox(kOutputBox, 1);
+        drawMenuBox(kQuantizeBox, 0);
       }
       break;
       case 7:   // quantize
       if (previousMenuState == 6) {
-        drawOutput(0);
-        drawQuantize(1);
+        drawMenuBox(kOutputBox, 0);
+        drawMenuBox(kQuantizeBox, 1);
       } else if (previousMenuState == 0) {
-        drawLoad(0);
-        drawSave(0);
-        drawOutput(0);
-        drawQuantize(1);
+        drawMenuBox(kLoadBox, 0);
+        drawMenuBox(kSaveBox, 0);
+        drawMenuBox(kOutputBox, 0);
+        drawMenuBox(kQuantizeBox, 1);
       }
       break;
       default:
@@ -364,32 +365,38 @@ namespace Zebra {
   // rhythm functions
 
   void Controller::tempoUp() {
-    uint8_t rhythmTempo = rhythmRef.getTempo();
-    if (rhythmRef.getTempo() < kMaxRhythmTempo) {
-      rhythmRef.setTempo(rhythmTempo + 1);
+    uint8_t tempo = rhythmRef.getTempo();
+    if (tempo < kMaxTempo) {
+      rhythmRef.setTempo(tempo + 1);
       playerRef.calculateAndStartTimer();
       viewRef.drawTempoData();
     }
   }
 
   void Controller::tempoDown() {
-    uint8_t rhythmTempo = rhythmRef.getTempo();
-    if (rhythmTempo > kMinRhythmTempo) {
-      rhythmRef.setTempo(rhythmTempo - 1);
+    uint8_t tempo = rhythmRef.getTempo();
+    if (tempo > kMinTempo) {
+      rhythmRef.setTempo(tempo - 1);
       playerRef.calculateAndStartTimer();
       viewRef.drawTempoData();
     }
   }
 
-  void Controller::metronomeUp() {}
+  void Controller::metronomeUp() {
+    rhythmRef.setMetronome(~rhythmRef.getMetronome());
+    viewRef.drawMetronomeData();
+  }
 
-  void Controller::metronomeDown() {}
+  void Controller::metronomeDown() {
+    rhythmRef.setMetronome(~rhythmRef.getMetronome());
+    viewRef.drawMetronomeData();
+  }
 
   void Controller::barUp() {
-    uint8_t rhythmBar = rhythmRef.getBar();
-    if (rhythmBar < kMaxRhythmBar) {
+    uint8_t bar = rhythmRef.getBar();
+    if (bar < kMaxBar) {
       playerRef.reset();
-      rhythmRef.setBar(rhythmBar + 1);
+      rhythmRef.setBar(bar + 1);
       adjustBarUpTiming();
       viewRef.calculatePlayXRatio();
       viewRef.drawBarData();
@@ -398,10 +405,10 @@ namespace Zebra {
   }
 
   void Controller::barDown() {
-    uint8_t rhythmBar = rhythmRef.getBar();
-    if (rhythmBar > kMinRhythmBar) {
+    uint8_t bar = rhythmRef.getBar();
+    if (bar > kMinBar) {
       playerRef.reset();
-      rhythmRef.setBar(rhythmBar - 1);
+      rhythmRef.setBar(bar - 1);
       adjustBarDownTiming();
       viewRef.calculatePlayXRatio();
       viewRef.drawBarData();
@@ -410,10 +417,10 @@ namespace Zebra {
   }
 
   void Controller::measureUp() {
-    uint8_t rhythmMeasure = rhythmRef.getMeasure();
-    if (rhythmMeasure < kMaxRhythmMeasure) {
+    uint8_t measure = rhythmRef.getMeasure();
+    if (measure < kMaxMeasure) {
       playerRef.reset();
-      rhythmRef.setMeasure(rhythmMeasure + 1);
+      rhythmRef.setMeasure(measure + 1);
       adjustMeasureUpTiming();
       viewRef.calculatePlayXRatio();
       viewRef.drawMeasureData();
@@ -422,10 +429,10 @@ namespace Zebra {
   }
 
   void Controller::measureDown() {
-    uint8_t rhythmMeasure = rhythmRef.getMeasure();
-    if (rhythmMeasure > kMinRhythmMeasure) {
+    uint8_t measure = rhythmRef.getMeasure();
+    if (measure > kMinMeasure) {
       playerRef.reset();
-      rhythmRef.setMeasure(rhythmMeasure - 1);
+      rhythmRef.setMeasure(measure - 1);
       adjustMeasureDownTiming();
       viewRef.calculatePlayXRatio();
       viewRef.drawMeasureData();
@@ -433,30 +440,60 @@ namespace Zebra {
     }
   }
 
-  void Controller::loadUp() {}
+  void Controller::loadUp() {
+    uint8_t load = rhythmRef.getLoad();
+    if (load < kMaxLoad) {
+      rhythmRef.setLoad(load + 1);
+      viewRef.drawLoadData();
+    }
+  }
 
-  void Controller::loadDown() {}
+  void Controller::loadDown() {
+    uint8_t load = rhythmRef.getLoad();
+    if (load > kMinLoad) {
+      rhythmRef.setLoad(load - 1);
+      viewRef.drawLoadData();
+    }
+  }
 
-  void Controller::saveUp() {}
+  void Controller::saveUp() {
+    uint8_t save = rhythmRef.getSave();
+    if (save < kMaxSave) {
+      rhythmRef.setSave(save + 1);
+      viewRef.drawSaveData();
+    }
+  }
 
-  void Controller::saveDown() {}
+  void Controller::saveDown() {
+    uint8_t save = rhythmRef.getSave();
+    if (save > kMinSave) {
+      rhythmRef.setSave(save - 1);
+      viewRef.drawSaveData();
+    }
+  }
 
-  void Controller::outputUp() {}
+  void Controller::outputUp() {
+    rhythmRef.setOutput(~rhythmRef.getOutput());
+    viewRef.drawOutputData();
+  }
 
-  void Controller::outputDown() {}
+  void Controller::outputDown() {
+    rhythmRef.setOutput(~rhythmRef.getOutput());
+    viewRef.drawOutputData();
+  }
 
   void Controller::quantizeUp() {
-    uint8_t rhythmQuantize = rhythmRef.getQuantize();
-    if (rhythmQuantize < kMaxRhythmQuantize) {
-      rhythmRef.setQuantize(rhythmQuantize + 1);
+    uint8_t quantize = rhythmRef.getQuantize();
+    if (quantize < kMaxQuantize) {
+      rhythmRef.setQuantize(quantize + 1);
       viewRef.drawQuantizeData();
     }
   }
 
   void Controller::quantizeDown() {
-    uint8_t rhythmQuantize = rhythmRef.getQuantize();
-    if (rhythmQuantize > kMinRhythmQuantize) {
-      rhythmRef.setQuantize(rhythmQuantize - 1);
+    uint8_t quantize = rhythmRef.getQuantize();
+    if (quantize > kMinQuantize) {
+      rhythmRef.setQuantize(quantize - 1);
       viewRef.drawQuantizeData();
     }
   }

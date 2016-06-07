@@ -10,9 +10,7 @@ namespace Zebra {
   , playX(0)
   , measurePlayCount(0)
   , playColor(kPlayColor0)
-  // info rhythm variables
-  , currentInfoRhythmLayout(0b10000000)
-  , previousInfoRhythmLayout(0b00000000)
+  // menu rhythm variables
   , tempoClean(0)
   , metronomeClean(0)
   , barClean(0)
@@ -21,7 +19,7 @@ namespace Zebra {
   , saveClean(0)
   , outputClean(0)
   , quantizeClean(0)
-  // info layer variables
+  // menu layer variables
   , instAClean(0)
   , instBClean(0)
   , fillNumberClean(255)
@@ -91,33 +89,6 @@ namespace Zebra {
 
   void View::calculatePlayXRatio() {
     playXRatio = float(rhythmRef.getSongTime()) / kSongX;
-  }
-
-  // rhythm functions
-
-  void View::drawRhythmSelected() {
-    // statement
-  }
-
-  void View::drawSelectedBeat(const Layer& layer_, const Beat& beat_) {
-    uint16_t xPos = selectedBeatXClean;
-    uint16_t yPos = selectedBeatYClean;
-    fillTriangle(xPos, yPos, xPos - 3, yPos - 3, xPos + 3, yPos - 3, BLACK);
-    // checking if layer is active and has at least one beat
-    if ((&layer_ != NULL) && (&beat_ != NULL)) {
-      // calculating starting beat time
-      uint32_t beatTime = beat_.getTime();
-      // calculating starting X position
-      xPos = kSongStartX + (beatTime * kSongX / rhythmRef.getSongTime());
-      // calculating Y position
-      yPos = layer_.getStartY() + 15;
-      // drawing selected fill
-      fillTriangle(xPos, yPos, xPos - 3, yPos - 3, xPos + 3, yPos - 3, layer_.getColor());
-      // saving X - Y positions to clean state
-      selectedBeatXClean = xPos;
-      //selectedFillXEndClean = xEndPos;
-      selectedBeatYClean = yPos;
-    }
   }
 
   // layer functions
@@ -326,99 +297,98 @@ namespace Zebra {
     }
   }
 
-  // info rhythm functions
-
-  void View::drawTempo() {
-    uint16_t background;
-    uint16_t foreground;
-    if (currentInfoRhythmLayout >> 7) {
-      background = BLACK;
-      foreground = WHITE;
-    } else {
-      background = WHITE;
-      foreground = BLACK;
+  void View::drawSelectedBeat(const Layer& layer_, const Beat& beat_) {
+    uint16_t xPos = selectedBeatXClean;
+    uint16_t yPos = selectedBeatYClean;
+    fillTriangle(xPos, yPos, xPos - 3, yPos - 3, xPos + 3, yPos - 3, BLACK);
+    // checking if layer is active and has at least one beat
+    if ((&layer_ != NULL) && (&beat_ != NULL)) {
+      // calculating starting beat time
+      uint32_t beatTime = beat_.getTime();
+      // calculating starting X position
+      xPos = kSongStartX + (beatTime * kSongX / rhythmRef.getSongTime());
+      // calculating Y position
+      yPos = layer_.getStartY() + 15;
+      // drawing selected fill
+      fillTriangle(xPos, yPos, xPos - 3, yPos - 3, xPos + 3, yPos - 3, layer_.getColor());
+      // saving X - Y positions to clean state
+      selectedBeatXClean = xPos;
+      //selectedFillXEndClean = xEndPos;
+      selectedBeatYClean = yPos;
     }
-    if (currentInfoRhythmLayout != previousInfoRhythmLayout) {
-      fillRect(0, 0, 120, kInfoHeight, background);
-      setTextColor(foreground);
-      setCursor(8, 8);
+  }
+
+  // menu functions
+
+  void View::drawMenuBox(uint16_t boxNum, bool state) {
+    uint16_t backColor;
+    uint16_t foreColor;
+    uint16_t boxXPos;
+    uint16_t boxYPos;
+    uint16_t headerXPos;
+    uint16_t headerYPos;
+    uint8_t dataDigit;
+    uint8_t dataXPos;
+    uint8_t dataYPos;
+    uint16_t data;
+    // getting variables
+    menuColorSelect(backColor, foreColor, state);
+    boxXPos = kMenuBoxXPos[boxNum];
+    boxYPos = kMenuBoxYPos;
+    headerXPos = kMenuHeaderXPos[boxNum];
+    headerYPos = kMenuHeaderYPos;
+    dataDigit = kMenuDataDigit[boxNum];
+    dataXPos = kMenuDataXPos[boxNum];
+    dataYPos = kMenuDataYPos;
+    // drawing box
+    fillRect(boxXPos, boxYPos, kMenuBoxWidth, kMenuBoxHeight, backColor);
+    // drawing header
+    setTextColor(foreColor);
+    setCursor(headerXPos, headerYPos);
+    switch (boxNum) {
+      case 0: // tempo
       println(F("TEMPO"));
+      break;
+      case 1: // metronome
+      println(F("METRONOME"));
+      break;
+      case 2: // bar
+      println(F("BAR"));
+      break;
+      case 3: // measure
+      println(F("MEASURE"));
+      break;
+      case 4: // load
+      println(F("LOAD"));
+      break;
+      case 5: // save
+      println(F("SAVE"));
+      break;
+      case 6: // output
+      println(F("OUTPUT"));
+      break;
+      case 7: // quantize
+      println(F("QUANTIZE"));
+      break;
     }
-    //drawInfoNumber(tempoClean, kTempoDigit, kTempoXPos, kTempoYPos, background);
-    //drawInfoNumber(rhythmRef.getTempo(), kTempoDigit, kTempoXPos, kTempoYPos, foreground);
-    //tempoClean = rhythmRef.getTempo();
+    drawInfoNumber(data, digit, dataXPos, dataYPos, foreColor);
+    menuDataClean[boxNum] = data;
   }
 
-  void View::drawMetronome() {}
-
-  void View::drawBar() {}
-
-  void View::drawMeasure() {}
-
-  void View::drawLoad() {}
-
-  void View::drawSave() {}
-
-  void View::drawOutput() {}
-
-  void View::drawQuantize() {}
-
-  //////////////////////
-
-  void View::drawInfoRhythmAll() {
-    fillNumberClean = -1;
-    drawInfoRhythmTempo();
-    drawInfoRhythmQuantize();
-    drawInfoRhythmBar();
-    drawInfoRhythmMeasure();
+  void View::drawMenuData(uint8_t boxNum) {
+    drawInfoNumber(menuDataClean[boxNum], kMenuDataDigit[boxNum], kMenuDataXPos[boxNum], kMenuDataYPos, BLACK);
+    drawInfoNumber(menuData[boxNum], kMenuDataXPos[boxNum], kMenuDataXPos[boxNum], kMenuDataYPos, WHITE);
+    menuDataClean[boxNum] = menuData[boxNum];
   }
 
-  void View::drawInfoRhythmBase() {
-    fillRect(0, 0, 480, kInfoHeight, WHITE);
-    drawFastVLine(120, 0, 50, BLACK);
-    drawFastVLine(240, 0, 50, BLACK);
-    drawFastVLine(360, 0, 50, BLACK);
-    uint8_t x;
-    uint8_t y;
-    fillRect(0, 0, 121, 50, BLACK);
-    fillTriangle(110, 5, 110, 15, 100, 10, BLACK);
-    //drawFastHLine(7, 20, 114, BLACK);
-    setTextColor(LGRAY);
-    setCursor(7, 7);
-    println(F("TEMPO"));
-    setTextColor(BLACK);
-    setCursor(127, 7);
-    println(F("METRONOME"));
-    setCursor(247, 7);
-    println(F("BAR"));
-    setCursor(367, 7);
-    println(F("MEASURE"));
-    drawInfoNumber(120, kTempoDigit, kTempoXPos - 1, kTempoYPos - 1, LGRAY);
-    drawInfoNumber(120, kTempoDigit, kTempoXPos - 1 + 120, kTempoYPos - 1, BLACK);
-  }
-
-  void View::drawInfoRhythmTempo() {
-    drawInfoNumber(tempoClean, kTempoDigit, kTempoXPos, kTempoYPos, BLACK);
-    drawInfoNumber(rhythmRef.getTempo(), kTempoDigit, kTempoXPos, kTempoYPos, WHITE);
-    tempoClean = rhythmRef.getTempo();
-  }
-
-  void View::drawInfoRhythmQuantize() {
-    drawInfoNumber(quantizeClean, kQuantizeDigit, kQuantizeXPos, kQuantizeYPos, WHITE);
-    drawInfoNumber(pgm_read_word(&kQuantizeLibrary[rhythmRef.getQuantize()]), kQuantizeDigit, kQuantizeXPos, kQuantizeYPos, BLACK);
-    quantizeClean = pgm_read_word(&kQuantizeLibrary[rhythmRef.getQuantize()]);
-  }
-
-  void View::drawInfoRhythmBar() {
-    drawInfoNumber(barClean, kBarDigit, kBarXPos, kBarYPos, WHITE);
-    drawInfoNumber(rhythmRef.getBar(), kBarDigit, kBarXPos, kBarYPos, BLACK);
-    barClean = rhythmRef.getBar();
-  }
-
-  void View::drawInfoRhythmMeasure() {
-    drawInfoNumber(measureClean, kMeasureDigit, kMeasureXPos, kMeasureYPos, WHITE);
-    drawInfoNumber(rhythmRef.getMeasure(), kMeasureDigit, kMeasureXPos, kMeasureYPos, BLACK);
-    measureClean = rhythmRef.getMeasure();
+  void View::menuColorSelect(uint16_t& backColor_, uint16_t& foreColor_, bool state) {
+    if (state) {
+      backColor_ = BLACK;
+      foreColor_ = LGRAY;
+    } else {
+      backColor_ = WHITE;
+      foreColor_ = BLACK;
+    }
   }
 
   // info layer functions

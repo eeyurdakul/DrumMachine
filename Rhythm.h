@@ -12,6 +12,8 @@ namespace Zebra {
     bool metronome;
     uint8_t bar;
     uint8_t measure;
+    uint8_t load;
+    uint8_t save;
     bool output;
     uint8_t quantize;
     uint32_t playTime;
@@ -24,12 +26,16 @@ namespace Zebra {
     uint8_t getTempo() const;
     void setMetronome(bool metronome_);
     bool getMetronome() const;
-    void setOutput(bool output_);
-    bool getOutput() const;
     void setBar(uint8_t bar_);
     uint8_t getBar() const;
     void setMeasure(uint8_t measure_);
     uint8_t getMeasure() const;
+    uint8_t setLoad(uint8_t load_);
+    void getLoad() const;
+    uint8_t setSave(uint8_t save_);
+    void getSave() const;
+    void setOutput(bool output_);
+    bool getOutput() const;
     void setQuantize(uint8_t quantize_);
     uint8_t getQuantize() const;
     // play functions

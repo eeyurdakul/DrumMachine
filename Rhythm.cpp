@@ -7,6 +7,8 @@ namespace Zebra {
   , metronome(kInitialMetronome)
   , bar(kInitialBar)
   , measure(kInitialMeasure)
+  , load(kInitialLoad)
+  , save(kInitialSave)
   , output(kInitialOutput)
   , quantize(kInitialQuantize)
   , songTime((kMeasureTime * kInitialMeasure) * kInitialBar)
@@ -15,7 +17,7 @@ namespace Zebra {
   Rhythm::~Rhythm() {}
 
   void Rhythm::setTempo(uint8_t tempo_) {
-    if ((tempo_ >= kMinRhythmTempo) && (tempo_ <= kMaxRhythmTempo)) {
+    if ((tempo_ >= kMinTempo) && (tempo_ <= kMaxTempo)) {
       tempo = tempo_;
     }
   }
@@ -33,7 +35,7 @@ namespace Zebra {
   }
 
   void Rhythm::setBar(uint8_t bar_) {
-    if ((bar_ >= kMinRhythmBar) && (bar_ <= kMaxRhythmBar)) {
+    if ((bar_ >= kMinBar) && (bar_ <= kMaxBar)) {
       bar = bar_;
     }
   }
@@ -43,13 +45,33 @@ namespace Zebra {
   }
 
   void Rhythm::setMeasure(uint8_t measure_) {
-    if ((measure_ >= kMinRhythmMeasure) && (measure_ <= kMaxRhythmMeasure)) {
+    if ((measure_ >= kMinMeasure) && (measure_ <= kMaxMeasure)) {
       measure = measure_;
     }
   }
 
   uint8_t Rhythm::getMeasure() const {
     return measure;
+  }
+
+  uint8_t Rhythm::setLoad(uint8_t load_) {
+    if ((load_ >= kMinLoad) && (load_ <= kMaxLoad)) {
+      load = load_;
+    }
+  }
+
+  void Rhythm::getLoad() const {
+    return load;
+  }
+
+  uint8_t Rhythm::setSave(uint8_t save_) {
+    if ((save_ >= kMinSave) && (save_ <= kMaxSave)) {
+      save = save_;
+    }
+  }
+
+  void Rhythm::getSave() const {
+    return save;
   }
 
   void Rhythm::setOutput(bool output_) {
@@ -61,7 +83,7 @@ namespace Zebra {
   }
 
   void Rhythm::setQuantize(uint8_t quantize_) {
-    if ((quantize_ >= kMinRhythmQuantize) && (quantize_ <= kMaxRhythmQuantize)) {
+    if ((quantize_ >= kMinQuantize) && (quantize_ <= kMaxQuantize)) {
       quantize = quantize_;
     }
   }

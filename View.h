@@ -25,9 +25,7 @@ namespace Zebra {
     uint8_t measurePlayCount;
     uint16_t playColor;
     float playXRatio;
-    // info rhythm variables
-    byte currentInfoRhythmLayout;
-    byte previousInfoRhythmLayout;
+    // menu rhythm variables
     uint8_t tempoClean;
     uint8_t metronomeClean;
     uint8_t barClean;
@@ -36,7 +34,7 @@ namespace Zebra {
     uint8_t saveClean;
     uint8_t outputClean;
     uint8_t quantizeClean;
-    // info layer variables
+    // menu layer variables
     uint8_t instAClean;
     uint8_t instBClean;
     int8_t fillNumberClean;
@@ -69,9 +67,6 @@ namespace Zebra {
     void restartPlayBar();
     void resetPlayBar();
     void calculatePlayXRatio();
-    // rhythm functions
-    void drawRhythmSelected();
-    void drawSelectedBeat(const Layer& layer_, const Beat& beat_);
     // layer functions
     void drawLayerAll(Layer& layer_);
     void drawLayerBase(const Layer& layer_);
@@ -87,32 +82,11 @@ namespace Zebra {
     void drawAllLayer();
     void drawAllLayerMeasure();
     void drawAllLayerMeasureSongFill();
+    void drawSelectedBeat(const Layer& layer_, const Beat& beat_);
     // menu functions
-    void drawTempo(bool state);
-    void drawMetronome(bool state);
-    void drawBar(bool state);
-    void drawMeasure(bool state);
-    void drawLoad(bool state);
-    void drawSave(bool state);
-    void drawOutput(bool state);
-    void drawQuantize(bool state);
-
-    void drawTempoData();
-    void drawMetronomeData();
-    void drawBarData();
-    void drawMeasureData();
-    void drawLoadData();
-    void drawSaveData();
-    void drawOutputData();
-    void drawQuantizeData();
-
-    void drawInfoRhythmAll();
-    void drawInfoRhythmBase();
-    void drawInfoRhythmTempo();
-    void drawInfoRhythmQuantize();
-    void drawInfoRhythmBar();
-    void drawInfoRhythmMeasure();
-    void cleanInfoRhythm();
+    void drawMenuBox(uint16_t boxNum, bool state);
+    void drawMenuData(uint8_t boxNum);
+    void menuColorSelect(uint16_t& backColor_, uint16_t& foreColor_, bool state);
     // info layer functions
     void drawInfoLayerAll(const Layer& layer_, const Beat& beat_);
     void drawInfoLayerBase();

@@ -61,6 +61,27 @@ namespace Zebra {
   const uint16_t kSongEndX = 408;
   const uint16_t kSongX = 360;
   const uint16_t kStartY = 0;
+  // menu constants
+  const uint8_t kTempoBox = 0;
+  const uint8_t kMetronomeBox = 1;
+  const uint8_t kBarBox = 2;
+  const uint8_t kMeasureBox = 3;
+  const uint8_t kLoadBox = 4;
+  const uint8_t kSaveBox = 5;
+  const uint8_t kOutputBox = 6;
+  const uint8_t kQuantizeBox = 7;
+  const uint16_t kMenuBoxXPos[] = {0, 120, 240, 360, 0, 120, 240, 360};
+  const uint8_t kMenuBoxYPos = 0;
+  const uint8_t kMenuBoxWidth = 119;
+  const uint8_t kMenuBoxHeight = 50;
+  const uint16_t kMenuHeaderXPos[] = {7, 127, 247, 367, 7, 127, 247, 367};
+  const uint8_t kMenuHeaderYPos = 7;
+  const uint8_t kMenuDataDigit = {3, 2, 2, 2, 2, 2, 2, 2};
+  const uint16_t kMenuDataXPos = {10, 130, 250, 370, 10, 130, 250, 370};
+  const uint8_t kMenuDataYPos = 32;
+
+
+
   // info constants
   const uint8_t kInfoHeight = 50;
   const uint8_t kMinInfoDigit = 0;
@@ -92,18 +113,24 @@ namespace Zebra {
 
   // Rhythm.h
 
-  const uint8_t kMinRhythmTempo = 60;
-  const uint8_t kMaxRhythmTempo = 160;
+  const uint8_t kMinTempo = 60;
+  const uint8_t kMaxTempo = 160;
+  const uint8_t kMinBar = 1;
+  const uint8_t kMaxBar = 8;
+  const uint8_t kMinMeasure = 1;
+  const uint8_t kMaxMeasure = 8;
+  const uint8_t kMinLoad = 1;
+  const uint8_t kMaxLoad = 32;
+  const uint8_t kMinSave = 1;
+  const uint8_t kMaxSave = 32;
   const uint8_t kMinRhythmQuantize = 0;
   const uint8_t kMaxRhythmQuantize = 6;
-  const uint8_t kMinRhythmBar = 1;
-  const uint8_t kMaxRhythmBar = 8;
-  const uint8_t kMinRhythmMeasure = 1;
-  const uint8_t kMaxRhythmMeasure = 8;
   const uint8_t kInitialTempo = 120;
   const bool kInitialMetronome = 1;   // 0 --> off, 1 --> on
   const uint8_t kInitialBar = 4;
   const uint8_t kInitialMeasure = 4;
+  const uint8_t kInitialLoad = 1;
+  const uint8_t kInitialSave = 1;
   const bool kInitialOutput = 0;      // 0 --> audio, 1 --> midi
   const uint8_t kInitialQuantize = 0;
   const uint8_t kLayerLibrarySize = 4;
