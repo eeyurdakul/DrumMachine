@@ -1,4 +1,4 @@
-rr#include "Controller.h"
+#include "Controller.h"
 
 namespace Zebra {
 
@@ -10,27 +10,23 @@ namespace Zebra {
   , selectedLayer(NULL)
   , selectedBeat(NULL)
   , selectedBeatNum(-1)
-  , currentMenuState(0)
-  , previousMenuState(-1) {}
+  , currentRhythmMenu(0)
+  , previousRhythmMenu(-1)
+  , currentLayerMenu(-1)
+  , previousLayerMenu(-1) {}
 
   Controller::~Controller() {}
 
   void Controller::initialize() {
-    if (rhythmRef.getSelected()) {
-
-      viewRef.drawInfoRhythmBase();
-      //viewRef.drawInfoRhythmAll();
-    } else {
-      viewRef.drawInfoLayerBase();
-      viewRef.drawInfoLayerAll(*selectedLayer, *selectedBeat);
-    }
+    rhythmMenuUpdate();
     viewRef.resetPlayBar();
     viewRef.drawAllLayer();
   }
 
   void Controller::checkKeyboard() {
-    if (keyboard.menuSelectButton.checkStatus()) {
-      menuSelect();
+    // select buttons
+    if (keyboard.rhythmMenuSelectButton.checkStatus()) {
+      rhythmMenuSelect();
     }
     if (keyboard.layer0SelectButton.checkStatus()) {
       layerSelect(rhythmRef.getLayer(0));
@@ -44,54 +40,49 @@ namespace Zebra {
     if (keyboard.layer3SelectButton.checkStatus()) {
       layerSelect(rhythmRef.getLayer(3));
     }
+    // channel buttons
+    if (keyboard.layer0ChannelButton.checkStatus()) {
+      layerChannelSelect(rhythmRef.getLayer(0));
+    }
+    if (keyboard.layer1ChannelButton.checkStatus()) {
+      layerChannelSelect(rhythmRef.getLayer(1));
+    }
+    if (keyboard.layer2ChannelButton.checkStatus()) {
+      layerChannelSelect(rhythmRef.getLayer(2));
+    }
+    if (keyboard.layer3ChannelButton.checkStatus()) {
+      layerChannelSelect(rhythmRef.getLayer(3));
+    }
+    // menu buttons
     if (keyboard.upButton.checkStatus()) {
-      if (currentMenuState >= 0) {
-        menuUp();
+      if (currentRhythmMenu >= 0) {
+        rhythmMenuUp();
       } else {
-        fillUp();
+        layerMenuUp();
       }
     }
     if (keyboard.downButton.checkStatus()) {
-      if (currentMenuState >= 0) {
-        menuDown();
+      if (currentRhythmMenu >= 0) {
+        rhythmMenuDown();
       } else {
-        fillDown();
+        layerMenuDown();
       }
     }
     if (keyboard.rightButton.checkStatus()) {
-      if (currentMenuState >= 0) {
-        menuRight();
+      if (currentRhythmMenu >= 0) {
+        rhythmMenuRight();
       } else {
-        beatUp();
+        layerMenuRight();
       }
     }
     if (keyboard.leftButton.checkStatus()) {
-      if (currentMenuState >= 0) {
-        menuLeft();
+      if (currentRhythmMenu >= 0) {
+        rhythmMenuLeft();
       } else {
-        beatDown();
+        layerMenuLeft();
       }
     }
-    if (keyboard.instAUpButton.checkStatus()) {
-      if (currentMenuState == -1) {
-        instAUp();
-      }
-    }
-    if (keyboard.instADownButton.checkStatus()) {
-      if (currentMenuState == -1) {
-        instADown();
-      }
-    }
-    if (keyboard.instBUpButton.checkStatus()) {
-      if (currentMenuState == -1) {
-        instBUp();
-      }
-    }
-    if (keyboard.instBDownButton.checkStatus()) {
-      if (currentMenuState == -1) {
-        instBDown();
-      }
-    }
+    // action buttons
     if (keyboard.recordButton.checkStatus()) {
       record();
     }
@@ -101,6 +92,7 @@ namespace Zebra {
     if (keyboard.resetButton.checkStatus()) {
       reset();
     }
+    // beat buttons
     if (keyboard.beatAButton.checkStatus()) {
       beatA();
     }
@@ -116,7 +108,7 @@ namespace Zebra {
 
   void Controller::record() {
     if (selectedLayer == NULL) {
-      layerSelectButtonPressed(rhythmRef.getLayer(0));
+      layerSelect(rhythmRef.getLayer(0));
     }
     playerRef.record();
   }
@@ -136,26 +128,34 @@ namespace Zebra {
 
   // select functions
 
-  void Controller::menuSelect() {
-    if (currentMenuState == -1) {
+  void Controller::rhythmMenuSelect() {
+    if (currentRhythmMenu == -1) {
       for (uint8_t i = 0; i < kLayerLibrarySize; i++) {
         rhythmRef.getLayer(i).setSelected(false);
         viewRef.drawLayerSelected(rhythmRef.getLayer(i));
       }
-      currentMenuState = 0;
-      previousMenuState = -1;
+      // rhythm menu settings
+      currentRhythmMenu = 0;
+      previousRhythmMenu = -1;
+      // layer menu settings
+      currentLayerMenu = -1;
+      previousLayerMenu = -1;
       selectedLayer = NULL;
       selectedBeat = NULL;
       selectedBeatNum = -1;
       viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
-      menuUpdate();
+      rhythmMenuUpdate();
     }
   }
 
   void Controller::layerSelect(Layer& layer_) {
     if (selectedLayer == NULL) {
-      currentMenuState = -1;
-      previousMenuState = -1;
+      // rhythm menu settings
+      currentRhythmMenu = -1;
+      previousRhythmMenu = -1;
+      // layer menu settings
+      currentLayerMenu = 0;
+      previousLayerMenu = -1;
       selectedLayer = &layer_;
       selectedLayer->setSelected(true);
       if (selectedLayer->getLastActiveBeat() >= 0) {
@@ -167,8 +167,10 @@ namespace Zebra {
       }
       viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       viewRef.drawLayerSelected(*selectedLayer);
-      viewRef.switchToLayer(*selectedLayer);
+      layerMenuUpdate();
     } else if (layer_.getNumber() != selectedLayer->getNumber()) {
+      // layer menu settings
+      currentLayerMenu = 0;
       selectedLayer->setSelected(false);
       viewRef.drawLayerSelected(*selectedLayer);
       selectedLayer = &layer_;
@@ -182,39 +184,49 @@ namespace Zebra {
       }
       viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       viewRef.drawLayerSelected(*selectedLayer);
-      viewRef.switchBetweenLayers(*selectedLayer);
+      layerMenuUpdate();
     }
   }
 
   void Controller::layerChannelSelect(Layer& layer_) {
-    layer_.setBeatActive(!layer_.getBeatActive());
-    viewRef.drawLayerBeatActive(layer_);
-  }
-
-  // menu functions
-
-  void Controller::menuRight() {
-    previousMenuState = currentMenuState;
-    if (currentMenuState < kMaxMenuState) {
-      currentMenuState += 1;
+    if ((layer_.getBeatActive()) && (layer_.getFillActive())) {
+      layer_.setFillActive(false);
+      viewRef.drawLayerFillActive(layer_);
+    } else if (layer_.getBeatActive()) {
+      layer_.setBeatActive(false);
+      viewRef.drawLayerBeatActive(layer_);
     } else {
-      currentMenuState = 0;
+      layer_.setBeatActive(true);
+      layer_.setFillActive(true);
+      viewRef.drawLayerBeatActive(layer_);
+      viewRef.drawLayerFillActive(layer_);
     }
-    menuUpdate();
   }
 
-  void Controller::menuLeft() {
-    previousMenuState = currentMenuState;
-    if (currentMenuState > 0) {
-      currentMenuState -= 1;
+  // rhythm menu functions
+
+  void Controller::rhythmMenuRight() {
+    previousRhythmMenu = currentRhythmMenu;
+    if (currentRhythmMenu < kMaxRhythmMenu) {
+      currentRhythmMenu += 1;
     } else {
-      currentMenuState = kMaxMenuState;
+      currentRhythmMenu = 0;
     }
-    menuUpdate();
+    rhythmMenuUpdate();
   }
 
-  void Controller::menuUp() {
-    switch (currentMenuState) {
+  void Controller::rhythmMenuLeft() {
+    previousRhythmMenu = currentRhythmMenu;
+    if (currentRhythmMenu > 0) {
+      currentRhythmMenu -= 1;
+    } else {
+      currentRhythmMenu = kMaxRhythmMenu;
+    }
+    rhythmMenuUpdate();
+  }
+
+  void Controller::rhythmMenuUp() {
+    switch (currentRhythmMenu) {
       case 0:
       tempoUp();
       break;
@@ -244,8 +256,8 @@ namespace Zebra {
     }
   }
 
-  void Controller::menuDown() {
-    switch (currentMenuState) {
+  void Controller::rhythmMenuDown() {
+    switch (currentRhythmMenu) {
       case 0:
       tempoDown();
       break;
@@ -275,86 +287,86 @@ namespace Zebra {
     }
   }
 
-  void Controller::menuUpdate() {
-    switch (currentMenuState) {
+  void Controller::rhythmMenuUpdate() {
+    switch (currentRhythmMenu) {
       case 0:   // tempo
-      if ((previousMenuState == -1) || (previousMenuState == 7)) {
-        drawMenuBox(kTempoBox, 1);
-        drawMenuBox(kMetronomeBox, 0);
-        drawMenuBox(kBarBox, 0);
-        drawMenuBox(kMeasureBox, 0);
-      } else if (previousMenuState == 1) {
-        drawMenuBox(kTempoBox, 1);
-        drawMenuBox(kMetronomeBox, 0);
+      if ((previousRhythmMenu == -1) || (previousRhythmMenu == 7)) {
+        viewRef.drawRhythmMenuBox(kTempoBox, 1);
+        viewRef.drawRhythmMenuBox(kMetronomeBox, 0);
+        viewRef.drawRhythmMenuBox(kBarBox, 0);
+        viewRef.drawRhythmMenuBox(kMeasureBox, 0);
+      } else if (previousRhythmMenu == 1) {
+        viewRef.drawRhythmMenuBox(kTempoBox, 1);
+        viewRef.drawRhythmMenuBox(kMetronomeBox, 0);
       }
       break;
       case 1:   // metronome
-      if (previousMenuState == 0) {
-        drawMenuBox(kTempoBox, 0);
-        drawMenuBox(kMetronomeBox, 1);
-      } else if (previousMenuState == 2) {
-        drawMenuBox(kMetronomeBox, 1);
-        drawMenuBox(kBarBox, 0);
+      if (previousRhythmMenu == 0) {
+        viewRef.drawRhythmMenuBox(kTempoBox, 0);
+        viewRef.drawRhythmMenuBox(kMetronomeBox, 1);
+      } else if (previousRhythmMenu == 2) {
+        viewRef.drawRhythmMenuBox(kMetronomeBox, 1);
+        viewRef.drawRhythmMenuBox(kBarBox, 0);
       }
       break;
       case 2:   // bar
-      if (previousMenuState == 1) {
-        drawMenuBox(kMetronomeBox, 0);
-        drawMenuBox(kBarBox, 1);
-      } else if (previousMenuState == 3) {
-        drawMenuBox(kBarBox, 1);
-        drawMenuBox(kMeasureBox, 0);
+      if (previousRhythmMenu == 1) {
+        viewRef.drawRhythmMenuBox(kMetronomeBox, 0);
+        viewRef.drawRhythmMenuBox(kBarBox, 1);
+      } else if (previousRhythmMenu == 3) {
+        viewRef.drawRhythmMenuBox(kBarBox, 1);
+        viewRef.drawRhythmMenuBox(kMeasureBox, 0);
       }
       break;
       case 3:   // measure
-      if (previousMenuState == 2) {
-        drawMenuBox(kBarBox, 0);
-        drawMenuBox(kMeasureBox, 1);
-      } else if (previousMenuState == 4) {
-        drawMenuBox(kTempoBox, 0);
-        drawMenuBox(kMetronomeBox, 0);
-        drawMenuBox(kBarBox, 0);
-        drawMenuBox(kMeasureBox, 1);
+      if (previousRhythmMenu == 2) {
+        viewRef.drawRhythmMenuBox(kBarBox, 0);
+        viewRef.drawRhythmMenuBox(kMeasureBox, 1);
+      } else if (previousRhythmMenu == 4) {
+        viewRef.drawRhythmMenuBox(kTempoBox, 0);
+        viewRef.drawRhythmMenuBox(kMetronomeBox, 0);
+        viewRef.drawRhythmMenuBox(kBarBox, 0);
+        viewRef.drawRhythmMenuBox(kMeasureBox, 1);
       }
       break;
       case 4:   // load
-      if (previousMenuState == 3) {
-        drawMenuBox(kLoadBox, 1);
-        drawMenuBox(kSaveBox, 0);
-        drawMenuBox(kOutputBox, 0);
-        drawMenuBox(kQuantizeBox, 0);
-      } else if (previousMenuState == 5) {
-        drawMenuBox(kLoadBox, 1);
-        drawMenuBox(kSaveBox, 0);
+      if (previousRhythmMenu == 3) {
+        viewRef.drawRhythmMenuBox(kLoadBox, 1);
+        viewRef.drawRhythmMenuBox(kSaveBox, 0);
+        viewRef.drawRhythmMenuBox(kOutputBox, 0);
+        viewRef.drawRhythmMenuBox(kQuantizeBox, 0);
+      } else if (previousRhythmMenu == 5) {
+        viewRef.drawRhythmMenuBox(kLoadBox, 1);
+        viewRef.drawRhythmMenuBox(kSaveBox, 0);
       }
       break;
       case 5:   // save
-      if (previousMenuState == 4) {
-        drawMenuBox(kLoadBox, 0);
-        drawMenuBox(kSaveBox, 1);
-      } else if (previousMenuState == 6) {
-        drawMenuBox(kSaveBox, 1);
-        drawMenuBox(kOutputBox, 0);
+      if (previousRhythmMenu == 4) {
+        viewRef.drawRhythmMenuBox(kLoadBox, 0);
+        viewRef.drawRhythmMenuBox(kSaveBox, 1);
+      } else if (previousRhythmMenu == 6) {
+        viewRef.drawRhythmMenuBox(kSaveBox, 1);
+        viewRef.drawRhythmMenuBox(kOutputBox, 0);
       }
       break;
       case 6:   // output
-      if (previousMenuState == 5) {
-        drawMenuBox(kSaveBox, 0);
-        drawMenuBox(kOutputBox, 1);
-      } else if (previousMenuState == 7) {
-        drawMenuBox(kOutputBox, 1);
-        drawMenuBox(kQuantizeBox, 0);
+      if (previousRhythmMenu == 5) {
+        viewRef.drawRhythmMenuBox(kSaveBox, 0);
+        viewRef.drawRhythmMenuBox(kOutputBox, 1);
+      } else if (previousRhythmMenu == 7) {
+        viewRef.drawRhythmMenuBox(kOutputBox, 1);
+        viewRef.drawRhythmMenuBox(kQuantizeBox, 0);
       }
       break;
       case 7:   // quantize
-      if (previousMenuState == 6) {
-        drawMenuBox(kOutputBox, 0);
-        drawMenuBox(kQuantizeBox, 1);
-      } else if (previousMenuState == 0) {
-        drawMenuBox(kLoadBox, 0);
-        drawMenuBox(kSaveBox, 0);
-        drawMenuBox(kOutputBox, 0);
-        drawMenuBox(kQuantizeBox, 1);
+      if (previousRhythmMenu == 6) {
+        viewRef.drawRhythmMenuBox(kOutputBox, 0);
+        viewRef.drawRhythmMenuBox(kQuantizeBox, 1);
+      } else if (previousRhythmMenu == 0) {
+        viewRef.drawRhythmMenuBox(kLoadBox, 0);
+        viewRef.drawRhythmMenuBox(kSaveBox, 0);
+        viewRef.drawRhythmMenuBox(kOutputBox, 0);
+        viewRef.drawRhythmMenuBox(kQuantizeBox, 1);
       }
       break;
       default:
@@ -369,7 +381,7 @@ namespace Zebra {
     if (tempo < kMaxTempo) {
       rhythmRef.setTempo(tempo + 1);
       playerRef.calculateAndStartTimer();
-      viewRef.drawTempoData();
+      viewRef.drawRhythmMenuData(kTempoBox);
     }
   }
 
@@ -378,18 +390,18 @@ namespace Zebra {
     if (tempo > kMinTempo) {
       rhythmRef.setTempo(tempo - 1);
       playerRef.calculateAndStartTimer();
-      viewRef.drawTempoData();
+      viewRef.drawRhythmMenuData(kTempoBox);
     }
   }
 
   void Controller::metronomeUp() {
     rhythmRef.setMetronome(~rhythmRef.getMetronome());
-    viewRef.drawMetronomeData();
+    viewRef.drawRhythmMenuData(kMetronomeBox);
   }
 
   void Controller::metronomeDown() {
     rhythmRef.setMetronome(~rhythmRef.getMetronome());
-    viewRef.drawMetronomeData();
+    viewRef.drawRhythmMenuData(kMetronomeBox);
   }
 
   void Controller::barUp() {
@@ -399,7 +411,7 @@ namespace Zebra {
       rhythmRef.setBar(bar + 1);
       adjustBarUpTiming();
       viewRef.calculatePlayXRatio();
-      viewRef.drawBarData();
+      viewRef.drawRhythmMenuData(kBarBox);
       viewRef.drawAllLayerMeasureSongFill();
     }
   }
@@ -411,7 +423,7 @@ namespace Zebra {
       rhythmRef.setBar(bar - 1);
       adjustBarDownTiming();
       viewRef.calculatePlayXRatio();
-      viewRef.drawBarData();
+      viewRef.drawRhythmMenuData(kBarBox);
       viewRef.drawAllLayerMeasureSongFill();
     }
   }
@@ -423,7 +435,7 @@ namespace Zebra {
       rhythmRef.setMeasure(measure + 1);
       adjustMeasureUpTiming();
       viewRef.calculatePlayXRatio();
-      viewRef.drawMeasureData();
+      viewRef.drawRhythmMenuData(kMeasureBox);
       viewRef.drawAllLayerMeasureSongFill();
     }
   }
@@ -435,7 +447,7 @@ namespace Zebra {
       rhythmRef.setMeasure(measure - 1);
       adjustMeasureDownTiming();
       viewRef.calculatePlayXRatio();
-      viewRef.drawMeasureData();
+      viewRef.drawRhythmMenuData(kMeasureBox);
       viewRef.drawAllLayerMeasureSongFill();
     }
   }
@@ -444,7 +456,7 @@ namespace Zebra {
     uint8_t load = rhythmRef.getLoad();
     if (load < kMaxLoad) {
       rhythmRef.setLoad(load + 1);
-      viewRef.drawLoadData();
+      viewRef.drawRhythmMenuData(kLoadBox);
     }
   }
 
@@ -452,7 +464,7 @@ namespace Zebra {
     uint8_t load = rhythmRef.getLoad();
     if (load > kMinLoad) {
       rhythmRef.setLoad(load - 1);
-      viewRef.drawLoadData();
+      viewRef.drawRhythmMenuData(kLoadBox);
     }
   }
 
@@ -460,7 +472,7 @@ namespace Zebra {
     uint8_t save = rhythmRef.getSave();
     if (save < kMaxSave) {
       rhythmRef.setSave(save + 1);
-      viewRef.drawSaveData();
+      viewRef.drawRhythmMenuData(kSaveBox);
     }
   }
 
@@ -468,25 +480,25 @@ namespace Zebra {
     uint8_t save = rhythmRef.getSave();
     if (save > kMinSave) {
       rhythmRef.setSave(save - 1);
-      viewRef.drawSaveData();
+      viewRef.drawRhythmMenuData(kSaveBox);
     }
   }
 
   void Controller::outputUp() {
     rhythmRef.setOutput(~rhythmRef.getOutput());
-    viewRef.drawOutputData();
+    viewRef.drawRhythmMenuData(kOutputBox);
   }
 
   void Controller::outputDown() {
     rhythmRef.setOutput(~rhythmRef.getOutput());
-    viewRef.drawOutputData();
+    viewRef.drawRhythmMenuData(kOutputBox);
   }
 
   void Controller::quantizeUp() {
     uint8_t quantize = rhythmRef.getQuantize();
     if (quantize < kMaxQuantize) {
       rhythmRef.setQuantize(quantize + 1);
-      viewRef.drawQuantizeData();
+      viewRef.drawRhythmMenuData(kQuantizeBox);
     }
   }
 
@@ -494,45 +506,101 @@ namespace Zebra {
     uint8_t quantize = rhythmRef.getQuantize();
     if (quantize > kMinQuantize) {
       rhythmRef.setQuantize(quantize - 1);
-      viewRef.drawQuantizeData();
+      viewRef.drawRhythmMenuData(kQuantizeBox);
+    }
+  }
+
+  // layer menu functions
+
+  void Controller::layerMenuRight() {
+    previousLayerMenu = currentLayerMenu;
+    if (currentLayerMenu < kMaxLayerMenu) {
+      currentLayerMenu += 1;
+    } else {
+      currentLayerMenu = 0;
+    }
+    layerMenuUpdate();
+  }
+
+  void Controller::layerMenuLeft() {
+    previousLayerMenu = currentLayerMenu;
+    if (currentLayerMenu > 0) {
+      currentLayerMenu -= 1;
+    } else {
+      currentLayerMenu = kMaxLayerMenu;
+    }
+    layerMenuUpdate();
+  }
+
+  void Controller::layerMenuUp() {
+    switch (currentLayerMenu) {
+      case 0:
+      // statement
+      break;
+      case 1:
+      instAUp();
+      break;
+      case 2:
+      instBUp();
+      break;
+      default:
+      break;
+    }
+  }
+
+  void Controller::layerMenuDown() {
+    switch (currentLayerMenu) {
+      case 0:
+      // statement
+      break;
+      case 1:
+      instADown();
+      break;
+      case 2:
+      instBDown();
+      break;
+      default:
+      break;
+    }
+  }
+
+  void Controller::layerMenuUpdate() {
+    switch (currentLayerMenu) {
+      case 0:   // fill
+      if (previousLayerMenu == -1) {
+        viewRef.drawLayerMenuBox(kFillBox, 1, *selectedLayer);
+        viewRef.drawLayerMenuBox(kInstABox, 0, *selectedLayer);
+        viewRef.drawLayerMenuBox(kInstBBox, 0, *selectedLayer);
+      } else if (previousLayerMenu == 1) {
+        viewRef.drawLayerMenuBox(kFillBox, 1, *selectedLayer);
+        viewRef.drawLayerMenuBox(kInstABox, 0, *selectedLayer);
+      } else if (previousLayerMenu == 2) {
+        viewRef.drawLayerMenuBox(kFillBox, 1, *selectedLayer);
+        viewRef.drawLayerMenuBox(kInstBBox, 0, *selectedLayer);
+      }
+      break;
+      case 1:   // inst A
+      if (previousLayerMenu == 0) {
+        viewRef.drawLayerMenuBox(kFillBox, 0, *selectedLayer);
+        viewRef.drawLayerMenuBox(kInstABox, 1, *selectedLayer);
+      } else if (previousLayerMenu == 2) {
+        viewRef.drawLayerMenuBox(kInstABox, 1, *selectedLayer);
+        viewRef.drawLayerMenuBox(kInstBBox, 0, *selectedLayer);
+      }
+      break;
+      case 2:   // inst B
+      if (previousLayerMenu == 1) {
+        viewRef.drawLayerMenuBox(kInstABox, 0, *selectedLayer);
+        viewRef.drawLayerMenuBox(kInstBBox, 1, *selectedLayer);
+      } else if (previousLayerMenu == 0) {
+        viewRef.drawLayerMenuBox(kInstBBox, 1, *selectedLayer);
+        viewRef.drawLayerMenuBox(kFillBox, 0, *selectedLayer);
+      }
+      break;
     }
   }
 
   // layer functions
-
-  void Controller::instAUp() {
-    uint8_t layerInst = selectedLayer->getInstAMidi();
-    if (layerInst < kMaxLayerInstMidi) {
-      selectedLayer->setInstAMidi(layerInst + 1);
-      viewRef.drawInstA(*selectedLayer);
-    }
-  }
-
-  void Controller::instADown() {
-    uint8_t layerInst = selectedLayer->getInstAMidi();
-    if (layerInst > kMinLayerInstMidi) {
-      selectedLayer->setInstAMidi(layerInst - 1);
-      viewRef.drawInstA(*selectedLayer);
-    }
-  }
-
-  void Controller::instBUp() {
-    uint8_t layerInst = selectedLayer->getInstBMidi();
-    if (layerInst < kMaxLayerInstMidi) {
-      selectedLayer->setInstBMidi(layerInst + 1);
-      viewRef.drawInstB(*selectedLayer);
-    }
-  }
-
-  void Controller::instBDown() {
-    uint8_t layerInst = selectedLayer->getInstBMidi();
-    if (layerInst > kMinLayerInstMidi) {
-      selectedLayer->setInstBMidi(layerInst - 1);
-      viewRef.drawInstB(*selectedLayer);
-    }
-  }
-
-  // fill functions
 
   void Controller::beatUp() {
     // checking if layer is not empty
@@ -540,12 +608,12 @@ namespace Zebra {
       if (selectedBeatNum < selectedLayer->getLastActiveBeat()) {
         selectedBeatNum += 1;
         selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
-        viewRef.drawInfoFill(*selectedBeat);
+        // viewRef.drawInfoFill(*selectedBeat);
         viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       } else if (selectedLayer->getLastActiveBeat() != 0) {
         selectedBeatNum = 0;
         selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
-        viewRef.drawInfoFill(*selectedBeat);
+        // viewRef.drawInfoFill(*selectedBeat);
         viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       }
     }
@@ -557,12 +625,12 @@ namespace Zebra {
       if (selectedBeatNum > 0) {
         selectedBeatNum -= 1;
         selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
-        viewRef.drawInfoFill(*selectedBeat);
+        // viewRef.drawInfoFill(*selectedBeat);
         viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       } else if (selectedLayer->getLastActiveBeat() != 0) {
         selectedBeatNum = selectedLayer->getLastActiveBeat();
         selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
-        viewRef.drawInfoFill(*selectedBeat);
+        // viewRef.drawInfoFill(*selectedBeat);
         viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       }
     }
@@ -574,7 +642,7 @@ namespace Zebra {
       uint8_t beatFill = selectedBeat->getFill();
       if (beatFill < (kFillLibrarySize - 1)) {
         selectedLayer->setFill(selectedBeatNum, beatFill + 1);
-        viewRef.drawInfoFill(*selectedBeat);
+        // viewRef.drawInfoFill(*selectedBeat);
         if (selectedBeat->getFill() == 1) {
           viewRef.drawBeatFill(*selectedLayer, selectedBeatNum, true);
         }
@@ -588,7 +656,7 @@ namespace Zebra {
       uint8_t beatFill = selectedBeat->getFill();
       if (beatFill > 0) {
         selectedLayer->setFill(selectedBeatNum, beatFill - 1);
-        viewRef.drawInfoFill(*selectedBeat);
+        // viewRef.drawInfoFill(*selectedBeat);
         if (selectedBeat->getFill() == 0) {
           viewRef.drawBeatFill(*selectedLayer, selectedBeatNum, false);
         }
@@ -596,34 +664,66 @@ namespace Zebra {
     }
   }
 
+  void Controller::instAUp() {
+    uint8_t layerInst = selectedLayer->getInstAMidi();
+    if (layerInst < kMaxLayerInstMidi) {
+      selectedLayer->setInstAMidi(layerInst + 1);
+      // viewRef.drawInstA(*selectedLayer);
+    }
+  }
+
+  void Controller::instADown() {
+    uint8_t layerInst = selectedLayer->getInstAMidi();
+    if (layerInst > kMinLayerInstMidi) {
+      selectedLayer->setInstAMidi(layerInst - 1);
+      // viewRef.drawInstA(*selectedLayer);
+    }
+  }
+
+  void Controller::instBUp() {
+    uint8_t layerInst = selectedLayer->getInstBMidi();
+    if (layerInst < kMaxLayerInstMidi) {
+      selectedLayer->setInstBMidi(layerInst + 1);
+      // viewRef.drawInstB(*selectedLayer);
+    }
+  }
+
+  void Controller::instBDown() {
+    uint8_t layerInst = selectedLayer->getInstBMidi();
+    if (layerInst > kMinLayerInstMidi) {
+      selectedLayer->setInstBMidi(layerInst - 1);
+      //viewRef.drawInstB(*selectedLayer);
+    }
+  }
+
   // beat record functions
 
   void Controller::beatA() {
-    if (playerRef.getRecordActive() && !(rhythmRef.getSelected())) {
+    if (playerRef.getRecordActive() && (selectedLayer != NULL)) {
       uint32_t recordTime = rhythmRef.getPlayTime();
       bool recordInst = 0;
       selectedBeatNum = selectedLayer->setBeat(recordTime, 3, recordInst);
       selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
       viewRef.drawLayerBeat(*selectedLayer, recordTime, recordInst);
       viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
-      viewRef.drawInfoFill(*selectedBeat);
+      // viewRef.drawInfoFill(*selectedBeat);
     }
   }
 
   void Controller::beatB() {
-    if (playerRef.getRecordActive() && !(rhythmRef.getSelected())) {
+    if (playerRef.getRecordActive() && (selectedLayer != NULL)) {
       uint32_t recordTime = rhythmRef.getPlayTime();
       bool recordInst = 1;
       selectedBeatNum = selectedLayer->setBeat(recordTime, 3, recordInst);
       selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
       viewRef.drawLayerBeat(*selectedLayer, recordTime, recordInst);
       viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
-      viewRef.drawInfoFill(*selectedBeat);
+      // viewRef.drawInfoFill(*selectedBeat);
     }
   }
 
   void Controller::beatClear() {
-    if (!rhythmRef.getSelected()) {
+    if (selectedLayer != NULL) {
       // clearing previous beat fill
       if (selectedBeatNum > 0) {
         viewRef.drawBeatFill(*selectedLayer, selectedBeatNum - 1, false);
@@ -645,9 +745,9 @@ namespace Zebra {
       viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       // drawing new selected beat's fill
       if (selectedLayer->getLastActiveBeat() == -1) {
-        viewRef.cleanInfoFill();
+        // viewRef.cleanInfoFill();
       } else {
-        viewRef.drawInfoFill(*selectedBeat);
+        // viewRef.drawInfoFill(*selectedBeat);
       }
     }
   }

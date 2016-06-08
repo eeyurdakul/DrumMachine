@@ -3,7 +3,7 @@
 namespace Zebra {
 
   Keyboard::Keyboard()
-  : menuSelectButton(kMenuSelectButtonPin)
+  : rhythmMenuSelectButton(kRhythmMenuSelectButtonPin)
   , layer0SelectButton(kLayer0SelectButtonPin)
   , layer1SelectButton(kLayer1SelectButtonPin)
   , layer2SelectButton(kLayer2SelectButtonPin)
@@ -18,11 +18,6 @@ namespace Zebra {
   , downButton(kDownButtonPin)
   , rightButton(kRightButtonPin)
   , leftButton(kLeftButtonPin)
-
-  , instAUpButton(kInstAUpButtonPin)
-  , instADownButton(kInstADownButtonPin)
-  , instBUpButton(kInstBUpButtonPin)
-  , instBDownButton(kInstBDownButtonPin)
 
   , recordButton(kRecordButtonPin)
   , playButton(kPlayButtonPin)

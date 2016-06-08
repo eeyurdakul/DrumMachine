@@ -10,7 +10,7 @@ namespace Zebra {
   , playX(0)
   , measurePlayCount(0)
   , playColor(kPlayColor0)
-  // menu rhythm variables
+  // rhythm menu variables
   , tempoClean(0)
   , metronomeClean(0)
   , barClean(0)
@@ -19,15 +19,10 @@ namespace Zebra {
   , saveClean(0)
   , outputClean(0)
   , quantizeClean(0)
-  // menu layer variables
+  // layer menu variables
   , instAClean(0)
   , instBClean(0)
-  , fillNumberClean(255)
-  , switchInfoToRhythmFlag(false)
-  , switchInfoToLayerFlag(false)
-  , switchInfoBetweenLayersFlag(false)
-  , switchLayer(0)
-  , switchState(0) {}
+  , fillNumberClean(255) {}
 
   View::~View() {}
 
@@ -45,9 +40,6 @@ namespace Zebra {
 
   void View::update() {
     drawPlayBar();
-    checkSwitchInfoToRhythm();
-    checkSwitchInfoToLayer();
-    checkSwitchInfoBetweenLayers();
   }
 
   // play functions
@@ -318,68 +310,191 @@ namespace Zebra {
     }
   }
 
-  // menu functions
+  // rhythm menu functions
 
-  void View::drawMenuBox(uint16_t boxNum, bool state) {
+  void View::drawRhythmMenuBox(uint8_t boxNum, bool state) {
     uint16_t backColor;
     uint16_t foreColor;
-    uint16_t boxXPos;
-    uint16_t boxYPos;
-    uint16_t headerXPos;
-    uint16_t headerYPos;
-    uint8_t dataDigit;
-    uint8_t dataXPos;
-    uint8_t dataYPos;
-    uint16_t data;
-    // getting variables
+    uint16_t boxXPos = kRhythmMenuBoxXPos[boxNum];
+    uint16_t boxYPos = kRhythmMenuBoxYPos;
+    uint16_t headerXPos = kRhythmMenuHeaderXPos[boxNum];
+    uint16_t headerYPos = kRhythmMenuHeaderYPos;
+    uint8_t dataDigit = kRhythmMenuDataDigit[boxNum];
+    uint8_t dataXPos = kRhythmMenuDataXPos[boxNum];
+    uint8_t dataYPos = kRhythmMenuDataYPos;
+    uint8_t data;
+    uint8_t* dataClean;
+    // defining colors
     menuColorSelect(backColor, foreColor, state);
-    boxXPos = kMenuBoxXPos[boxNum];
-    boxYPos = kMenuBoxYPos;
-    headerXPos = kMenuHeaderXPos[boxNum];
-    headerYPos = kMenuHeaderYPos;
-    dataDigit = kMenuDataDigit[boxNum];
-    dataXPos = kMenuDataXPos[boxNum];
-    dataYPos = kMenuDataYPos;
     // drawing box
-    fillRect(boxXPos, boxYPos, kMenuBoxWidth, kMenuBoxHeight, backColor);
+    fillRect(boxXPos, boxYPos, kRhythmMenuBoxWidth, kRhythmMenuBoxHeight, backColor);
     // drawing header
     setTextColor(foreColor);
     setCursor(headerXPos, headerYPos);
     switch (boxNum) {
       case 0: // tempo
       println(F("TEMPO"));
+      data = rhythmRef.getTempo();
+      dataClean = &tempoClean;
       break;
       case 1: // metronome
       println(F("METRONOME"));
+      data = rhythmRef.getMetronome();
+      dataClean = &metronomeClean;
       break;
       case 2: // bar
       println(F("BAR"));
+      data = rhythmRef.getBar();
+      dataClean = &barClean;
       break;
       case 3: // measure
       println(F("MEASURE"));
+      data = rhythmRef.getMeasure();
+      dataClean = &measureClean;
       break;
       case 4: // load
       println(F("LOAD"));
+      data = rhythmRef.getLoad();
+      dataClean = &loadClean;
       break;
       case 5: // save
       println(F("SAVE"));
+      data = rhythmRef.getSave();
+      dataClean = &saveClean;
       break;
       case 6: // output
       println(F("OUTPUT"));
+      data = rhythmRef.getOutput();
+      dataClean = &outputClean;
       break;
       case 7: // quantize
       println(F("QUANTIZE"));
+      data = rhythmRef.getQuantize();
+      dataClean = &quantizeClean;
       break;
     }
-    drawInfoNumber(data, digit, dataXPos, dataYPos, foreColor);
-    menuDataClean[boxNum] = data;
+    drawMenuNumber(data, dataDigit, dataXPos, dataYPos, foreColor);
+    *dataClean = data;
   }
 
-  void View::drawMenuData(uint8_t boxNum) {
-    drawInfoNumber(menuDataClean[boxNum], kMenuDataDigit[boxNum], kMenuDataXPos[boxNum], kMenuDataYPos, BLACK);
-    drawInfoNumber(menuData[boxNum], kMenuDataXPos[boxNum], kMenuDataXPos[boxNum], kMenuDataYPos, WHITE);
-    menuDataClean[boxNum] = menuData[boxNum];
+  void View::drawRhythmMenuData(uint8_t boxNum) {
+    uint16_t backColor = BLACK;
+    uint16_t foreColor = WHITE;
+    uint8_t dataDigit = kRhythmMenuDataDigit[boxNum];
+    uint8_t dataXPos = kRhythmMenuDataXPos[boxNum];
+    uint8_t dataYPos = kRhythmMenuDataYPos;
+    uint8_t *dataClean;
+    uint8_t data;
+    switch (boxNum) {
+      case 0: // tempo
+      data = rhythmRef.getTempo();
+      dataClean = &tempoClean;
+      break;
+      case 1: // metronome
+      data = rhythmRef.getMetronome();
+      dataClean = &metronomeClean;
+      break;
+      case 2: // bar
+      data = rhythmRef.getBar();
+      dataClean = &barClean;
+      break;
+      case 3: // measure
+      data = rhythmRef.getMeasure();
+      dataClean = &measureClean;
+      break;
+      case 4: // load
+      data = rhythmRef.getLoad();
+      dataClean = &loadClean;
+      break;
+      case 5: // save
+      data = rhythmRef.getSave();
+      dataClean = &saveClean;
+      break;
+      case 6: // output
+      data = rhythmRef.getOutput();
+      dataClean = &outputClean;
+      break;
+      case 7: // quantize
+      data = rhythmRef.getQuantize();
+      dataClean = &quantizeClean;
+      break;
+    }
+    drawMenuNumber(*dataClean, dataDigit, dataXPos, dataYPos, backColor);
+    drawMenuNumber(data, dataDigit, dataXPos, dataYPos, foreColor);
+    *dataClean = data;
   }
+
+  // layer menu functions
+
+  void View::drawLayerMenuBox(uint8_t boxNum, bool state, const Layer& layer_) {
+    uint16_t backColor;
+    uint16_t foreColor;
+    uint16_t boxXPos = kLayerMenuBoxXPos[boxNum];
+    uint16_t boxYPos = kLayerMenuBoxYPos;
+    uint16_t headerXPos = kLayerMenuHeaderXPos[boxNum];
+    uint16_t headerYPos = kLayerMenuHeaderYPos;
+    uint8_t dataDigit = kLayerMenuDataDigit[boxNum];
+    uint8_t dataXPos = kLayerMenuDataXPos[boxNum];
+    uint8_t dataYPos = kLayerMenuDataYPos;
+    uint8_t data;
+    uint8_t* dataClean;
+    // defining colors
+    menuColorSelect(backColor, foreColor, state);
+    // drawing box
+    fillRect(boxXPos, boxYPos, kLayerMenuBoxWidth, kLayerMenuBoxHeight, backColor);
+    // drawing header
+    setTextColor(foreColor);
+    setCursor(headerXPos, headerYPos);
+    switch (boxNum) {
+      case 0: // fill
+      // statement
+      break;
+      case 1: // measure
+      println(F("INST A"));
+      data = layer_.getInstAMidi();
+      dataClean = &instAClean;
+      break;
+      case 2: // load
+      println(F("INST B"));
+      data = layer_.getInstBMidi();
+      dataClean = &instBClean;
+      break;
+      default:
+      break;
+    }
+    drawMenuNumber(data, dataDigit, dataXPos, dataYPos, foreColor);
+    *dataClean = data;
+  }
+
+  void View::drawLayerMenuData(uint8_t boxNum, const Layer& layer_) {
+    uint16_t backColor = BLACK;
+    uint16_t foreColor = WHITE;
+    uint8_t dataDigit = kLayerMenuDataDigit[boxNum];
+    uint8_t dataXPos = kLayerMenuDataXPos[boxNum];
+    uint8_t dataYPos = kLayerMenuDataYPos;
+    uint8_t *dataClean;
+    uint8_t data;
+    switch (boxNum) {
+      case 0: // fill
+      // statement
+      break;
+      case 1: // tempo
+      data = layer_.getInstAMidi();
+      dataClean = &instAClean;
+      break;
+      case 2: // metronome
+      data = layer_.getInstBMidi();
+      dataClean = &instBClean;
+      break;
+      default:
+      break;
+    }
+    drawMenuNumber(*dataClean, dataDigit, dataXPos, dataYPos, backColor);
+    drawMenuNumber(data, dataDigit, dataXPos, dataYPos, foreColor);
+    *dataClean = data;
+  }
+
+  // private menu functions
 
   void View::menuColorSelect(uint16_t& backColor_, uint16_t& foreColor_, bool state) {
     if (state) {
@@ -391,144 +506,28 @@ namespace Zebra {
     }
   }
 
-  // info layer functions
-
-  void View::drawInfoLayerAll(const Layer& layer_, const Beat& beat_) {
-    drawInfoLayerInstA(layer_);
-    drawInfoLayerInstB(layer_);
-    if (layer_.getLastActiveBeat() != -1) {
-      drawInfoFill(beat_);
-    } else {
-      cleanInfoFill();
-    }
-  }
-
-  void View::drawInfoLayerBase() {
-    // clearing info base
-    fillRect(0, 0, 480, kInfoHeight, WHITE);
-    // drawing section segments
-    drawFastVLine(240, 0, 20, BLACK);
-    drawFastVLine(360, 0, 20, BLACK);
-    // drawing fill graph base
-    //drawFastVLine(330, 9, 36, BLACK);
-    drawFastHLine(90, 45, 140, BLACK);
-    for(int i = 0; i < 12; i ++) {
-      drawPixel(230, 9 + (3 * i), BLACK);
-    }
-    setCursor(8, 8);
-    println(F("FILL"));
-    setTextColor(BLACK);
-    setCursor(248, 8);
-    println(F("INST A"));
-    setCursor(368, 8);
-    println(F("INST B"));
-  }
-
-  void View::drawInfoLayerInstA(const Layer& layer_) {
-    if (&layer_ != NULL) {
-      uint8_t instA = layer_.getInstAMidi();
-      // checking if there is a new inst data
-      if ((switchInfoToLayerFlag) || (instA != instAClean)) {
-        drawInfoNumber(instAClean, kInstADigit, kInstAXPos, kInstAYPos, WHITE);
-        drawInfoNumber(instA, kInstADigit, kInstAXPos, kInstAYPos, BLACK);
-        instAClean = instA;
-      }
-    }
-  }
-
-  void View::drawInfoLayerInstB(const Layer& layer_) {
-    if (&layer_ != NULL) {
-      uint8_t instB = layer_.getInstBMidi();
-      // checking if there is a new inst data
-      if ((switchInfoToLayerFlag) || (instB != instBClean)) {
-        drawInfoNumber(instBClean, kInstBDigit, kInstBXPos, kInstBYPos, WHITE);
-        drawInfoNumber(instB, kInstBDigit, kInstBXPos, kInstBYPos, BLACK);
-        instBClean = instB;
-      }
-    }
-  }
-
-  void View::drawInfoFill(const Beat& beat_) {
-    if (&beat_ != NULL) {
-      // checking if there is a new fill data
-      if ((switchInfoToLayerFlag) || (beat_.getFill() != fillNumberClean)) {
-        // clearing old fill name
-        fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
-        // drawing fill name
-        uint16_t fillNameXPos = kFillNameXPos;
-        uint16_t fillNameYPos = kFillNameYPos;
-        for(uint8_t i = 0; i < kFillNameLetterCount; i++) {
-          drawInfoLetter(getFillName(beat_.getFill(), i), fillNameXPos, fillNameYPos, BLACK);
-          fillNameXPos += kInfoDigitOffset;
-        }
-        // clearing old fill diagram
-        fillRect(90, 9, 120, 36, WHITE);
-        // drawing fill diagram
-        uint8_t fill = beat_.getFill();
-        uint8_t step = getFillStep(fill);
-        uint8_t quantaTotalTimeRatio = 0;
-        uint8_t quantaTimeRatio = 0;
-        uint8_t quantaVolume = 0;
-        // calculating quanta total time ratio
-        for(int j = 0; j < step + 1; j++) {
-          quantaTotalTimeRatio += getFillTime(fill, j);
-        }
-        // drawing quanta time line
-        for(int k = 0; k < step; k++) {
-          quantaTimeRatio += getFillTime(fill, k);
-          quantaVolume = getFillVolume(fill, k);
-          uint16_t fillDiagXPos = int(90 + 120 * double(quantaTimeRatio) / quantaTotalTimeRatio);
-          float vLine = 36 * float(quantaVolume) / kMaxVolume;
-          drawFastVLine(fillDiagXPos, 45 - vLine, vLine, BLACK);
-        }
-        // adjusting fillNumberClean
-        fillNumberClean = beat_.getFill();
-      }
-    }
-  }
-
-  void View::cleanInfoFill() {
-    // checking if there is a new fill data
-    if ((switchInfoToLayerFlag) || (fillNumberClean != -1)) {
-      // clearing old fill name
-      fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
-      // clearing old fill diagram
-      fillRect(90, 9, 120, 36, WHITE);
-      uint16_t fillNameXPos = kFillNameXPos;
-      uint16_t fillNameYPos = kFillNameYPos;
-      // drawing empty fill name (hypen)
-      for(uint8_t i = 0; i < kFillNameLetterCount; i++) {
-        drawInfoLetter('-', fillNameXPos, fillNameYPos, BLACK);
-        fillNameXPos += kInfoDigitOffset;
-      }
-      fillNumberClean = -1;
-    }
-  }
-
-  // private info functions
-
-  void View::drawInfoNumber(uint8_t num, uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color) {
+  void View::drawMenuNumber(uint8_t num, uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color) {
     uint8_t digitHundreds;
     uint8_t digitTens;
     uint8_t digitOnes;
 
-    if ((digit >= kMinInfoDigit) && (digit <= kMaxInfoDigit)) {
+    if ((digit >= kMinMenuDigit) && (digit <= kMaxMenuDigit)) {
       if (digit == 3) {
         digitHundreds = (num / 100);
-        drawInfoDigit(digitHundreds, xPos, yPos, color);
-        xPos += kInfoDigitOffset;
+        drawMenuDigit(digitHundreds, xPos, yPos, color);
+        xPos += kMenuDigitOffset;
       }
       if (digit >= 2) {
         digitTens = (num % 100) / 10;
-        drawInfoDigit(digitTens, xPos, yPos, color);
-        xPos += kInfoDigitOffset;
+        drawMenuDigit(digitTens, xPos, yPos, color);
+        xPos += kMenuDigitOffset;
       }
       digitOnes = num % 10;
-      drawInfoDigit(digitOnes, xPos, yPos, color);
+      drawMenuDigit(digitOnes, xPos, yPos, color);
     }
   }
 
-  void View::drawInfoLetter(char letter, uint16_t xPos, uint16_t yPos, uint16_t color) {
+  void View::drawMenuLetter(char letter, uint16_t xPos, uint16_t yPos, uint16_t color) {
     uint8_t letterDigit = 0;
     switch (letter) {
       case '0':
@@ -684,10 +683,10 @@ namespace Zebra {
       letterDigit = 40;
       break;
     }
-    drawInfoDigit(letterDigit, xPos, yPos, color);
+    drawMenuDigit(letterDigit, xPos, yPos, color);
   }
 
-  void View::drawInfoDigit(uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color) {
+  void View::drawMenuDigit(uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color) {
     for (int y = 0; y < 13; y++) {
       for (int x = 0; x < 9; x++) {
         if (pgm_read_word(&digitFont[digit][y]) & (1 << 8 - x)) {
@@ -723,185 +722,6 @@ namespace Zebra {
     return pgm_read_byte(flashAddress + stepNum);
   }
 
-  // info switch functions
-
-  void View::switchInfoToRhythm() {
-    switchInfoToRhythmFlag = true;
-    switchState = 0;
-  }
-
-  void View::switchInfoToLayer(const Layer& layer_) {
-    if (&layer_ != NULL) {
-      switchInfoToLayerFlag = true;
-      switchLayer = layer_.getNumber();
-      switchState = 0;
-    }
-  }
-
-  void View::switchInfoBetweenLayers(const Layer& layer_) {
-    if (&layer_ != NULL) {
-      switchInfoBetweenLayersFlag = true;
-      switchLayer = layer_.getNumber();
-      switchState = 0;
-    }
-  }
-
-  void View::checkSwitchInfoToRhythm() {
-    if (switchInfoToRhythmFlag) {
-      switch (switchState) {
-        // clearing all
-        case 0:
-        fillRect(0, 0, 480, kInfoHeight, WHITE);
-        switchState += 1;
-        break;
-        // drawing rhythm elements
-        case 1:
-        fillRect(0, 0, 121, kInfoHeight - 1, BLACK);
-        drawFastVLine(120, 0, 50, BLACK);
-        switchState += 1;
-        break;
-        case 2:
-        drawFastVLine(240, 0, 50, BLACK);
-        switchState += 1;
-        break;
-        case 3:
-        drawFastVLine(360, 0, 50, BLACK);
-        switchState += 1;
-        break;
-        case 4:
-        setTextColor(WHITE);
-        setCursor(8, 8);
-        println(F("TEMPO"));
-        switchState += 1;
-        break;
-        case 5:
-        setTextColor(BLACK);
-        setCursor(128, 8);
-        println(F("QUANTIZE"));
-        switchState += 1;
-        break;
-        case 6:
-        setCursor(248, 8);
-        println(F("BAR"));
-        switchState += 1;
-        break;
-        case 7:
-        setCursor(368, 8);
-        println(F("MEASURE"));
-        switchState += 1;
-        break;
-        case 8:
-        drawInfoRhythmTempo();
-        switchState += 1;
-        break;
-        case 9:
-        drawInfoRhythmQuantize();
-        switchState += 1;
-        break;
-        case 10:
-        drawInfoRhythmBar();
-        switchState += 1;
-        break;
-        case 11:
-        drawInfoRhythmMeasure();
-        switchState = 0;
-        switchInfoToRhythmFlag = false;
-        break;
-        default:
-        break;
-      }
-    }
-  }
-
-  void View::checkSwitchInfoToLayer() {
-    if (switchInfoToLayerFlag) {
-      switch (switchState) {
-        // clearing all
-        case 0:
-        fillRect(0, 0, 480, kInfoHeight, WHITE);
-        switchState += 1;
-        break;
-        // drawing layer elements
-        case 1:
-        drawFastVLine(240, 0, 20, BLACK);
-        switchState += 1;
-        break;
-        case 2:
-        drawFastVLine(360, 0, 20, BLACK);
-        switchState += 1;
-        break;
-        case 3:
-        drawFastHLine(90, 45, 120, BLACK);
-        for(int i = 0; i < 12; i ++) {
-          drawPixel(210, 9 + (3 * i), BLACK);
-        }
-        setTextColor(BLACK);
-        switchState += 1;
-        break;
-        case 4:
-        setCursor(8, 8);
-        println(F("FILL"));
-        switchState += 1;
-        break;
-        case 5:
-        setCursor(248, 8);
-        println(F("INST A"));
-        switchState += 1;
-        break;
-        case 6:
-        setCursor(368, 8);
-        println(F("INST B"));
-        switchState += 1;
-        break;
-        case 7:
-        if (rhythmRef.getLayer(switchLayer).getLastActiveBeat() != -1) {
-          drawInfoFill(rhythmRef.getLayer(switchLayer).getBeat(0));
-        } else {
-          cleanInfoFill();
-        }
-        switchState += 1;
-        break;
-        case 8:
-        drawInfoLayerInstA(rhythmRef.getLayer(switchLayer));
-        switchState += 1;
-        break;
-        case 9:
-        drawInfoLayerInstB(rhythmRef.getLayer(switchLayer));
-        switchState = 0;
-        switchInfoToLayerFlag = false;
-        break;
-        default:
-        break;
-      }
-    }
-  }
-
-  void View::checkSwitchInfoBetweenLayers() {
-    if (switchInfoBetweenLayersFlag) {
-      switch (switchState) {
-        case 0:
-        if (rhythmRef.getLayer(switchLayer).getLastActiveBeat() != -1) {
-          drawInfoFill(rhythmRef.getLayer(switchLayer).getBeat(0));
-        } else {
-          cleanInfoFill();
-        }
-        switchState += 1;
-        break;
-        case 1:
-        drawInfoLayerInstA(rhythmRef.getLayer(switchLayer));
-        switchState += 1;
-        break;
-        case 2:
-        drawInfoLayerInstB(rhythmRef.getLayer(switchLayer));
-        switchState = 0;
-        switchInfoBetweenLayersFlag = false;
-        break;
-        default:
-        break;
-      }
-    }
-  }
-
   // debug functions
 
   void View::debug(uint32_t var) {
@@ -911,3 +731,107 @@ namespace Zebra {
     print(var);
   }
 }
+
+/*
+
+void View::drawInfoLayerAll(const Layer& layer_, const Beat& beat_) {
+drawInfoLayerInstA(layer_);
+drawInfoLayerInstB(layer_);
+if (layer_.getLastActiveBeat() != -1) {
+drawInfoFill(beat_);
+} else {
+cleanInfoFill();
+}
+}
+
+void View::drawInfoLayerBase() {
+// clearing info base
+fillRect(0, 0, 480, kInfoHeight, WHITE);
+// drawing section segments
+drawFastVLine(240, 0, 20, BLACK);
+drawFastVLine(360, 0, 20, BLACK);
+// drawing fill graph base
+//drawFastVLine(330, 9, 36, BLACK);
+drawFastHLine(90, 45, 140, BLACK);
+for(int i = 0; i < 12; i ++) {
+drawPixel(230, 9 + (3 * i), BLACK);
+}
+setCursor(8, 8);
+println(F("FILL"));
+setTextColor(BLACK);
+setCursor(248, 8);
+println(F("INST A"));
+setCursor(368, 8);
+println(F("INST B"));
+}
+
+void View::drawInfoLayerInstB(const Layer& layer_) {
+if (&layer_ != NULL) {
+uint8_t instB = layer_.getInstBMidi();
+// checking if there is a new inst data
+if ((switchInfoToLayerFlag) || (instB != instBClean)) {
+drawInfoNumber(instBClean, kInstBDigit, kInstBXPos, kInstBYPos, WHITE);
+drawInfoNumber(instB, kInstBDigit, kInstBXPos, kInstBYPos, BLACK);
+instBClean = instB;
+}
+}
+}
+
+void View::drawInfoFill(const Beat& beat_) {
+if (&beat_ != NULL) {
+// checking if there is a new fill data
+if ((switchInfoToLayerFlag) || (beat_.getFill() != fillNumberClean)) {
+// clearing old fill name
+fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
+// drawing fill name
+uint16_t fillNameXPos = kFillNameXPos;
+uint16_t fillNameYPos = kFillNameYPos;
+for(uint8_t i = 0; i < kFillNameLetterCount; i++) {
+drawInfoLetter(getFillName(beat_.getFill(), i), fillNameXPos, fillNameYPos, BLACK);
+fillNameXPos += kInfoDigitOffset;
+}
+// clearing old fill diagram
+fillRect(90, 9, 120, 36, WHITE);
+// drawing fill diagram
+uint8_t fill = beat_.getFill();
+uint8_t step = getFillStep(fill);
+uint8_t quantaTotalTimeRatio = 0;
+uint8_t quantaTimeRatio = 0;
+uint8_t quantaVolume = 0;
+// calculating quanta total time ratio
+for(int j = 0; j < step + 1; j++) {
+quantaTotalTimeRatio += getFillTime(fill, j);
+}
+// drawing quanta time line
+for(int k = 0; k < step; k++) {
+quantaTimeRatio += getFillTime(fill, k);
+quantaVolume = getFillVolume(fill, k);
+uint16_t fillDiagXPos = int(90 + 120 * double(quantaTimeRatio) / quantaTotalTimeRatio);
+float vLine = 36 * float(quantaVolume) / kMaxVolume;
+drawFastVLine(fillDiagXPos, 45 - vLine, vLine, BLACK);
+}
+// adjusting fillNumberClean
+fillNumberClean = beat_.getFill();
+}
+}
+}
+
+void View::cleanInfoFill() {
+// checking if there is a new fill data
+if ((switchInfoToLayerFlag) || (fillNumberClean != -1)) {
+// clearing old fill name
+fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
+// clearing old fill diagram
+fillRect(90, 9, 120, 36, WHITE);
+uint16_t fillNameXPos = kFillNameXPos;
+uint16_t fillNameYPos = kFillNameYPos;
+// drawing empty fill name (hypen)
+for(uint8_t i = 0; i < kFillNameLetterCount; i++) {
+drawInfoLetter('-', fillNameXPos, fillNameYPos, BLACK);
+fillNameXPos += kInfoDigitOffset;
+}
+fillNumberClean = -1;
+}
+}
+
+*/

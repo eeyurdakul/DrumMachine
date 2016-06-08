@@ -19,8 +19,10 @@ namespace Zebra {
     Layer* selectedLayer;
     Beat* selectedBeat;
     int8_t selectedBeatNum;
-    int8_t currentMenuState;
-    int8_t previousMenuState;
+    int8_t currentRhythmMenu;
+    int8_t previousRhythmMenu;
+    int8_t currentLayerMenu;
+    int8_t previousLayerMenu;
     // private timing functions
     void adjustBarUpTiming();
     void adjustBarDownTiming();
@@ -42,15 +44,15 @@ namespace Zebra {
     void playStop();
     void reset();
     // select functions
-    void menuSelect();
+    void rhythmMenuSelect();
     void layerSelect(Layer& layer_);
     void layerChannelSelect(Layer& layer_);
-    // menu functions
-    void menuRight();
-    void menuLeft();
-    void menuUp();
-    void menuDown();
-    void menuUpdate();
+    // rhythm menu functions
+    void rhythmMenuRight();
+    void rhythmMenuLeft();
+    void rhythmMenuUp();
+    void rhythmMenuDown();
+    void rhythmMenuUpdate();
     // rhythm functions
     void tempoUp();
     void tempoDown();
@@ -68,16 +70,21 @@ namespace Zebra {
     void outputDown();
     void quantizeUp();
     void quantizeDown();
+    // layer menu functions
+    void layerMenuRight();
+    void layerMenuLeft();
+    void layerMenuUp();
+    void layerMenuDown();
+    void layerMenuUpdate();
     // layer functions
-    void instAUp();
-    void instADown();
-    void instBUp();
-    void instBDown();
-    // fill functions
     void beatUp();
     void beatDown();
     void fillUp();
     void fillDown();
+    void instAUp();
+    void instADown();
+    void instBUp();
+    void instBDown();
     // beat record functions
     void beatA();
     void beatB();

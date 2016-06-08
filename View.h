@@ -25,7 +25,7 @@ namespace Zebra {
     uint8_t measurePlayCount;
     uint16_t playColor;
     float playXRatio;
-    // menu rhythm variables
+    // rhythm menu variables
     uint8_t tempoClean;
     uint8_t metronomeClean;
     uint8_t barClean;
@@ -34,21 +34,18 @@ namespace Zebra {
     uint8_t saveClean;
     uint8_t outputClean;
     uint8_t quantizeClean;
-    // menu layer variables
+    // layer menu variables
     uint8_t instAClean;
     uint8_t instBClean;
     int8_t fillNumberClean;
+    // beat variables
     uint16_t selectedBeatXClean;
     uint16_t selectedBeatYClean;
-    bool switchInfoToRhythmFlag;
-    bool switchInfoToLayerFlag;
-    bool switchInfoBetweenLayersFlag;
-    int8_t switchLayer;
-    int8_t switchState;
-    // private info functions
-    void drawInfoNumber(uint8_t num, uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color);
-    void drawInfoLetter(char letter, uint16_t xPos, uint16_t yPos, uint16_t color);
-    void drawInfoDigit(uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color);
+    // private menu functions
+    void menuColorSelect(uint16_t& backColor_, uint16_t& foreColor_, bool state);
+    void drawMenuNumber(uint8_t num, uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color);
+    void drawMenuLetter(char letter, uint16_t xPos, uint16_t yPos, uint16_t color);
+    void drawMenuDigit(uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color);
     // private fill functions
     uint8_t getFillStep(uint8_t fillNum);
     char getFillName(uint8_t fillNum, uint8_t letterNum);
@@ -83,24 +80,12 @@ namespace Zebra {
     void drawAllLayerMeasure();
     void drawAllLayerMeasureSongFill();
     void drawSelectedBeat(const Layer& layer_, const Beat& beat_);
-    // menu functions
-    void drawMenuBox(uint16_t boxNum, bool state);
-    void drawMenuData(uint8_t boxNum);
-    void menuColorSelect(uint16_t& backColor_, uint16_t& foreColor_, bool state);
-    // info layer functions
-    void drawInfoLayerAll(const Layer& layer_, const Beat& beat_);
-    void drawInfoLayerBase();
-    void drawInfoLayerInstA(const Layer& layer_);
-    void drawInfoLayerInstB(const Layer& layer_);
-    void drawInfoFill(const Beat& beat_);
-    void cleanInfoFill();
-    // info switch functions
-    void switchInfoToRhythm();
-    void switchInfoToLayer(const Layer& layer_);
-    void switchInfoBetweenLayers(const Layer& layer_);
-    void checkSwitchInfoToRhythm();
-    void checkSwitchInfoToLayer();
-    void checkSwitchInfoBetweenLayers();
+    // rhythm menu functions
+    void drawRhythmMenuBox(uint8_t boxNum, bool state);
+    void drawRhythmMenuData(uint8_t boxNum);
+    // layer menu functions
+    void drawLayerMenuBox(uint8_t boxNum, bool state, const Layer& layer_);
+    void drawLayerMenuData(uint8_t boxNum, const Layer& layer_);
     // debug functions
     void debug(uint32_t var);
   };

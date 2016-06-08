@@ -30,10 +30,10 @@ namespace Zebra {
     uint8_t getBar() const;
     void setMeasure(uint8_t measure_);
     uint8_t getMeasure() const;
-    uint8_t setLoad(uint8_t load_);
-    void getLoad() const;
-    uint8_t setSave(uint8_t save_);
-    void getSave() const;
+    void setLoad(uint8_t load_);
+    uint8_t getLoad() const;
+    void setSave(uint8_t save_);
+    uint8_t getSave() const;
     void setOutput(bool output_);
     bool getOutput() const;
     void setQuantize(uint8_t quantize_);

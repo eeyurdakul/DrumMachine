@@ -54,23 +54,23 @@ namespace Zebra {
     return measure;
   }
 
-  uint8_t Rhythm::setLoad(uint8_t load_) {
+  void Rhythm::setLoad(uint8_t load_) {
     if ((load_ >= kMinLoad) && (load_ <= kMaxLoad)) {
       load = load_;
     }
   }
 
-  void Rhythm::getLoad() const {
+  uint8_t Rhythm::getLoad() const {
     return load;
   }
 
-  uint8_t Rhythm::setSave(uint8_t save_) {
+  void Rhythm::setSave(uint8_t save_) {
     if ((save_ >= kMinSave) && (save_ <= kMaxSave)) {
       save = save_;
     }
   }
 
-  void Rhythm::getSave() const {
+  uint8_t Rhythm::getSave() const {
     return save;
   }
 
