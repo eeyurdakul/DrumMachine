@@ -209,20 +209,16 @@ namespace Zebra {
     previousRhythmMenu = currentRhythmMenu;
     if (currentRhythmMenu < kMaxRhythmMenu) {
       currentRhythmMenu += 1;
-    } else {
-      currentRhythmMenu = 0;
+      rhythmMenuUpdate();
     }
-    rhythmMenuUpdate();
   }
 
   void Controller::rhythmMenuLeft() {
     previousRhythmMenu = currentRhythmMenu;
     if (currentRhythmMenu > 0) {
       currentRhythmMenu -= 1;
-    } else {
-      currentRhythmMenu = kMaxRhythmMenu;
+      rhythmMenuUpdate();
     }
-    rhythmMenuUpdate();
   }
 
   void Controller::rhythmMenuUp() {
@@ -290,7 +286,7 @@ namespace Zebra {
   void Controller::rhythmMenuUpdate() {
     switch (currentRhythmMenu) {
       case 0:   // tempo
-      if ((previousRhythmMenu == -1) || (previousRhythmMenu == 7)) {
+      if (previousRhythmMenu == -1) {
         viewRef.drawRhythmMenuBox(kTempoBox, 1);
         viewRef.drawRhythmMenuBox(kMetronomeBox, 0);
         viewRef.drawRhythmMenuBox(kBarBox, 0);
@@ -362,11 +358,6 @@ namespace Zebra {
       if (previousRhythmMenu == 6) {
         viewRef.drawRhythmMenuBox(kOutputBox, 0);
         viewRef.drawRhythmMenuBox(kQuantizeBox, 1);
-      } else if (previousRhythmMenu == 0) {
-        viewRef.drawRhythmMenuBox(kLoadBox, 0);
-        viewRef.drawRhythmMenuBox(kSaveBox, 0);
-        viewRef.drawRhythmMenuBox(kOutputBox, 0);
-        viewRef.drawRhythmMenuBox(kQuantizeBox, 1);
       }
       break;
       default:
@@ -395,12 +386,12 @@ namespace Zebra {
   }
 
   void Controller::metronomeUp() {
-    rhythmRef.setMetronome(~rhythmRef.getMetronome());
+    rhythmRef.setMetronome(!rhythmRef.getMetronome());
     viewRef.drawRhythmMenuData(kMetronomeBox);
   }
 
   void Controller::metronomeDown() {
-    rhythmRef.setMetronome(~rhythmRef.getMetronome());
+    rhythmRef.setMetronome(!rhythmRef.getMetronome());
     viewRef.drawRhythmMenuData(kMetronomeBox);
   }
 
@@ -485,12 +476,12 @@ namespace Zebra {
   }
 
   void Controller::outputUp() {
-    rhythmRef.setOutput(~rhythmRef.getOutput());
+    rhythmRef.setOutput(!rhythmRef.getOutput());
     viewRef.drawRhythmMenuData(kOutputBox);
   }
 
   void Controller::outputDown() {
-    rhythmRef.setOutput(~rhythmRef.getOutput());
+    rhythmRef.setOutput(!rhythmRef.getOutput());
     viewRef.drawRhythmMenuData(kOutputBox);
   }
 
@@ -516,20 +507,16 @@ namespace Zebra {
     previousLayerMenu = currentLayerMenu;
     if (currentLayerMenu < kMaxLayerMenu) {
       currentLayerMenu += 1;
-    } else {
-      currentLayerMenu = 0;
+      layerMenuUpdate();
     }
-    layerMenuUpdate();
   }
 
   void Controller::layerMenuLeft() {
     previousLayerMenu = currentLayerMenu;
     if (currentLayerMenu > 0) {
       currentLayerMenu -= 1;
-    } else {
-      currentLayerMenu = kMaxLayerMenu;
+      layerMenuUpdate();
     }
-    layerMenuUpdate();
   }
 
   void Controller::layerMenuUp() {
@@ -574,9 +561,6 @@ namespace Zebra {
       } else if (previousLayerMenu == 1) {
         viewRef.drawLayerMenuBox(kFillBox, 1, *selectedLayer);
         viewRef.drawLayerMenuBox(kInstABox, 0, *selectedLayer);
-      } else if (previousLayerMenu == 2) {
-        viewRef.drawLayerMenuBox(kFillBox, 1, *selectedLayer);
-        viewRef.drawLayerMenuBox(kInstBBox, 0, *selectedLayer);
       }
       break;
       case 1:   // inst A
@@ -592,9 +576,6 @@ namespace Zebra {
       if (previousLayerMenu == 1) {
         viewRef.drawLayerMenuBox(kInstABox, 0, *selectedLayer);
         viewRef.drawLayerMenuBox(kInstBBox, 1, *selectedLayer);
-      } else if (previousLayerMenu == 0) {
-        viewRef.drawLayerMenuBox(kInstBBox, 1, *selectedLayer);
-        viewRef.drawLayerMenuBox(kFillBox, 0, *selectedLayer);
       }
       break;
     }

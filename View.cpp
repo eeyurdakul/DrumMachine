@@ -27,11 +27,7 @@ namespace Zebra {
   View::~View() {}
 
   void View::initialize() {
-    reset();
-    uint16_t identifier = readID();
-    if (identifier == 0x0101)
-    identifier = 0x9341;
-    begin(identifier);
+    begin(0x9341);
     setRotation(3);
     setTextSize(1);
     fillScreen(BLACK);
@@ -147,16 +143,16 @@ namespace Zebra {
     if (&layer_ != NULL) {
       // clearing measure
       fillRect(kSongStartX, layer_.getStartY() + 45, kSongX, 12, BLACK);
-      drawFastHLine(kSongStartX, layer_.getStartY() + 56, kSongX + 1, LGRAY);
+      drawFastHLine(kSongStartX, layer_.getStartY() + 56, kSongX + 1, DGRAY);
       barX = kSongX / rhythmRef.getBar();
       uint16_t segment = rhythmRef.getMeasure() * rhythmRef.getBar();
       measureX = float(kSongX) / segment;
       for (uint8_t i = 0; i <= segment; i ++) {
         uint16_t posX = kSongStartX + int(i * measureX);
         if (i % rhythmRef.getMeasure() == 0) {
-          drawFastVLine(posX, layer_.getStartY() + 46, 6, LGRAY);
+          drawFastVLine(posX, layer_.getStartY() + 46, 6, DGRAY);
         } else {
-          drawFastVLine(posX, layer_.getStartY() + 50, 2, LGRAY);
+          drawFastVLine(posX, layer_.getStartY() + 50, 2, DGRAY);
         }
       }
     }
@@ -320,8 +316,8 @@ namespace Zebra {
     uint16_t headerXPos = kRhythmMenuHeaderXPos[boxNum];
     uint16_t headerYPos = kRhythmMenuHeaderYPos;
     uint8_t dataDigit = kRhythmMenuDataDigit[boxNum];
-    uint8_t dataXPos = kRhythmMenuDataXPos[boxNum];
-    uint8_t dataYPos = kRhythmMenuDataYPos;
+    uint16_t dataXPos = kRhythmMenuDataXPos[boxNum];
+    uint16_t dataYPos = kRhythmMenuDataYPos;
     uint8_t data;
     uint8_t* dataClean;
     // defining colors
@@ -381,8 +377,8 @@ namespace Zebra {
     uint16_t backColor = BLACK;
     uint16_t foreColor = WHITE;
     uint8_t dataDigit = kRhythmMenuDataDigit[boxNum];
-    uint8_t dataXPos = kRhythmMenuDataXPos[boxNum];
-    uint8_t dataYPos = kRhythmMenuDataYPos;
+    uint16_t dataXPos = kRhythmMenuDataXPos[boxNum];
+    uint16_t dataYPos = kRhythmMenuDataYPos;
     uint8_t *dataClean;
     uint8_t data;
     switch (boxNum) {
@@ -434,14 +430,18 @@ namespace Zebra {
     uint16_t headerXPos = kLayerMenuHeaderXPos[boxNum];
     uint16_t headerYPos = kLayerMenuHeaderYPos;
     uint8_t dataDigit = kLayerMenuDataDigit[boxNum];
-    uint8_t dataXPos = kLayerMenuDataXPos[boxNum];
-    uint8_t dataYPos = kLayerMenuDataYPos;
+    uint16_t dataXPos = kLayerMenuDataXPos[boxNum];
+    uint16_t dataYPos = kLayerMenuDataYPos;
     uint8_t data;
     uint8_t* dataClean;
     // defining colors
     menuColorSelect(backColor, foreColor, state);
     // drawing box
-    fillRect(boxXPos, boxYPos, kLayerMenuBoxWidth, kLayerMenuBoxHeight, backColor);
+    if (boxNum == 0) {
+      fillRect(boxXPos, boxYPos, kLayerMenuBoxWidth2, kLayerMenuBoxHeight, backColor);
+    } else {
+      fillRect(boxXPos, boxYPos, kLayerMenuBoxWidth, kLayerMenuBoxHeight, backColor);
+    }
     // drawing header
     setTextColor(foreColor);
     setCursor(headerXPos, headerYPos);
@@ -470,8 +470,8 @@ namespace Zebra {
     uint16_t backColor = BLACK;
     uint16_t foreColor = WHITE;
     uint8_t dataDigit = kLayerMenuDataDigit[boxNum];
-    uint8_t dataXPos = kLayerMenuDataXPos[boxNum];
-    uint8_t dataYPos = kLayerMenuDataYPos;
+    uint16_t dataXPos = kLayerMenuDataXPos[boxNum];
+    uint16_t dataYPos = kLayerMenuDataYPos;
     uint8_t *dataClean;
     uint8_t data;
     switch (boxNum) {
@@ -687,9 +687,9 @@ namespace Zebra {
   }
 
   void View::drawMenuDigit(uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color) {
-    for (int y = 0; y < 13; y++) {
-      for (int x = 0; x < 9; x++) {
-        if (pgm_read_word(&digitFont[digit][y]) & (1 << 8 - x)) {
+    for (uint8_t y = 0; y < 13; y++) {
+      for (uint8_t x = 0; x < 9; x++) {
+        if (pgm_read_word(&digitFont[digit][y]) & (1 << (8 - x))) {
           drawPixel(xPos + x, yPos + y, color);
         }
       }
