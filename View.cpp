@@ -20,7 +20,7 @@ namespace Zebra {
   , quantizeClean(0)
   , instAClean(0)
   , instBClean(0)
-  , fillNumberClean(255) {}
+  , fillNumberClean(127) {}
 
   View::~View() {}
 
@@ -146,16 +146,16 @@ namespace Zebra {
     if (&layer_ != NULL) {
       // clearing measure
       fillRect(kSongStartX, layer_.getStartY() + 45, kSongX, 12, BLACK);
-      drawFastHLine(kSongStartX, layer_.getStartY() + 56, kSongX + 1, LGRAY);
+      drawFastHLine(kSongStartX, layer_.getStartY() + 56, kSongX + 1, MGRAY);
       barX = kSongX / rhythmRef.getBar();
       uint16_t segment = rhythmRef.getMeasure() * rhythmRef.getBar();
       measureX = float(kSongX) / segment;
       for (uint8_t i = 0; i <= segment; i ++) {
         uint16_t posX = kSongStartX + int(i * measureX);
         if (i % rhythmRef.getMeasure() == 0) {
-          drawFastVLine(posX, layer_.getStartY() + 46, 6, LGRAY);
+          drawFastVLine(posX, layer_.getStartY() + 46, 6, MGRAY);
         } else {
-          drawFastVLine(posX, layer_.getStartY() + 50, 2, LGRAY);
+          drawFastVLine(posX, layer_.getStartY() + 50, 2, MGRAY);
         }
       }
     }
@@ -492,11 +492,8 @@ namespace Zebra {
     fillRect(0, 0, 480, kMenuHeight, WHITE);
     drawFastVLine(240, 0, 45, BLACK);
     drawFastVLine(360, 0, 45, BLACK);
-    //drawFastVLine(330, 9, 36, BLACK);
-    drawFastHLine(90, 45, 140, BLACK);
-    for(int i = 0; i < 12; i ++) {
-      drawPixel(230, 9 + (3 * i), BLACK);
-    }
+    drawFastHLine(kFillGraphStartXPos, kDataYPos + kFillGraphHeight, kFillGraphLength, BLACK);
+    drawFastVLine(kFillGraphEndXPos, kDataYPos, 13, BLACK);
     setTextColor(BLACK);
     setCursor(8, 8);
     println(F("FILL"));
@@ -558,6 +555,16 @@ namespace Zebra {
     }
   }
 
+  void View::switchBetweenLayers(const Layer& layer_, const Beat& beat_, int8_t previousState) {
+    drawInstA(layer_);
+    drawInstB(layer_);
+    if (layer_.getLastActiveBeat() != -1) {
+      drawFill(beat_);
+    } else if (fillNumberClean != -1) {
+      cleanFill();
+    }
+  }
+
   void View::drawInstA(const Layer& layer_) {
     if (&layer_ != NULL) {
       uint8_t instA = layer_.getInstAMidi();
@@ -581,16 +588,16 @@ namespace Zebra {
       // checking if there is a new fill data
       if (beat_.getFill() != fillNumberClean) {
         // clearing old fill name
-        fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
+        fillRect(kFillNameXPos, kDataYPos, 57, 13, WHITE);
         // drawing fill name
         uint16_t fillNameXPos = kFillNameXPos;
-        uint16_t fillNameYPos = kFillNameYPos;
-        for(uint8_t i = 0; i < kFillNameLetterCount; i++) {
+        uint16_t fillNameYPos = kDataYPos;
+        for(uint8_t i = 0; i < kFillNameDigit; i++) {
           drawMenuLetter(getFillName(beat_.getFill(), i), fillNameXPos, fillNameYPos, BLACK);
           fillNameXPos += kMenuDigitOffset;
         }
         // clearing old fill diagram
-        fillRect(90, 9, 120, 36, WHITE);
+        fillRect(kFillGraphStartXPos, kDataYPos, kFillGraphLength, 12, WHITE);
         // drawing fill diagram
         uint8_t fill = beat_.getFill();
         uint8_t step = getFillStep(fill);
@@ -605,9 +612,9 @@ namespace Zebra {
         for(int k = 0; k < step; k++) {
           quantaTimeRatio += getFillTime(fill, k);
           quantaVolume = getFillVolume(fill, k);
-          uint16_t fillDiagXPos = int(90 + 120 * double(quantaTimeRatio) / quantaTotalTimeRatio);
-          float vLine = 36 * float(quantaVolume) / kMaxVolume;
-          drawFastVLine(fillDiagXPos, 45 - vLine, vLine, BLACK);
+          uint16_t fillDiagXPos = int(kFillGraphStartXPos + kFillGraphLength * double(quantaTimeRatio) / quantaTotalTimeRatio);
+          float vLine = kFillGraphHeight * float(quantaVolume) / kMaxVolume;
+          drawFastVLine(fillDiagXPos, 42 - vLine, vLine, BLACK);
         }
         // adjusting fillNumberClean
         fillNumberClean = beat_.getFill();
@@ -616,21 +623,19 @@ namespace Zebra {
   }
 
   void View::cleanFill() {
-    // checking if there is a new fill data
-    if ((fillNumberClean != -1)) {
-      // clearing old fill name
-      fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
-      // clearing old fill diagram
-      fillRect(90, 9, 120, 36, WHITE);
-      uint16_t fillNameXPos = kFillNameXPos;
-      uint16_t fillNameYPos = kFillNameYPos;
-      // drawing empty fill name (hypen)
-      for(uint8_t i = 0; i < kFillNameLetterCount; i++) {
-        drawMenuLetter('-', fillNameXPos, fillNameYPos, BLACK);
-        fillNameXPos += kMenuDigitOffset;
-      }
-      fillNumberClean = -1;
+    // clearing old fill name
+    fillRect(kFillNameXPos, kDataYPos, 57, 13, WHITE);
+    // clearing old fill diagram
+    fillRect(kFillGraphStartXPos, kDataYPos, kFillGraphLength, kFillGraphHeight, WHITE);
+    uint16_t fillNameXPos = kFillNameXPos;
+    uint16_t fillNameYPos = kDataYPos;
+    // drawing empty fill name (hypen)
+    for(uint8_t i = 0; i < kFillNameDigit; i++) {
+      drawMenuLetter('-', fillNameXPos, fillNameYPos, BLACK);
+      fillNameXPos += kMenuDigitOffset;
     }
+    fillNumberClean = -1;
+
   }
 
   // private info functions

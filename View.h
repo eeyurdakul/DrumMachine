@@ -94,6 +94,7 @@ namespace Zebra {
     // layer menu functions
     void drawLayerMenu(const Layer& layer_, const Beat& beat);
     void drawLayerMenuSelection(int8_t currentState, int8_t previousState);
+    void switchBetweenLayers(const Layer& layer_, const Beat& beat, int8_t previousState);
     void drawInstA(const Layer& layer_);
     void drawInstB(const Layer& layer_);
     void drawFill(const Beat& beat_);

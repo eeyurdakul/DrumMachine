@@ -181,7 +181,6 @@ namespace Zebra {
       selectedLayer->setSelected(true);
       // layer menu settings
       currentLayerMenu = 0;
-      previousLayerMenu = -1;
       if (selectedLayer->getLastActiveBeat() >= 0) {
         selectedBeatNum = 0;
         selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
@@ -232,6 +231,8 @@ namespace Zebra {
       // layer menu update
       if ((currentLayerMenu == 0) && (previousLayerMenu == -1)) {
         viewRef.drawLayerMenu(*selectedLayer, *selectedBeat);
+      } else {
+        viewRef.switchBetweenLayers(*selectedLayer, *selectedBeat, previousLayerMenu);
       }
       // drawing menu selection
       viewRef.drawLayerMenuSelection(currentLayerMenu, previousLayerMenu);
@@ -352,6 +353,7 @@ namespace Zebra {
     uint8_t rhythmBar = rhythmRef.getBar();
     if (rhythmBar < kMaxBar) {
       playerRef.reset();
+      viewRef.resetPlayBar();
       rhythmRef.setBar(rhythmBar + 1);
       adjustBarUpTiming();
       viewRef.calculatePlayXRatio();
@@ -364,6 +366,7 @@ namespace Zebra {
     uint8_t rhythmBar = rhythmRef.getBar();
     if (rhythmBar > kMinBar) {
       playerRef.reset();
+      viewRef.resetPlayBar();
       rhythmRef.setBar(rhythmBar - 1);
       adjustBarDownTiming();
       viewRef.calculatePlayXRatio();
@@ -376,6 +379,7 @@ namespace Zebra {
     uint8_t rhythmMeasure = rhythmRef.getMeasure();
     if (rhythmMeasure < kMaxMeasure) {
       playerRef.reset();
+      viewRef.resetPlayBar();
       rhythmRef.setMeasure(rhythmMeasure + 1);
       adjustMeasureUpTiming();
       viewRef.calculatePlayXRatio();
@@ -388,6 +392,7 @@ namespace Zebra {
     uint8_t rhythmMeasure = rhythmRef.getMeasure();
     if (rhythmMeasure > kMinMeasure) {
       playerRef.reset();
+      viewRef.resetPlayBar();
       rhythmRef.setMeasure(rhythmMeasure - 1);
       adjustMeasureDownTiming();
       viewRef.calculatePlayXRatio();

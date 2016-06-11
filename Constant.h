@@ -88,9 +88,12 @@ namespace Zebra {
   const char kOutputData[2][4] = {{'W', 'A', 'V', 'E'}, {'M', 'I', 'D', 'I'}};
 
   // layer menu constants
-  const uint16_t kFillNameXPos = 10;
-  const uint16_t kFillNameYPos = 32;
-  const uint8_t kFillNameLetterCount = 5;
+  const uint16_t kFillNameXPos = 162;
+  const uint8_t kFillNameDigit = 5;
+  const uint8_t kFillGraphStartXPos = 40;
+  const uint8_t kFillGraphEndXPos = 140;
+  const uint8_t kFillGraphLength = 100;
+  const uint8_t kFillGraphHeight = 12;
   const uint16_t kInstAXPos = 331;
   const uint16_t kInstBXPos = 451;
   const uint8_t kInstADigit = 2;
