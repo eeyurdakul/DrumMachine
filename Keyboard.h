@@ -10,11 +10,12 @@ namespace Zebra {
   public:
     Keyboard();
     ~Keyboard();
-    Button rhythmMenuSelectButton;
+    Button rhythmSelectButton;
     Button layer0SelectButton;
     Button layer1SelectButton;
     Button layer2SelectButton;
     Button layer3SelectButton;
+    Button selectButton;
     Button layer0ChannelButton;
     Button layer1ChannelButton;
     Button layer2ChannelButton;

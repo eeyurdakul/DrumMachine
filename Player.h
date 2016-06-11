@@ -14,8 +14,6 @@ namespace Zebra {
     Midi midi;
     bool playActive;
     bool recordActive;
-    bool midiActive;
-    bool audioActive;
     double period;
     double frequency;
   public:
@@ -30,10 +28,6 @@ namespace Zebra {
     bool getPlayActive() const;
     void setRecordActive(bool active_);
     bool getRecordActive() const;
-    void setMidiActive(bool active_);
-    bool getMidiActive() const;
-    void setAudioActive(bool active_);
-    bool getAudioActive() const;
     void calculatePeriod();
     double getPeriod() const;
     void calculateFrequency();

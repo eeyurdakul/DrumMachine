@@ -42,7 +42,6 @@ namespace Zebra {
     uint16_t selectedBeatXClean;
     uint16_t selectedBeatYClean;
     // private menu functions
-    void menuColorSelect(uint16_t& backColor_, uint16_t& foreColor_, bool state);
     void drawMenuNumber(uint8_t num, uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color);
     void drawMenuLetter(char letter, uint16_t xPos, uint16_t yPos, uint16_t color);
     void drawMenuDigit(uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color);
@@ -80,12 +79,25 @@ namespace Zebra {
     void drawAllLayerMeasure();
     void drawAllLayerMeasureSongFill();
     void drawSelectedBeat(const Layer& layer_, const Beat& beat_);
-    // rhythm menu functions
-    void drawRhythmMenuBox(uint8_t boxNum, bool state);
-    void drawRhythmMenuData(uint8_t boxNum);
+    // rhythm menu functionse
+    void drawRhythmMenu1();
+    void drawRhythmMenu2();
+    void drawRhythmMenuSelection(int8_t currentState, int8_t previousState);
+    void drawTempo();
+    void drawMetronome();
+    void drawBar();
+    void drawMeasure();
+    void drawLoad();
+    void drawSave();
+    void drawOutput();
+    void drawQuantize();
     // layer menu functions
-    void drawLayerMenuBox(uint8_t boxNum, bool state, const Layer& layer_);
-    void drawLayerMenuData(uint8_t boxNum, const Layer& layer_);
+    void drawLayerMenu(const Layer& layer_, const Beat& beat);
+    void drawLayerMenuSelection(int8_t currentState, int8_t previousState);
+    void drawInstA(const Layer& layer_);
+    void drawInstB(const Layer& layer_);
+    void drawFill(const Beat& beat_);
+    void cleanFill();
     // debug functions
     void debug(uint32_t var);
   };

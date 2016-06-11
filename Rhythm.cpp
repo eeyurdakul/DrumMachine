@@ -11,6 +11,7 @@ namespace Zebra {
   , save(kInitialSave)
   , output(kInitialOutput)
   , quantize(kInitialQuantize)
+  , selected(true)
   , songTime((kMeasureTime * kInitialMeasure) * kInitialBar)
   , layerLibrary {{0}, {1}, {2}, {3}} {}
 
@@ -90,6 +91,14 @@ namespace Zebra {
 
   uint8_t Rhythm::getQuantize() const {
     return quantize;
+  }
+
+  void Rhythm::setSelected(bool selected_) {
+    selected = selected_;
+  }
+
+  bool Rhythm::getSelected() const {
+    return selected;
   }
 
   // play functions

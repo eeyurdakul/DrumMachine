@@ -10,7 +10,6 @@ namespace Zebra {
   , playX(0)
   , measurePlayCount(0)
   , playColor(kPlayColor0)
-  // rhythm menu variables
   , tempoClean(0)
   , metronomeClean(0)
   , barClean(0)
@@ -19,7 +18,6 @@ namespace Zebra {
   , saveClean(0)
   , outputClean(0)
   , quantizeClean(0)
-  // layer menu variables
   , instAClean(0)
   , instBClean(0)
   , fillNumberClean(255) {}
@@ -27,6 +25,8 @@ namespace Zebra {
   View::~View() {}
 
   void View::initialize() {
+    reset();
+    uint16_t identifier = readID();
     begin(0x9341);
     setRotation(3);
     setTextSize(1);
@@ -50,7 +50,10 @@ namespace Zebra {
 
   void View::drawPlayBar() {
     if ((rhythmRef.getPlayTime() / playXRatio) > playX) {
-      drawPixel(kSongStartX + playX, kPlayY, playColor);
+      if (playX > (measureX * measurePlayCount)) {
+        drawFastVLine(kSongStartX + playX, kPlayY, 2, playColor);
+        measurePlayCount++;
+      }
       playX += 1;
     }
   }
@@ -59,10 +62,10 @@ namespace Zebra {
     playX = 0;
     measurePlayCount = 0;
     if (playColor == kPlayColor0) {
-      drawPixel(kSongEndX, kPlayY, playColor);
+      drawFastVLine(kSongEndX, kPlayY, 2, playColor);
       playColor = kPlayColor1;
     } else {
-      drawPixel(kSongEndX, kPlayY, playColor);
+      drawFastVLine(kSongEndX, kPlayY, 2, playColor);
       playColor = kPlayColor0;
     }
   }
@@ -143,16 +146,16 @@ namespace Zebra {
     if (&layer_ != NULL) {
       // clearing measure
       fillRect(kSongStartX, layer_.getStartY() + 45, kSongX, 12, BLACK);
-      drawFastHLine(kSongStartX, layer_.getStartY() + 56, kSongX + 1, DGRAY);
+      drawFastHLine(kSongStartX, layer_.getStartY() + 56, kSongX + 1, LGRAY);
       barX = kSongX / rhythmRef.getBar();
       uint16_t segment = rhythmRef.getMeasure() * rhythmRef.getBar();
       measureX = float(kSongX) / segment;
       for (uint8_t i = 0; i <= segment; i ++) {
         uint16_t posX = kSongStartX + int(i * measureX);
         if (i % rhythmRef.getMeasure() == 0) {
-          drawFastVLine(posX, layer_.getStartY() + 46, 6, DGRAY);
+          drawFastVLine(posX, layer_.getStartY() + 46, 6, LGRAY);
         } else {
-          drawFastVLine(posX, layer_.getStartY() + 50, 2, DGRAY);
+          drawFastVLine(posX, layer_.getStartY() + 50, 2, LGRAY);
         }
       }
     }
@@ -308,223 +311,352 @@ namespace Zebra {
 
   // rhythm menu functions
 
-  void View::drawRhythmMenuBox(uint8_t boxNum, bool state) {
-    uint16_t backColor;
-    uint16_t foreColor;
-    uint16_t boxXPos = kRhythmMenuBoxXPos[boxNum];
-    uint16_t boxYPos = kRhythmMenuBoxYPos;
-    uint16_t headerXPos = kRhythmMenuHeaderXPos[boxNum];
-    uint16_t headerYPos = kRhythmMenuHeaderYPos;
-    uint8_t dataDigit = kRhythmMenuDataDigit[boxNum];
-    uint16_t dataXPos = kRhythmMenuDataXPos[boxNum];
-    uint16_t dataYPos = kRhythmMenuDataYPos;
-    uint8_t data;
-    uint8_t* dataClean;
-    // defining colors
-    menuColorSelect(backColor, foreColor, state);
-    // drawing box
-    fillRect(boxXPos, boxYPos, kRhythmMenuBoxWidth, kRhythmMenuBoxHeight, backColor);
-    // drawing header
-    setTextColor(foreColor);
-    setCursor(headerXPos, headerYPos);
-    switch (boxNum) {
-      case 0: // tempo
-      println(F("TEMPO"));
-      data = rhythmRef.getTempo();
-      dataClean = &tempoClean;
-      break;
-      case 1: // metronome
-      println(F("METRONOME"));
-      data = rhythmRef.getMetronome();
-      dataClean = &metronomeClean;
-      break;
-      case 2: // bar
-      println(F("BAR"));
-      data = rhythmRef.getBar();
-      dataClean = &barClean;
-      break;
-      case 3: // measure
-      println(F("MEASURE"));
-      data = rhythmRef.getMeasure();
-      dataClean = &measureClean;
-      break;
-      case 4: // load
-      println(F("LOAD"));
-      data = rhythmRef.getLoad();
-      dataClean = &loadClean;
-      break;
-      case 5: // save
-      println(F("SAVE"));
-      data = rhythmRef.getSave();
-      dataClean = &saveClean;
-      break;
-      case 6: // output
-      println(F("OUTPUT"));
-      data = rhythmRef.getOutput();
-      dataClean = &outputClean;
-      break;
-      case 7: // quantize
-      println(F("QUANTIZE"));
-      data = rhythmRef.getQuantize();
-      dataClean = &quantizeClean;
-      break;
-    }
-    drawMenuNumber(data, dataDigit, dataXPos, dataYPos, foreColor);
-    *dataClean = data;
+  void View::drawRhythmMenu1() {
+    fillRect(0, 0, 480, kMenuHeight, WHITE);
+    drawFastVLine(120, 0, 45, BLACK);
+    drawFastVLine(240, 0, 45, BLACK);
+    drawFastVLine(360, 0, 45, BLACK);
+    setTextColor(BLACK);
+    setCursor(8, 8);
+    println(F("TEMPO"));
+    setCursor(128, 8);
+    println(F("METRONOME"));
+    setCursor(248, 8);
+    println(F("BAR"));
+    setCursor(368, 8);
+    println(F("MEASURE"));
+    drawTempo();
+    drawMetronome();
+    drawBar();
+    drawMeasure();
   }
 
-  void View::drawRhythmMenuData(uint8_t boxNum) {
-    uint16_t backColor = BLACK;
-    uint16_t foreColor = WHITE;
-    uint8_t dataDigit = kRhythmMenuDataDigit[boxNum];
-    uint16_t dataXPos = kRhythmMenuDataXPos[boxNum];
-    uint16_t dataYPos = kRhythmMenuDataYPos;
-    uint8_t *dataClean;
-    uint8_t data;
-    switch (boxNum) {
-      case 0: // tempo
-      data = rhythmRef.getTempo();
-      dataClean = &tempoClean;
-      break;
-      case 1: // metronome
-      data = rhythmRef.getMetronome();
-      dataClean = &metronomeClean;
-      break;
-      case 2: // bar
-      data = rhythmRef.getBar();
-      dataClean = &barClean;
-      break;
-      case 3: // measure
-      data = rhythmRef.getMeasure();
-      dataClean = &measureClean;
-      break;
-      case 4: // load
-      data = rhythmRef.getLoad();
-      dataClean = &loadClean;
-      break;
-      case 5: // save
-      data = rhythmRef.getSave();
-      dataClean = &saveClean;
-      break;
-      case 6: // output
-      data = rhythmRef.getOutput();
-      dataClean = &outputClean;
-      break;
-      case 7: // quantize
-      data = rhythmRef.getQuantize();
-      dataClean = &quantizeClean;
-      break;
+  void View::drawRhythmMenu2() {
+    fillRect(0, 0, 480, kMenuHeight, WHITE);
+    drawFastVLine(120, 0, 45, BLACK);
+    drawFastVLine(240, 0, 45, BLACK);
+    drawFastVLine(360, 0, 45, BLACK);
+    setTextColor(BLACK);
+    setCursor(8, 8);
+    println(F("LOAD"));
+    setCursor(128, 8);
+    println(F("SAVE"));
+    setCursor(248, 8);
+    println(F("OUTPUT"));
+    setCursor(368, 8);
+    println(F("QUANTIZE"));
+    drawLoad();
+    drawSave();
+    drawOutput();
+    drawQuantize();
+  }
+
+  void View::drawRhythmMenuSelection(int8_t currentState, int8_t previousState) {
+    uint16_t xPos1;
+    uint16_t xPos2;
+    // clearing previous state
+    if (previousState >= 0) {
+      switch (previousState) {
+        case 0:
+        case 4:
+        xPos1 = 8;
+        xPos2 = 20;
+        break;
+        case 1:
+        case 5:
+        xPos1 = 128;
+        xPos2 = 140;
+        break;
+        case 2:
+        case 6:
+        xPos1 = 248;
+        xPos2 = 260;
+        break;
+        case 3:
+        case 7:
+        xPos1 = 368;
+        xPos2 = 380;
+        break;
+        default:
+        break;
+      }
+      drawTriangle(xPos1, 30, xPos1, 42, xPos2, 36, WHITE);
     }
-    drawMenuNumber(*dataClean, dataDigit, dataXPos, dataYPos, backColor);
-    drawMenuNumber(data, dataDigit, dataXPos, dataYPos, foreColor);
-    *dataClean = data;
+    // drawing current state
+    if (currentState >= 0) {
+      switch (currentState) {
+        case 0:
+        case 4:
+        xPos1 = 8;
+        xPos2 = 20;
+        break;
+        case 1:
+        case 5:
+        xPos1 = 128;
+        xPos2 = 140;
+        break;
+        case 2:
+        case 6:
+        xPos1 = 248;
+        xPos2 = 260;
+        break;
+        case 3:
+        case 7:
+        xPos1 = 368;
+        xPos2 = 380;
+        break;
+        default:
+        break;
+      }
+      drawTriangle(xPos1, 30, xPos1, 42, xPos2, 36, DGRAY);
+    }
+  }
+
+  void View::drawTempo() {
+    drawMenuNumber(tempoClean, kTempoDigit, kTempoXPos, kDataYPos, WHITE);
+    drawMenuNumber(rhythmRef.getTempo(), kTempoDigit, kTempoXPos, kDataYPos, BLACK);
+    tempoClean = rhythmRef.getTempo();
+  }
+
+  void View::drawMetronome() {
+    uint16_t xPos = kMetronomeXPos;
+    uint16_t yPos = kDataYPos;
+    bool data;
+    // clearing old state
+    fillRect(xPos, yPos,33, 13, WHITE);
+    // getting new state
+    if (rhythmRef.getMetronome()) {
+      data = 1;
+    } else {
+      data = 0;
+    }
+    // drawing new state
+    for(uint8_t i = 0; i < kMetronomeDigit; i++) {
+      drawMenuLetter(kMetronomeData[data][i], xPos, yPos, BLACK);
+      xPos += kMenuDigitOffset;
+    }
+  }
+
+  void View::drawBar() {
+    drawMenuNumber(barClean, kBarDigit, kBarXPos, kDataYPos, WHITE);
+    drawMenuNumber(rhythmRef.getBar(), kBarDigit, kBarXPos, kDataYPos, BLACK);
+    barClean = rhythmRef.getBar();
+  }
+
+  void View::drawMeasure() {
+    drawMenuNumber(measureClean, kMeasureDigit, kMeasureXPos, kDataYPos, WHITE);
+    drawMenuNumber(rhythmRef.getMeasure(), kMeasureDigit, kMeasureXPos, kDataYPos, BLACK);
+    measureClean = rhythmRef.getMeasure();
+  }
+
+  void View::drawLoad() {
+    drawMenuNumber(loadClean, kLoadDigit, kLoadXPos, kDataYPos, WHITE);
+    drawMenuNumber(rhythmRef.getLoad(), kLoadDigit, kLoadXPos, kDataYPos, BLACK);
+    loadClean = rhythmRef.getLoad();
+  }
+
+  void View::drawSave() {
+    drawMenuNumber(saveClean, kSaveDigit, kSaveXPos, kDataYPos, WHITE);
+    drawMenuNumber(rhythmRef.getSave(), kSaveDigit, kSaveXPos, kDataYPos, BLACK);
+    saveClean = rhythmRef.getSave();
+  }
+
+  void View::drawOutput() {
+    uint16_t xPos = kOutputXPos;
+    uint16_t yPos = kDataYPos;
+    bool data;
+    // clearing old state
+    fillRect(xPos, yPos,45, 13, WHITE);
+    // getting new state
+    if (rhythmRef.getOutput()) {
+      data = 1;
+    } else {
+      data = 0;
+    }
+    // drawing new state
+    for(uint8_t i = 0; i < kOutputDigit; i++) {
+      drawMenuLetter(kOutputData[data][i], xPos, yPos, BLACK);
+      xPos += kMenuDigitOffset;
+    }
+  }
+
+  void View::drawQuantize() {
+    drawMenuNumber(quantizeClean, kQuantizeDigit, kQuantizeXPos, kDataYPos, WHITE);
+    drawMenuNumber(pgm_read_word(&kQuantizeLibrary[rhythmRef.getQuantize()]), kQuantizeDigit, kQuantizeXPos, kDataYPos, BLACK);
+    quantizeClean = pgm_read_word(&kQuantizeLibrary[rhythmRef.getQuantize()]);
   }
 
   // layer menu functions
 
-  void View::drawLayerMenuBox(uint8_t boxNum, bool state, const Layer& layer_) {
-    uint16_t backColor;
-    uint16_t foreColor;
-    uint16_t boxXPos = kLayerMenuBoxXPos[boxNum];
-    uint16_t boxYPos = kLayerMenuBoxYPos;
-    uint16_t headerXPos = kLayerMenuHeaderXPos[boxNum];
-    uint16_t headerYPos = kLayerMenuHeaderYPos;
-    uint8_t dataDigit = kLayerMenuDataDigit[boxNum];
-    uint16_t dataXPos = kLayerMenuDataXPos[boxNum];
-    uint16_t dataYPos = kLayerMenuDataYPos;
-    uint8_t data;
-    uint8_t* dataClean;
-    // defining colors
-    menuColorSelect(backColor, foreColor, state);
-    // drawing box
-    if (boxNum == 0) {
-      fillRect(boxXPos, boxYPos, kLayerMenuBoxWidth2, kLayerMenuBoxHeight, backColor);
+  void View::drawLayerMenu(const Layer& layer_, const Beat& beat_) {
+    fillRect(0, 0, 480, kMenuHeight, WHITE);
+    drawFastVLine(240, 0, 45, BLACK);
+    drawFastVLine(360, 0, 45, BLACK);
+    //drawFastVLine(330, 9, 36, BLACK);
+    drawFastHLine(90, 45, 140, BLACK);
+    for(int i = 0; i < 12; i ++) {
+      drawPixel(230, 9 + (3 * i), BLACK);
+    }
+    setTextColor(BLACK);
+    setCursor(8, 8);
+    println(F("FILL"));
+    setCursor(248, 8);
+    println(F("INST A"));
+    setCursor(368, 8);
+    println(F("INST B"));
+    drawInstA(layer_);
+    drawInstB(layer_);
+    if (layer_.getLastActiveBeat() != -1) {
+      drawFill(beat_);
     } else {
-      fillRect(boxXPos, boxYPos, kLayerMenuBoxWidth, kLayerMenuBoxHeight, backColor);
-    }
-    // drawing header
-    setTextColor(foreColor);
-    setCursor(headerXPos, headerYPos);
-    switch (boxNum) {
-      case 0: // fill
-      // statement
-      break;
-      case 1: // measure
-      println(F("INST A"));
-      data = layer_.getInstAMidi();
-      dataClean = &instAClean;
-      break;
-      case 2: // load
-      println(F("INST B"));
-      data = layer_.getInstBMidi();
-      dataClean = &instBClean;
-      break;
-      default:
-      break;
-    }
-    drawMenuNumber(data, dataDigit, dataXPos, dataYPos, foreColor);
-    *dataClean = data;
-  }
-
-  void View::drawLayerMenuData(uint8_t boxNum, const Layer& layer_) {
-    uint16_t backColor = BLACK;
-    uint16_t foreColor = WHITE;
-    uint8_t dataDigit = kLayerMenuDataDigit[boxNum];
-    uint16_t dataXPos = kLayerMenuDataXPos[boxNum];
-    uint16_t dataYPos = kLayerMenuDataYPos;
-    uint8_t *dataClean;
-    uint8_t data;
-    switch (boxNum) {
-      case 0: // fill
-      // statement
-      break;
-      case 1: // tempo
-      data = layer_.getInstAMidi();
-      dataClean = &instAClean;
-      break;
-      case 2: // metronome
-      data = layer_.getInstBMidi();
-      dataClean = &instBClean;
-      break;
-      default:
-      break;
-    }
-    drawMenuNumber(*dataClean, dataDigit, dataXPos, dataYPos, backColor);
-    drawMenuNumber(data, dataDigit, dataXPos, dataYPos, foreColor);
-    *dataClean = data;
-  }
-
-  // private menu functions
-
-  void View::menuColorSelect(uint16_t& backColor_, uint16_t& foreColor_, bool state) {
-    if (state) {
-      backColor_ = BLACK;
-      foreColor_ = LGRAY;
-    } else {
-      backColor_ = WHITE;
-      foreColor_ = BLACK;
+      cleanFill();
     }
   }
+
+  void View::drawLayerMenuSelection(int8_t currentState, int8_t previousState) {
+    uint16_t xPos1;
+    uint16_t xPos2;
+    // clearing previous state
+    if (previousState >= 0) {
+      switch (previousState) {
+        case 0:
+        xPos1 = 8;
+        xPos2 = 20;
+        break;
+        case 1:
+        xPos1 = 248;
+        xPos2 = 260;
+        break;
+        case 2:
+        xPos1 = 368;
+        xPos2 = 380;
+        break;
+        default:
+        break;
+      }
+      drawTriangle(xPos1, 30, xPos1, 42, xPos2, 36, WHITE);
+    }
+    // drawing current state
+    if (currentState >= 0) {
+      switch (currentState) {
+        case 0:
+        xPos1 = 8;
+        xPos2 = 20;
+        break;
+        case 1:
+        xPos1 = 248;
+        xPos2 = 260;
+        break;
+        case 2:
+        xPos1 = 368;
+        xPos2 = 380;
+        break;
+        default:
+        break;
+      }
+      drawTriangle(xPos1, 30, xPos1, 42, xPos2, 36, DGRAY);
+    }
+  }
+
+  void View::drawInstA(const Layer& layer_) {
+    if (&layer_ != NULL) {
+      uint8_t instA = layer_.getInstAMidi();
+      drawMenuNumber(instAClean, kInstADigit, kInstAXPos, kDataYPos, WHITE);
+      drawMenuNumber(instA, kInstADigit, kInstAXPos, kDataYPos, BLACK);
+      instAClean = instA;
+    }
+  }
+
+  void View::drawInstB(const Layer& layer_) {
+    if (&layer_ != NULL) {
+      uint8_t instB = layer_.getInstBMidi();
+      drawMenuNumber(instBClean, kInstBDigit, kInstBXPos, kDataYPos, WHITE);
+      drawMenuNumber(instB, kInstBDigit, kInstBXPos, kDataYPos, BLACK);
+      instBClean = instB;
+    }
+  }
+
+  void View::drawFill(const Beat& beat_) {
+    if (&beat_ != NULL) {
+      // checking if there is a new fill data
+      if (beat_.getFill() != fillNumberClean) {
+        // clearing old fill name
+        fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
+        // drawing fill name
+        uint16_t fillNameXPos = kFillNameXPos;
+        uint16_t fillNameYPos = kFillNameYPos;
+        for(uint8_t i = 0; i < kFillNameLetterCount; i++) {
+          drawMenuLetter(getFillName(beat_.getFill(), i), fillNameXPos, fillNameYPos, BLACK);
+          fillNameXPos += kMenuDigitOffset;
+        }
+        // clearing old fill diagram
+        fillRect(90, 9, 120, 36, WHITE);
+        // drawing fill diagram
+        uint8_t fill = beat_.getFill();
+        uint8_t step = getFillStep(fill);
+        uint8_t quantaTotalTimeRatio = 0;
+        uint8_t quantaTimeRatio = 0;
+        uint8_t quantaVolume = 0;
+        // calculating quanta total time ratio
+        for(int j = 0; j < step + 1; j++) {
+          quantaTotalTimeRatio += getFillTime(fill, j);
+        }
+        // drawing quanta time line
+        for(int k = 0; k < step; k++) {
+          quantaTimeRatio += getFillTime(fill, k);
+          quantaVolume = getFillVolume(fill, k);
+          uint16_t fillDiagXPos = int(90 + 120 * double(quantaTimeRatio) / quantaTotalTimeRatio);
+          float vLine = 36 * float(quantaVolume) / kMaxVolume;
+          drawFastVLine(fillDiagXPos, 45 - vLine, vLine, BLACK);
+        }
+        // adjusting fillNumberClean
+        fillNumberClean = beat_.getFill();
+      }
+    }
+  }
+
+  void View::cleanFill() {
+    // checking if there is a new fill data
+    if ((fillNumberClean != -1)) {
+      // clearing old fill name
+      fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
+      // clearing old fill diagram
+      fillRect(90, 9, 120, 36, WHITE);
+      uint16_t fillNameXPos = kFillNameXPos;
+      uint16_t fillNameYPos = kFillNameYPos;
+      // drawing empty fill name (hypen)
+      for(uint8_t i = 0; i < kFillNameLetterCount; i++) {
+        drawMenuLetter('-', fillNameXPos, fillNameYPos, BLACK);
+        fillNameXPos += kMenuDigitOffset;
+      }
+      fillNumberClean = -1;
+    }
+  }
+
+  // private info functions
 
   void View::drawMenuNumber(uint8_t num, uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color) {
     uint8_t digitHundreds;
     uint8_t digitTens;
     uint8_t digitOnes;
-
+    // drawing hundreds digit
     if ((digit >= kMinMenuDigit) && (digit <= kMaxMenuDigit)) {
       if (digit == 3) {
         digitHundreds = (num / 100);
         drawMenuDigit(digitHundreds, xPos, yPos, color);
         xPos += kMenuDigitOffset;
       }
-      if (digit >= 2) {
-        digitTens = (num % 100) / 10;
-        drawMenuDigit(digitTens, xPos, yPos, color);
-        xPos += kMenuDigitOffset;
-      }
-      digitOnes = num % 10;
-      drawMenuDigit(digitOnes, xPos, yPos, color);
     }
+    // drawing tens digit
+    if (digit >= 2) {
+      digitTens = (num % 100) / 10;
+      drawMenuDigit(digitTens, xPos, yPos, color);
+      xPos += kMenuDigitOffset;
+    }
+    // drawing ones digit
+    digitOnes = num % 10;
+    drawMenuDigit(digitOnes, xPos, yPos, color);
+
   }
 
   void View::drawMenuLetter(char letter, uint16_t xPos, uint16_t yPos, uint16_t color) {
@@ -687,9 +819,9 @@ namespace Zebra {
   }
 
   void View::drawMenuDigit(uint8_t digit, uint16_t xPos, uint16_t yPos, uint16_t color) {
-    for (uint8_t y = 0; y < 13; y++) {
-      for (uint8_t x = 0; x < 9; x++) {
-        if (pgm_read_word(&digitFont[digit][y]) & (1 << (8 - x))) {
+    for (int y = 0; y < 13; y++) {
+      for (int x = 0; x < 9; x++) {
+        if (pgm_read_word(&digitFont[digit][y]) & (1 << 8 - x)) {
           drawPixel(xPos + x, yPos + y, color);
         }
       }
@@ -731,107 +863,3 @@ namespace Zebra {
     print(var);
   }
 }
-
-/*
-
-void View::drawInfoLayerAll(const Layer& layer_, const Beat& beat_) {
-drawInfoLayerInstA(layer_);
-drawInfoLayerInstB(layer_);
-if (layer_.getLastActiveBeat() != -1) {
-drawInfoFill(beat_);
-} else {
-cleanInfoFill();
-}
-}
-
-void View::drawInfoLayerBase() {
-// clearing info base
-fillRect(0, 0, 480, kInfoHeight, WHITE);
-// drawing section segments
-drawFastVLine(240, 0, 20, BLACK);
-drawFastVLine(360, 0, 20, BLACK);
-// drawing fill graph base
-//drawFastVLine(330, 9, 36, BLACK);
-drawFastHLine(90, 45, 140, BLACK);
-for(int i = 0; i < 12; i ++) {
-drawPixel(230, 9 + (3 * i), BLACK);
-}
-setCursor(8, 8);
-println(F("FILL"));
-setTextColor(BLACK);
-setCursor(248, 8);
-println(F("INST A"));
-setCursor(368, 8);
-println(F("INST B"));
-}
-
-void View::drawInfoLayerInstB(const Layer& layer_) {
-if (&layer_ != NULL) {
-uint8_t instB = layer_.getInstBMidi();
-// checking if there is a new inst data
-if ((switchInfoToLayerFlag) || (instB != instBClean)) {
-drawInfoNumber(instBClean, kInstBDigit, kInstBXPos, kInstBYPos, WHITE);
-drawInfoNumber(instB, kInstBDigit, kInstBXPos, kInstBYPos, BLACK);
-instBClean = instB;
-}
-}
-}
-
-void View::drawInfoFill(const Beat& beat_) {
-if (&beat_ != NULL) {
-// checking if there is a new fill data
-if ((switchInfoToLayerFlag) || (beat_.getFill() != fillNumberClean)) {
-// clearing old fill name
-fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
-// drawing fill name
-uint16_t fillNameXPos = kFillNameXPos;
-uint16_t fillNameYPos = kFillNameYPos;
-for(uint8_t i = 0; i < kFillNameLetterCount; i++) {
-drawInfoLetter(getFillName(beat_.getFill(), i), fillNameXPos, fillNameYPos, BLACK);
-fillNameXPos += kInfoDigitOffset;
-}
-// clearing old fill diagram
-fillRect(90, 9, 120, 36, WHITE);
-// drawing fill diagram
-uint8_t fill = beat_.getFill();
-uint8_t step = getFillStep(fill);
-uint8_t quantaTotalTimeRatio = 0;
-uint8_t quantaTimeRatio = 0;
-uint8_t quantaVolume = 0;
-// calculating quanta total time ratio
-for(int j = 0; j < step + 1; j++) {
-quantaTotalTimeRatio += getFillTime(fill, j);
-}
-// drawing quanta time line
-for(int k = 0; k < step; k++) {
-quantaTimeRatio += getFillTime(fill, k);
-quantaVolume = getFillVolume(fill, k);
-uint16_t fillDiagXPos = int(90 + 120 * double(quantaTimeRatio) / quantaTotalTimeRatio);
-float vLine = 36 * float(quantaVolume) / kMaxVolume;
-drawFastVLine(fillDiagXPos, 45 - vLine, vLine, BLACK);
-}
-// adjusting fillNumberClean
-fillNumberClean = beat_.getFill();
-}
-}
-}
-
-void View::cleanInfoFill() {
-// checking if there is a new fill data
-if ((switchInfoToLayerFlag) || (fillNumberClean != -1)) {
-// clearing old fill name
-fillRect(kFillNameXPos, kFillNameYPos, 57, 13, WHITE);
-// clearing old fill diagram
-fillRect(90, 9, 120, 36, WHITE);
-uint16_t fillNameXPos = kFillNameXPos;
-uint16_t fillNameYPos = kFillNameYPos;
-// drawing empty fill name (hypen)
-for(uint8_t i = 0; i < kFillNameLetterCount; i++) {
-drawInfoLetter('-', fillNameXPos, fillNameYPos, BLACK);
-fillNameXPos += kInfoDigitOffset;
-}
-fillNumberClean = -1;
-}
-}
-
-*/

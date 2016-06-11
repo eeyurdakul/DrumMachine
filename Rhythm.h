@@ -16,6 +16,7 @@ namespace Zebra {
     uint8_t save;
     bool output;
     uint8_t quantize;
+    bool selected;
     uint32_t playTime;
     uint32_t songTime;
     Layer layerLibrary[kLayerLibrarySize];
@@ -38,6 +39,8 @@ namespace Zebra {
     bool getOutput() const;
     void setQuantize(uint8_t quantize_);
     uint8_t getQuantize() const;
+    void setSelected(bool selected_);
+    bool getSelected() const;
     // play functions
     void setPlayTime(uint32_t playTime_);
     uint32_t getPlayTime() const;

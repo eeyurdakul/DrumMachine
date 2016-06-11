@@ -44,15 +44,18 @@ namespace Zebra {
     void playStop();
     void reset();
     // select functions
-    void rhythmMenuSelect();
+    void rhythmSelect();
     void layerSelect(Layer& layer_);
     void layerChannelSelect(Layer& layer_);
+    // global select function
+    void select();
+    // menu function
+    void menuUpdate();
     // rhythm menu functions
     void rhythmMenuRight();
     void rhythmMenuLeft();
     void rhythmMenuUp();
     void rhythmMenuDown();
-    void rhythmMenuUpdate();
     // rhythm functions
     void tempoUp();
     void tempoDown();
@@ -75,7 +78,6 @@ namespace Zebra {
     void layerMenuLeft();
     void layerMenuUp();
     void layerMenuDown();
-    void layerMenuUpdate();
     // layer functions
     void beatUp();
     void beatDown();
