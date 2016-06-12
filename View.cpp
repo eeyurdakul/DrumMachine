@@ -20,7 +20,7 @@ namespace Zebra {
   , quantizeClean(0)
   , instAClean(0)
   , instBClean(0)
-  , fillNumberClean(127) {}
+  , fillNumberClean(-2) {}
 
   View::~View() {}
 
@@ -312,6 +312,7 @@ namespace Zebra {
   // rhythm menu functions
 
   void View::drawRhythmMenu1() {
+    fillNumberClean = -2;
     fillRect(0, 0, 480, kMenuHeight, WHITE);
     drawFastVLine(120, 0, 45, BLACK);
     drawFastVLine(240, 0, 45, BLACK);
@@ -332,6 +333,7 @@ namespace Zebra {
   }
 
   void View::drawRhythmMenu2() {
+    fillNumberClean = -2;
     fillRect(0, 0, 480, kMenuHeight, WHITE);
     drawFastVLine(120, 0, 45, BLACK);
     drawFastVLine(240, 0, 45, BLACK);
@@ -861,7 +863,7 @@ namespace Zebra {
 
   // debug functions
 
-  void View::debug(uint32_t var) {
+  void View::debug(int32_t var) {
     fillRect(40, 260, 200, 20, BLACK);
     setTextColor(WHITE);
     setCursor(50, 265);

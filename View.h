@@ -37,7 +37,7 @@ namespace Zebra {
     // layer menu variables
     uint8_t instAClean;
     uint8_t instBClean;
-    int8_t fillNumberClean;
+    int8_t fillNumberClean;   // -2 --> rhythmselect, -1 --> empty layer
     // beat variables
     uint16_t selectedBeatXClean;
     uint16_t selectedBeatYClean;
@@ -100,6 +100,6 @@ namespace Zebra {
     void drawFill(const Beat& beat_);
     void cleanFill();
     // debug functions
-    void debug(uint32_t var);
+    void debug(int32_t var);
   };
 }

@@ -9,6 +9,7 @@ namespace Zebra {
   , keyboard()
   , selectedLayer(NULL)
   , selectedBeat(NULL)
+  , fillEditMode(false)
   , selectedBeatNum(-1)
   , currentRhythmMenu(0)
   , previousRhythmMenu(-1)
@@ -62,28 +63,44 @@ namespace Zebra {
       if ((currentRhythmMenu >= 0) && (currentLayerMenu < 0)) {
         rhythmMenuUp();
       } else if ((currentLayerMenu >= 0) && (currentRhythmMenu < 0)) {
-        layerMenuUp();
+        if (fillEditMode) {
+          fillUp();
+        } else {
+          layerMenuUp();
+        }
       }
     }
     if (keyboard.downButton.checkStatus()) {
       if ((currentRhythmMenu >= 0) && (currentLayerMenu < 0)) {
         rhythmMenuDown();
       } else if ((currentLayerMenu >= 0) && (currentRhythmMenu < 0)) {
-        layerMenuDown();
+        if (fillEditMode) {
+          fillDown();
+        } else {
+          layerMenuDown();
+        }
       }
     }
     if (keyboard.rightButton.checkStatus()) {
       if ((currentRhythmMenu >= 0) && (currentLayerMenu < 0)) {
         rhythmMenuRight();
       } else if ((currentLayerMenu >= 0) && (currentRhythmMenu < 0)) {
-        layerMenuRight();
+        if (fillEditMode) {
+          beatUp();
+        } else {
+          layerMenuRight();
+        }
       }
     }
     if (keyboard.leftButton.checkStatus()) {
       if ((currentRhythmMenu >= 0) && (currentLayerMenu < 0)) {
         rhythmMenuLeft();
       } else if ((currentLayerMenu >= 0) && (currentRhythmMenu < 0)) {
-        layerMenuLeft();
+        if (fillEditMode) {
+          beatDown();
+        } else {
+          layerMenuLeft();
+        }
       }
     }
     // action buttons
@@ -140,10 +157,10 @@ namespace Zebra {
       }
       // rhythm menu settings
       currentRhythmMenu = 0;
-      previousRhythmMenu = -1;
       // layer menu settings
       currentLayerMenu = -1;
       previousLayerMenu = -1;
+      fillEditMode = false;
       rhythmRef.setSelected(true);
       selectedLayer = NULL;
       selectedBeat = NULL;
@@ -154,14 +171,15 @@ namespace Zebra {
   }
 
   void Controller::layerSelect(Layer& layer_) {
+    // switching from rhythm to layer
     if (selectedLayer == NULL) {
       // rhythm menu settings
       currentRhythmMenu = -1;
       previousRhythmMenu = -1;
+      rhythmRef.setSelected(false);
       // layer menu settings
       currentLayerMenu = 0;
-      previousLayerMenu = -1;
-      rhythmRef.setSelected(false);
+      fillEditMode = true;
       selectedLayer = &layer_;
       selectedLayer->setSelected(true);
       if (selectedLayer->getLastActiveBeat() >= 0) {
@@ -174,13 +192,15 @@ namespace Zebra {
       viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       viewRef.drawLayerSelected(*selectedLayer);
       menuUpdate();
-    } else if (layer_.getNumber() != selectedLayer->getNumber()) {
+    } // switching from layer to layer
+    else if (layer_.getNumber() != selectedLayer->getNumber()) {
       selectedLayer->setSelected(false);
       viewRef.drawLayerSelected(*selectedLayer);
       selectedLayer = &layer_;
       selectedLayer->setSelected(true);
       // layer menu settings
       currentLayerMenu = 0;
+      fillEditMode = true;
       if (selectedLayer->getLastActiveBeat() >= 0) {
         selectedBeatNum = 0;
         selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
@@ -191,7 +211,19 @@ namespace Zebra {
       viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       viewRef.drawLayerSelected(*selectedLayer);
       menuUpdate();
+    } // switching fill edit mode
+    else {
+      if ((currentLayerMenu == 0) && (fillEditMode)) {
+        fillEditMode = false;
+        currentLayerMenu = 1;
+        menuUpdate();
+      } else if ((currentLayerMenu > 0) &&(!fillEditMode)) {
+        fillEditMode = true;
+        currentLayerMenu = 0;
+        menuUpdate();
+      }
     }
+
   }
 
   void Controller::layerChannelSelect(Layer& layer_) {
@@ -229,13 +261,25 @@ namespace Zebra {
       viewRef.drawRhythmMenuSelection(currentRhythmMenu, previousRhythmMenu);
     } else if ((currentLayerMenu >= 0) && (currentRhythmMenu < 0)) {
       // layer menu update
+      // checking if switching from rhythm to layer
       if ((currentLayerMenu == 0) && (previousLayerMenu == -1)) {
+        // drawing layer menu
         viewRef.drawLayerMenu(*selectedLayer, *selectedBeat);
+        // drawing menu selection
+        viewRef.drawLayerMenuSelection(currentLayerMenu, previousLayerMenu);
+        // updating previousLayerMenu
+        previousLayerMenu = 0;
       } else {
+        // checking if switching between layers
         viewRef.switchBetweenLayers(*selectedLayer, *selectedBeat, previousLayerMenu);
+        // checking if menu selection is changed
+        if (currentLayerMenu != previousLayerMenu) {
+          // drawing menu selection
+          viewRef.drawLayerMenuSelection(currentLayerMenu, previousLayerMenu);
+          // updating previousLayerMenu
+          previousLayerMenu = currentLayerMenu;
+        }
       }
-      // drawing menu selection
-      viewRef.drawLayerMenuSelection(currentLayerMenu, previousLayerMenu);
     }
   }
 
@@ -470,7 +514,7 @@ namespace Zebra {
   }
 
   void Controller::layerMenuLeft() {
-    if (currentLayerMenu > 0) {
+    if (currentLayerMenu > 1) {
       previousLayerMenu = currentLayerMenu;
       currentLayerMenu -= 1;
       menuUpdate();
@@ -550,15 +594,12 @@ namespace Zebra {
     if (selectedLayer->getLastActiveBeat() != -1) {
       if (selectedBeatNum < selectedLayer->getLastActiveBeat()) {
         selectedBeatNum += 1;
-        selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
-        viewRef.drawFill(*selectedBeat);
-        viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       } else if (selectedLayer->getLastActiveBeat() != 0) {
         selectedBeatNum = 0;
-        selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
-        viewRef.drawFill(*selectedBeat);
-        viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       }
+      selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
+      viewRef.drawFill(*selectedBeat);
+      viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
     }
   }
 
@@ -567,15 +608,12 @@ namespace Zebra {
     if (selectedLayer->getLastActiveBeat() != -1) {
       if (selectedBeatNum > 0) {
         selectedBeatNum -= 1;
-        selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
-        viewRef.drawFill(*selectedBeat);
-        viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       } else if (selectedLayer->getLastActiveBeat() != 0) {
         selectedBeatNum = selectedLayer->getLastActiveBeat();
-        selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
-        viewRef.drawFill(*selectedBeat);
-        viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
       }
+      selectedBeat = &(selectedLayer->getBeat(selectedBeatNum));
+      viewRef.drawFill(*selectedBeat);
+      viewRef.drawSelectedBeat(*selectedLayer, *selectedBeat);
     }
   }
 

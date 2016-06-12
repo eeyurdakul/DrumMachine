@@ -18,6 +18,7 @@ namespace Zebra {
     Keyboard keyboard;
     Layer* selectedLayer;
     Beat* selectedBeat;
+    bool fillEditMode;
     int8_t selectedBeatNum;
     int8_t currentRhythmMenu;
     int8_t previousRhythmMenu;
